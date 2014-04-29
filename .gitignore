@@ -1,0 +1,8 @@
+config.py
+*.md~
+*.txt~
+*.pyc
+*.py~
+*.csv
+*.csv~
+pyenv
