@@ -59,8 +59,8 @@ def run_tests(packages, csvfile):
     print "Complete"
 
 def run_packagegroup_tests(options):
-    if options.packagroup:
-        package_group_name = options.packagroup
+    if options.packagegroup:
+        package_group_name = options.packagegroup
     else:
         package_group_name = config.PACKAGEGROUP_NAME
 
