@@ -32,7 +32,7 @@ def get_xml_in_dir(start_string, relative_dir):
                               'name': os.path.splitext(file)[0]})
     return filenames
 
-def run_tests(packages):
+def run_tests(packages, csvfile):
 
     def write_row(a, package, t_name):
         a['test-name'] = t_name
@@ -47,15 +47,14 @@ def run_tests(packages):
     
     print "Opening new CSV file, beginning testing"
     
-    with file(OUTPUT_FILENAME, 'w') as csvfile:
-        writer = unicodecsv.DictWriter(csvfile, headers)
-        hdict = dict([(h,h) for h in headers])
-        writer.writerow(hdict)
+    writer = unicodecsv.DictWriter(csvfile, headers)
+    hdict = dict([(h,h) for h in headers])
+    writer.writerow(hdict)
 
-        for package in packages:
-            write_package(package)
+    for package in packages:
+        write_package(package)
 
-        print "Complete"
+    print "Complete"
 
 def run_packagegroup_tests(options):
     if options.packagroup:
@@ -63,8 +62,9 @@ def run_packagegroup_tests(options):
     else:
         package_group_name = config.PACKAGEGROUP_NAME
     
-    packages = get_xml_in_dir(package_group_name, DIR_FOR_TESTING)
-    run_tests(packages)
+    with file(OUTPUT_FILENAME, 'w') as csvstream:
+        packages = get_xml_in_dir(package_group_name, DIR_FOR_TESTING)
+        run_tests(packages, csvstream)
 
 def get_options():
     parser = optparse.OptionParser()
