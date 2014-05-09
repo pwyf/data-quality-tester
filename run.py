@@ -46,16 +46,16 @@ def run_tests(packages):
                 write_row(a, package, atest['name'])
     
     print "Opening new CSV file, beginning testing"
-    csvfile = open(OUTPUT_FILENAME, 'w')
-    writer = unicodecsv.DictWriter(csvfile, headers)
-    hdict = dict([(h,h) for h in headers])
-    writer.writerow(hdict)
+    
+    with file(OUTPUT_FILENAME, 'w') as csvfile:
+        writer = unicodecsv.DictWriter(csvfile, headers)
+        hdict = dict([(h,h) for h in headers])
+        writer.writerow(hdict)
 
-    for package in packages:
-        write_package(package)
+        for package in packages:
+            write_package(package)
 
-    print "Complete"
-    csvfile.close()
+        print "Complete"
 
 def run_packagegroup_tests(options):
     if options.packagroup:
