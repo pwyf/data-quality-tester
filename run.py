@@ -61,9 +61,10 @@ def run_packagegroup_tests(options):
         package_group_name = options.packagroup
     else:
         package_group_name = config.PACKAGEGROUP_NAME
+
+    packages = get_xml_in_dir(package_group_name, DIR_FOR_TESTING)
     
     with file(OUTPUT_FILENAME, 'w') as csvstream:
-        packages = get_xml_in_dir(package_group_name, DIR_FOR_TESTING)
         run_tests(packages, csvstream)
 
 def get_options():
