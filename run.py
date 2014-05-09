@@ -3,6 +3,7 @@ import unicodecsv
 import os
 import config
 import optparse
+import sys
 
 TESTS = config.TESTS
 CURRENT_TEST = config.CURRENT_TEST
@@ -63,16 +64,20 @@ def run_packagegroup_tests(options):
         package_group_name = config.PACKAGEGROUP_NAME
 
     packages = get_xml_in_dir(package_group_name, DIR_FOR_TESTING)
-    
-    with file(OUTPUT_FILENAME, 'w') as csvstream:
-        run_tests(packages, csvstream)
+
+    if options.stdout:
+        run_tests(packages, sys.stdout)
+    else:
+        with file(OUTPUT_FILENAME, 'w') as csvstream:
+            run_tests(packages, csvstream)
 
 def get_options():
     parser = optparse.OptionParser()
     parser.add_option("--package-group", dest="packagegroup",
                       action="store")
+    parser.add_option("--stdout", dest="stdout", action="store_true")
     options, rest = parser.parse_args()
-
+    return options
  
 if __name__ == "__main__":
     options = get_options()
