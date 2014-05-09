@@ -2,6 +2,7 @@ from foxpath import test
 import unicodecsv
 import os
 import config
+import optparse
 
 TESTS = config.TESTS
 CURRENT_TEST = config.CURRENT_TEST
@@ -56,9 +57,22 @@ def run_tests(packages):
     print "Complete"
     csvfile.close()
 
-def run_packagegroup_tests():
-    packages = get_xml_in_dir(PACKAGEGROUP_NAME, DIR_FOR_TESTING)
+def run_packagegroup_tests(options):
+    if options.packagroup:
+        package_group_name = options.packagroup
+    else:
+        package_group_name = config.PACKAGEGROUP_NAME
+    
+    packages = get_xml_in_dir(package_group_name, DIR_FOR_TESTING)
     run_tests(packages)
+
+def get_options():
+    parser = optparse.OptionParser()
+    parser.add_option("--package-group", dest="packagegroup",
+                      action="store")
+    options, rest = parser.parse_args()
+
  
 if __name__ == "__main__":
-    run_packagegroup_tests()
+    options = get_options()
+    run_packagegroup_tests(options)
