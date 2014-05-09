@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from foxpath import test
 import unicodecsv
 import os
