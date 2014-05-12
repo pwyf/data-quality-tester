@@ -62,7 +62,7 @@ def run_tests(packages, csvfile, tests):
 
 def get_tests_from_file(filename):
     reader = unicodecsv.DictReader(file(filename))
-    for test in reader:
+    for t in reader:
         yield { "expression": t["test_name"],
                 "name": t["test_description"] }
 
