@@ -60,6 +60,12 @@ def run_tests(packages, csvfile, tests):
 
     print "Complete"
 
+def get_tests_from_file(filename):
+    reader = unicodecsv.DictReader(file(filename))
+    for test in reader:
+        yield { "expression": t["test_name"],
+                "name": t["test_description"] }
+
 def run_packagegroup_tests(options):
     if options.packagegroup:
         package_group_name = options.packagegroup
@@ -69,7 +75,12 @@ def run_packagegroup_tests(options):
     packages = get_xml_in_dir(package_group_name, DIR_FOR_TESTING)
 
     def wrapped_run_tests(output_stream):
-        return run_tests(packages, output_stream, TESTS)
+        if options.tests_file:
+            tests = [ t for t in get_tests_from_file(filename) ]
+        else:
+            tests = TESTS
+
+        return run_tests(packages, output_stream, tests)
 
     if options.stdout:
         wrapped_run_tests(sys.stdout)
