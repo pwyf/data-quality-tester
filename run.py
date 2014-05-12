@@ -34,7 +34,7 @@ def get_xml_in_dir(start_string, relative_dir):
                               'name': os.path.splitext(file)[0]})
     return filenames
 
-def run_tests(packages, csvfile):
+def run_tests(packages, csvfile, tests):
 
     def write_row(a, package, t_name):
         a['test-name'] = t_name
@@ -43,7 +43,7 @@ def run_tests(packages, csvfile):
 
     def write_package(package):
         print "Testing and writing for package", package['name']
-        for atest in TESTS:
+        for atest in tests:
             for a in test.test_doc_json_out(package['absolute_filename'],
                 atest['expression'], CURRENT_TEST)['activities']:
 
@@ -69,7 +69,7 @@ def run_packagegroup_tests(options):
     packages = get_xml_in_dir(package_group_name, DIR_FOR_TESTING)
 
     def wrapped_run_tests(output_stream):
-        return run_tests(packages, output_stream)
+        return run_tests(packages, output_stream, TESTS)
 
     if options.stdout:
         wrapped_run_tests(sys.stdout)
@@ -82,6 +82,7 @@ def get_options():
     parser.add_option("--package-group", dest="packagegroup",
                       action="store")
     parser.add_option("--stdout", dest="stdout", action="store_true")
+    parser.add_option("--tests-file", dest="tests_file", action="store")
     options, rest = parser.parse_args()
     return options
  
