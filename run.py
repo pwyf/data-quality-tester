@@ -44,7 +44,9 @@ def run_tests(packages, csvfile):
     def write_package(package):
         print "Testing and writing for package", package['name']
         for atest in TESTS:
-            for a in test.test_doc_json_out(package['absolute_filename'],atest['expression'],CURRENT_TEST)['activities']:
+            for a in test.test_doc_json_out(package['absolute_filename'],
+                atest['expression'], CURRENT_TEST)['activities']:
+
                 write_row(a, package, atest['name'])
     
     print "Opening new CSV file, beginning testing"
@@ -66,11 +68,14 @@ def run_packagegroup_tests(options):
 
     packages = get_xml_in_dir(package_group_name, DIR_FOR_TESTING)
 
+    def wrapped_run_tests(output_stream):
+        return run_tests(packages, output_stream)
+
     if options.stdout:
-        run_tests(packages, sys.stdout)
+        wrapped_run_tests(sys.stdout)
     else:
         with file(OUTPUT_FILENAME, 'w') as csvstream:
-            run_tests(packages, csvstream)
+            wrapped_run_tests(csvstream)
 
 def get_options():
     parser = optparse.OptionParser()
