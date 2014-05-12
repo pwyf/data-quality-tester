@@ -76,7 +76,7 @@ def run_packagegroup_tests(options):
 
     def wrapped_run_tests(output_stream):
         if options.tests_file:
-            tests = [ t for t in get_tests_from_file(filename) ]
+            tests = [ t for t in get_tests_from_file(options.tests_file) ]
         else:
             tests = TESTS
 
