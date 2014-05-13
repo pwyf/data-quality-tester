@@ -10,7 +10,6 @@ TESTS = config.TESTS
 CURRENT_TEST = config.CURRENT_TEST
 DIR_FOR_TESTING = config.DIR_FOR_TESTING
 PACKAGEGROUP_NAME = config.PACKAGEGROUP_NAME
-OUTPUT_FILENAME = config.OUTPUT_FILENAME
 
 headers = [
            'result', 
@@ -82,17 +81,12 @@ def run_packagegroup_tests(options):
 
         return run_tests(packages, output_stream, tests)
 
-    if options.stdout:
-        wrapped_run_tests(sys.stdout)
-    else:
-        with file(OUTPUT_FILENAME, 'w') as csvstream:
-            wrapped_run_tests(csvstream)
+    wrapped_run_tests(sys.stdout)
 
 def get_options():
     parser = optparse.OptionParser()
     parser.add_option("--package-group", dest="packagegroup",
                       action="store")
-    parser.add_option("--stdout", dest="stdout", action="store_true")
     parser.add_option("--tests-file", dest="tests_file", action="store")
     options, rest = parser.parse_args()
     return options
