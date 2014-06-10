@@ -74,21 +74,26 @@ def run_packagegroup_tests(options):
 
     packages = get_xml_in_dir(package_group_name, DIR_FOR_TESTING)
 
-    def wrapped_run_tests(output_stream):
+    def wrapped_run_tests():
         if options.tests_file:
             tests = [ t for t in get_tests_from_file(options.tests_file) ]
         else:
             tests = TESTS
+        if options.output_file:
+            output_stream = open(options.output_file, 'w')
+        else:
+            output_stream = sys.stdout
 
         return run_tests(packages, output_stream, tests)
 
-    wrapped_run_tests(sys.stdout)
+    wrapped_run_tests()
 
 def get_options():
     parser = optparse.OptionParser()
     parser.add_option("--package-group", dest="packagegroup",
                       action="store")
     parser.add_option("--tests-file", dest="tests_file", action="store")
+    parser.add_option("--output-file", dest="output_file", action="store")
     options, rest = parser.parse_args()
     return options
  
