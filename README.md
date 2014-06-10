@@ -43,4 +43,4 @@ Copyright (C) 2014, Mark Brough, Publish What You Fund. AGPL v3.0 licensed.
 
 5. Run the script:
 
-        python run.py
+        ./iati-tester
