@@ -44,3 +44,19 @@ Copyright (C) 2014, Mark Brough, Publish What You Fund. AGPL v3.0 licensed.
 5. Run the script:
 
         ./iati-tester
+
+## Running with command-line arguments
+
+You can also run the tester by passing command line arguments (instead of
+having to change the config file each time - although the config file does
+need to be set for supplying some standard variables).
+
+`package-group` - the name of the package group / publisher on the IATI Registry. All the files you want to test should begin with this string. If not set, defaults to the variables set in `config.py`
+
+`output-file` - the CSV file you want to output to. If not set, defaults to `sys.stdout`.
+
+`tests-file` - the tests file you want to output to. If not set, defaults to the variables set in `config.py`
+
+For example, if you want to test all XML files beginning with `dfid` in your `DIR_FOR_TESTING` folder (set in `config.py`), using the IATI Data Quality tests file, and output to `dfid.csv`, you can run:
+
+        ./iati-tester --package-group=dfid --output-file=dfid.csv --tests-file='../IATI-Data-Quality/tests/tests.csv'
