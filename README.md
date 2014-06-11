@@ -59,4 +59,4 @@ need to be set for supplying some standard variables).
 
 For example, if you want to test all XML files beginning with `dfid` in your `DIR_FOR_TESTING` folder (set in `config.py`), using the IATI Data Quality tests file, and output to `dfid.csv`, you can run:
 
-        ./iati-tester --package-group=dfid --output-file=dfid.csv --tests-file='../IATI-Data-Quality/tests/tests.csv'
+    ./iati-tester --package-group=dfid --output-file=dfid.csv --tests-file='../IATI-Data-Quality/tests/tests.csv'
