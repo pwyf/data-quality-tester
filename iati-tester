@@ -13,9 +13,10 @@ PACKAGEGROUP_NAME = config.PACKAGEGROUP_NAME
 LISTS = config.LISTS
 
 headers = [
-           'result', 
-           'iati-identifier', 
-           'test-name', 
+           'result',
+           'iati-identifier',
+           'hierarchy',
+           'test-name',
            'package-name',
            'current-result',
             ]
