@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h4>Activity from <a href="{{ url_for('run_tests', package_name=package_name) }}">{{ package_name }}</a></h4>
+
+<pre class="prettyprint">{{ activity }}</pre>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+pre { white-space: pre-wrap; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=false&amp;skin=sons-of-obsidian"></script>
+<script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
+<script>
+  var p = document.getElementsByClassName("prettyprint")[0];
+  p.innerText = vkbeautify.xml(p.innerText);
+</script>
+{% endblock %}

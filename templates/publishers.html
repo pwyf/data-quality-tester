@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Number of packages</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for publisher in publishers %}
+      <tr>
+        <td><a href="{{ url_for('publisher', publisher=publisher["code"]) }}">{{ publisher["name"] }}</a></td>
+        <td>{{ publisher["num_packages"] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
