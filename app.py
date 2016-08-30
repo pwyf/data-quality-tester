@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import codelists
 from flask import Flask, flash, render_template, redirect, request, url_for
+from werkzeug.contrib.cache import SimpleCache  # MemcachedCache
+
 from foxpath import test as foxtest
 import os.path
 import unicodecsv
@@ -11,6 +13,11 @@ from lxml import etree
 
 app = Flask(__name__)
 app.secret_key = "super top secret key"
+CACHE_ENABLED = True
+CACHE_TIMEOUT = 86400  # 24 hours
+
+cache = SimpleCache()
+# cache = MemcachedCache(['127.0.0.1:11211'])
 
 LISTS = codelists.CODELISTS
 TESTS_FILE = 'tests.csv'
@@ -91,6 +98,20 @@ def fetch_activity(filepath, iati_identifier):
     doc = etree.parse(filepath)
     activities = doc.xpath("//iati-identifier[text() = '" + iati_identifier + "']/..")
     return etree.tostring(activities[0])
+
+@app.before_request
+def return_cached():
+    # if GET and POST not empty
+    if CACHE_ENABLED and not request.values:
+        response = cache.get(request.path)
+        if response:
+            return response
+
+@app.after_request
+def cache_response(response):
+    if CACHE_ENABLED and not request.values:
+        cache.set(request.path, response, CACHE_TIMEOUT)
+    return response
 
 @app.route('/')
 def publishers():
