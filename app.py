@@ -114,7 +114,7 @@ def cache_response(response):
     return response
 
 @app.route('/')
-def publishers():
+def home():
     publishers = []
     j = requests.get("{registry_api}/organization_list?all_fields=true".format(
         registry_api=REGISTRY_API_BASE_URL,
