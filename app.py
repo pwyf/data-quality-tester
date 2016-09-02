@@ -1,14 +1,15 @@
 #!/usr/bin/env python
-import codelists
-from flask import Flask, flash, render_template, redirect, request, url_for
-from werkzeug.contrib.cache import SimpleCache  # MemcachedCache
-
-from foxpath import test as foxtest
 import os.path
 import unicodecsv
-import requests
 
+from flask import Flask, flash, render_template, redirect, request, url_for
+from foxpath import test as foxtest
 from lxml import etree
+import requests
+from werkzeug.contrib.cache import SimpleCache  # MemcachedCache
+
+import codelists
+from pagination import Pagination
 
 
 app = Flask(__name__)
@@ -24,6 +25,7 @@ TESTS_FILE = 'tests.csv'
 FILTERS_FILE = 'filters.csv'
 UPLOAD_FOLDER = 'uploads'
 REGISTRY_API_BASE_URL = "https://iatiregistry.org/api/3/action"
+PER_PAGE = 20
 
 def download_package(url, filepath):
     # download if we don't have a cached copy
@@ -113,33 +115,50 @@ def cache_response(response):
         cache.set(request.path, response, CACHE_TIMEOUT)
     return response
 
+def url_for_other_page(page):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
+app.jinja_env.globals['url_for_other_page'] = url_for_other_page
+
 @app.route('/')
 def home():
     publishers = []
     j = requests.get("{registry_api}/organization_list?all_fields=true".format(
         registry_api=REGISTRY_API_BASE_URL,
     )).json()
-    for publisher in j["result"]:
+
+    page = int(request.args.get('page', 1))
+    offset = (page - 1) * PER_PAGE
+    results = j["result"][offset:offset + PER_PAGE]
+
+    pagination = Pagination(page, PER_PAGE, len(j["result"]))
+
+    for publisher in results:
         publishers.append({
             "code": publisher["name"],
             "name": publisher["title"],
             "num_packages": publisher["packages"],
         })
-    return render_template('publishers.html', publishers=publishers)
+
+    kwargs = {
+        "pagination": pagination,
+        "publishers": publishers,
+    }
+    return render_template('publishers.html', **kwargs)
 
 @app.route('/publisher/<publisher>')
 def publisher(publisher):
-    per_page = 20
     resources = []
     registry_tmpl = "{registry_api}/package_search?q=organization:{{publisher}}&rows={per_page}&start={{offset}}".format(
         registry_api=REGISTRY_API_BASE_URL,
-        per_page=per_page,
+        per_page=PER_PAGE,
     )
     page = int(request.args.get('page', 1))
-    offset = (page - 1) * per_page
-    j = requests.get(registry_tmpl.format(publisher=publisher, offset=offset)).json()
-    all_result_count = j["result"]["count"]
-    pages = 1 + int(float(all_result_count - 1) / per_page)
+    offset = (page - 1) * PER_PAGE
+
+    j = exec_request(registry_tmpl.format(publisher=publisher, offset=offset)).json()
+    pagination = Pagination(page, PER_PAGE, j["result"]["count"])
     for result in j["result"]["results"]:
         filetype = [extra["value"] for extra in result["extras"] if extra["key"] == "filetype"][0]
         for resource in result["resources"]:
@@ -150,13 +169,12 @@ def publisher(publisher):
                 "revision": resource["revision_id"],
                 "filetype": filetype,
             })
-    args = {
+    kwargs = {
         "resources": resources,
         "publisher": publisher,
-        "current_page": page,
-        "pages": pages,
+        "pagination": pagination,
     }
-    return render_template('publisher.html', **args)
+    return render_template('publisher.html', **kwargs)
 
 @app.route('/test/<package_name>')
 def run_tests(package_name):
@@ -181,8 +199,8 @@ def view_activity(package_name, iati_identifier):
     download_package(url, filepath)
 
     activity = fetch_activity(filepath, iati_identifier).strip()
-    args = {
+    kwargs = {
         "package_name": package_name,
         "activity": activity,
     }
-    return render_template('activity.html', **args)
+    return render_template('activity.html', **kwargs)
