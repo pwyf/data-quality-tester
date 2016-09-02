@@ -85,11 +85,11 @@ def test_package(filepath):
         act_test = {}
         try:
             act_test["hierarchy"] = activity.xpath("@hierarchy")[0]
-        except Exception:
+        except IndexError:
             act_test["hierarchy"] = ""
         try:
             act_test["iati_identifier"] = activity.xpath('iati-identifier/text()')[0]
-        except Exception:
+        except IndexError:
             act_test["iati_identifier"] = "Unknown"
         act_test["results"] = {}
         for test_dict in all_tests:
