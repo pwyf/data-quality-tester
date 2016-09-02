@@ -14,7 +14,6 @@ from pagination import Pagination
 
 app = Flask(__name__)
 app.secret_key = "super top secret key"
-CACHE_ENABLED = True
 CACHE_TIMEOUT = 86400  # 24 hours
 
 cache = SimpleCache()
@@ -27,6 +26,16 @@ UPLOAD_FOLDER = 'uploads'
 REGISTRY_API_BASE_URL = "https://iatiregistry.org/api/3/action"
 PER_PAGE = 20
 
+def exec_request(url, refresh=False, *args, **kwargs):
+    if not refresh:
+        response = cache.get(url)
+        if response:
+            # cache hit
+            return response
+    response = requests.get(url, *args, **kwargs)
+    cache.set(url, response, CACHE_TIMEOUT)
+    return response
+
 def download_package(url, filepath):
     # download if we don't have a cached copy
     if not os.path.exists(filepath):
@@ -36,12 +45,12 @@ def download_package(url, filepath):
                 if chunk:
                     f.write(chunk)
 
-def fetch_latest_package_version(package_name):
+def fetch_latest_package_version(package_name, refresh=False):
     registry_url = "{registry_api}/package_show?id={package_name}".format(
         registry_api=REGISTRY_API_BASE_URL,
         package_name=package_name
     )
-    j = requests.get(registry_url).json()
+    j = exec_request(registry_url, refresh=refresh).json()
     resource = j["result"]["resources"][0]
     url = resource["url"]
     revision = resource["revision_id"]
@@ -101,20 +110,6 @@ def fetch_activity(filepath, iati_identifier):
     activities = doc.xpath("//iati-identifier[text() = '" + iati_identifier + "']/..")
     return etree.tostring(activities[0])
 
-@app.before_request
-def return_cached():
-    # if GET and POST not empty
-    if CACHE_ENABLED and not request.values:
-        response = cache.get(request.path)
-        if response:
-            return response
-
-@app.after_request
-def cache_response(response):
-    if CACHE_ENABLED and not request.values:
-        cache.set(request.path, response, CACHE_TIMEOUT)
-    return response
-
 def url_for_other_page(page):
     args = request.view_args.copy()
     args['page'] = page
@@ -124,7 +119,7 @@ app.jinja_env.globals['url_for_other_page'] = url_for_other_page
 @app.route('/')
 def home():
     publishers = []
-    j = requests.get("{registry_api}/organization_list?all_fields=true".format(
+    j = exec_request("{registry_api}/organization_list?all_fields=true".format(
         registry_api=REGISTRY_API_BASE_URL,
     )).json()
 
@@ -178,11 +173,8 @@ def publisher(publisher):
 
 @app.route('/test/<package_name>')
 def run_tests(package_name):
-    # if not package_name:
-    #     flash("No package name specified", 'danger')
-    #     return redirect(url_for('publishers'), code=302)
-
-    url, revision, filepath = fetch_latest_package_version(package_name)
+    refresh = request.args.get("refresh", False)
+    url, revision, filepath = fetch_latest_package_version(package_name, refresh)
     download_package(url, filepath)
 
     activities = test_package(filepath)
@@ -195,7 +187,8 @@ def run_tests(package_name):
 
 @app.route('/activity/<package_name>/<iati_identifier>')
 def view_activity(package_name, iati_identifier):
-    url, revision, filepath = fetch_latest_package_version(package_name)
+    refresh = request.args.get("refresh", False)
+    url, revision, filepath = fetch_latest_package_version(package_name, refresh)
     download_package(url, filepath)
 
     activity = fetch_activity(filepath, iati_identifier).strip()
