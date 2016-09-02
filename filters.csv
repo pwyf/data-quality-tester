@@ -1,2 +1,3 @@
 "indicator_name","indicator_description","test_name","test_description","test_level"
 ,,"activity-date[@type='end-planned']/@iso-date|activity-date[@type='end-planned']/text()|activity-date[@type='3']/@iso-date|activity-date[@type='3']/text() or activity-date[@type='end-actual']/@iso-date|activity-date[@type='end-actual']/text()|activity-date[@type='4']/@iso-date|activity-date[@type='4']/text() or transaction-date/@iso-date (for any transaction[transaction-type/@code='D']|transaction[transaction-type/@code='E']|transaction[transaction-type/@code='3']|transaction[transaction-type/@code='4']) is less than 13 months ago?","Current data",1
+,,"at least one sector/@code is on list Agriculture?","Agriculture sector code",1
