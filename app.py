@@ -20,9 +20,10 @@ cache = SimpleCache()
 # cache = MemcachedCache(['127.0.0.1:11211'])
 
 LISTS = codelists.CODELISTS
-TESTS_FILE = 'tests.csv'
-FILTERS_FILE = 'filters.csv'
-UPLOAD_FOLDER = 'uploads'
+TESTS_FILE = "tests.csv"
+FILTERS_FILE = "filters.csv"
+DEFAULT_FILTER = None
+UPLOAD_FOLDER = "uploads"
 REGISTRY_API_BASE_URL = "https://iatiregistry.org/api/3/action"
 PER_PAGE = 20
 
@@ -62,27 +63,36 @@ def fetch_latest_package_version(package_name, refresh=False):
     return url, revision, filepath
 
 def load_expressions_from_file(filename):
-    out = []
     with open(filename) as f:
         reader = unicodecsv.DictReader(f)
-        for t in reader:
-            out.append({
+        return {
+            t["test_description"]: {
                 'name': t["test_description"],
                 'fn': foxtest.generate_function(t["test_name"]),
                 'is_binary': foxtest.binary_test(t["test_name"]),
-            })
-    return out
+            } for t in reader
+        }
 
-def test_package(filepath):
-    # load the tests
-    all_tests = [t for t in load_expressions_from_file(TESTS_FILE)]
-    all_filters = [t for t in load_expressions_from_file(FILTERS_FILE)]
+def test_activity(activity, test_dict):
+    try:
+        if test_dict["is_binary"]:
+            result = test_dict["fn"]({"activity": activity, "lists": LISTS})
+        else:
+            result = test_dict["fn"](activity)
+    except Exception:
+        result = 2  # ERROR
+    return foxtest.result_t(result)
 
+def test_package(filepath, tests_suite, filter_dict=None):
     results = []
     doc = etree.parse(filepath)
     activities = doc.xpath("//iati-activity")
     for activity in activities:
-        act_test = {}
+        if filter_dict and test_activity(activity, filter_dict) == "FAIL":
+            continue
+        act_test = {
+            "results": {test_dict["name"]: test_activity(activity, test_dict) for test_dict in tests_suite},
+        }
         try:
             act_test["hierarchy"] = activity.xpath("@hierarchy")[0]
         except IndexError:
@@ -91,16 +101,7 @@ def test_package(filepath):
             act_test["iati_identifier"] = activity.xpath('iati-identifier/text()')[0]
         except IndexError:
             act_test["iati_identifier"] = "Unknown"
-        act_test["results"] = {}
-        for test_dict in all_tests:
-            try:
-                if test_dict["is_binary"]:
-                    result = test_dict["fn"]({"activity": activity, "lists": LISTS})
-                else:
-                    result = test_dict["fn"](activity)
-            except Exception:
-                result = 2
-            act_test["results"][test_dict["name"]] = foxtest.result_t(result)
+
         results.append(act_test)
 
     return results
@@ -177,13 +178,23 @@ def run_tests(package_name):
     url, revision, filepath = fetch_latest_package_version(package_name, refresh)
     download_package(url, filepath)
 
-    activities = test_package(filepath)
-    args = {
+    # load the tests
+    tests_suite = load_expressions_from_file(TESTS_FILE).values()
+
+    # load and set the filter
+    filters_suite = load_expressions_from_file(FILTERS_FILE)
+    current_filter = request.args.get('filter', DEFAULT_FILTER)
+    current_filter = DEFAULT_FILTER if current_filter not in filters_suite else current_filter
+    filter_dict = filters_suite.get(current_filter)
+
+    activities = test_package(filepath, tests_suite, filter_dict)
+    kwargs = {
         "package_name": package_name,
         "revision": revision,
         "activities": activities,
+        "current_filter": current_filter,
     }
-    return render_template('results.html', **args)
+    return render_template('results.html', **kwargs)
 
 @app.route('/activity/<package_name>/<iati_identifier>')
 def view_activity(package_name, iati_identifier):
