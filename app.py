@@ -98,6 +98,16 @@ def test_package(filepath, tests_list, filter_dict=None):
         act_test = {
             "results": [test_activity(activity, test_dict) for test_dict in tests_list],
         }
+        act_test["results_percs"] = {
+            "PASS": 0,
+            "FAIL": 0,
+            "ERROR": 0,
+            "NOT-RELEVANT": 0,
+        }
+        for result in act_test["results"]:
+            act_test["results_percs"][result] += 1
+        for result, total in act_test["results_percs"].items():
+            act_test["results_percs"][result] = 100. * total / len(tests_list)
         try:
             act_test["hierarchy"] = activity.xpath("@hierarchy")[0]
         except IndexError:

@@ -49,25 +49,41 @@
 
 <div class="table-responsive">
   <table class="table table-striped">
+    <colgroup>
+       <col span="1" style="width: 20%;">
+       <col span="1" style="width: 10%;">
+       <col span="1" style="width: 70%;">
+    </colgroup>
     <thead>
       <tr>
-        <th>Test</th>
         <th>IATI Identifier</th>
         <th>Hierarchy</th>
-        <th>Result</th>
+        <th>Results</th>
       </tr>
     </thead>
     <tbody>
-      {% for activity in activities %}
-        {% for test_name, result in activity["results"].items() %}
+      {%- for activity in activities %}
         <tr>
-          <td>{{ test_name }}</td>
           <td><a href="{{ url_for('view_activity', package_name=package_name, iati_identifier=activity['iati_identifier']) }}">{{ activity['iati_identifier'] }}</a></td>
           <td>{{ activity['hierarchy'] }}</td>
-          <td>{{ result }}</td>
+          <td>
+            <div class="progress">
+              <div class="progress-bar progress-bar-success" style="width: {{ activity['results_percs']['PASS'] }}%">
+                <span class="sr-only">{{ activity['results_percs']['PASS'] }}% Pass</span>
+              </div>
+              <div class="progress-bar progress-bar-danger" style="width: {{ activity['results_percs']['FAIL'] }}%">
+                <span class="sr-only">{{ activity['results_percs']['FAIL'] }}% Fail</span>
+              </div>
+              <div class="progress-bar progress-bar-warning" style="width: {{ activity['results_percs']['ERROR'] }}%">
+                <span class="sr-only">{{ activity['results_percs']['ERROR'] }}% Error</span>
+              </div>
+              <div class="progress-bar progress-bar-default" style="width: {{ activity['results_percs']['NOT-RELEVANT'] }}%">
+                <span class="sr-only">{{ activity['results_percs']['NOT-RELEVANT'] }}% Not relevant</span>
+              </div>
+            </div>
+          </td>
         </tr>
-        {% endfor %}
-      {% endfor %}
+      {%- endfor %}
     </tbody>
   </table>
 </div>
