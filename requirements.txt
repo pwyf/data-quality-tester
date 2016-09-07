@@ -1,5 +1,5 @@
 lxml==2.3.4
-foxpath>=0.99.21
+foxpath>=0.99.23
 unicodecsv
 
 Flask
