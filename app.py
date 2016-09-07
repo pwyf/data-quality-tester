@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import logging
 import os.path
 import unicodecsv
 
@@ -29,10 +30,11 @@ REGISTRY_API_BASE_URL = "https://iatiregistry.org/api/3/action"
 PER_PAGE = 20
 
 def exec_request(url, refresh=False, *args, **kwargs):
+    app.logger.info('Fetching {} ...'.format(url))
     if not refresh:
         response = cache.get(url)
         if response:
-            # cache hit
+            app.logger.info('Cache hit')
             return response
     response = requests.get(url, *args, **kwargs)
     cache.set(url, response, CACHE_TIMEOUT)
