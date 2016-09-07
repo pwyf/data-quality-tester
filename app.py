@@ -104,7 +104,6 @@ def test_package(filepath, tests_suite, filter_dict=None):
             act_test["iati_identifier"] = activity.xpath('iati-identifier/text()')[0]
         except IndexError:
             act_test["iati_identifier"] = "Unknown"
-
         results.append(act_test)
 
     return results

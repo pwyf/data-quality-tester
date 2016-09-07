@@ -11,7 +11,9 @@
       {% for resource in resources %}
       <tr>
         <td>
-          <span class="label label-{% if resource["filetype"] == "organisation" %}default{% else %}primary{% endif %}">{{ resource["filetype"] }} file</span>
+          {% if resource["filetype"] %}
+          <span class="label label-{% if resource["filetype"] == "activity" %}primary{% else %}default{% endif %}">{{ resource["filetype"] }} file</span>
+          {% endif %}
 
           {% if resource["filetype"] == "activity" %}
           <a href="{{ url_for('run_tests', package_name=resource["package_name"]) }}">{{ resource["title"] }}</a>
