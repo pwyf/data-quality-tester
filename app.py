@@ -25,6 +25,7 @@ LISTS["Agriculture"] = ["31110", "31120", "31130", "31140", "31150", "31161", "3
 TESTS_FILE = "tests.csv"
 FILTERS_FILE = "filters.csv"
 DEFAULT_FILTER = None
+DEFAULT_TEST = None
 UPLOAD_FOLDER = "uploads"
 REGISTRY_API_BASE_URL = "https://iatiregistry.org/api/3/action"
 PER_PAGE = 20
@@ -68,13 +69,14 @@ def fetch_latest_package_version(package_name, refresh=False):
 def load_expressions_from_file(filename):
     with open(filename) as f:
         reader = unicodecsv.DictReader(f)
-        return {
-            t["test_description"]: {
+        return [
+            {
                 'name': t["test_description"],
+                'expression': t["test_name"],
                 'fn': foxtest.generate_function(t["test_name"]),
                 'is_binary': foxtest.binary_test(t["test_name"]),
             } for t in reader
-        }
+        ]
 
 def test_activity(activity, test_dict):
     try:
@@ -86,7 +88,7 @@ def test_activity(activity, test_dict):
         result = 2  # ERROR
     return foxtest.result_t(result)
 
-def test_package(filepath, tests_suite, filter_dict=None):
+def test_package(filepath, tests_list, filter_dict=None):
     results = []
     doc = etree.parse(filepath)
     activities = doc.xpath("//iati-activity")
@@ -94,7 +96,7 @@ def test_package(filepath, tests_suite, filter_dict=None):
         if filter_dict and test_activity(activity, filter_dict) == "FAIL":
             continue
         act_test = {
-            "results": {test_dict["name"]: test_activity(activity, test_dict) for test_dict in tests_suite},
+            "results": [test_activity(activity, test_dict) for test_dict in tests_list],
         }
         try:
             act_test["hierarchy"] = activity.xpath("@hierarchy")[0]
@@ -180,6 +182,12 @@ def publisher(publisher):
     }
     return render_template('publisher.html', **kwargs)
 
+def get_current(exp_list, current_name, default):
+    exp_dicts = {x["name"]: x for x in exp_list}
+    if current_name not in exp_dicts:
+        current_name = default
+    return current_name, exp_dicts.get(current_name)
+
 @app.route('/test/<package_name>')
 def run_tests(package_name):
     refresh = request.args.get("refresh", False)
@@ -187,19 +195,25 @@ def run_tests(package_name):
     download_package(url, filepath)
 
     # load the tests
-    tests_suite = load_expressions_from_file(TESTS_FILE).values()
+    all_tests_list = load_expressions_from_file(TESTS_FILE)
+    current_test = get_current(all_tests_list, request.args.get('test'), DEFAULT_TEST)
+    tests_to_run = all_tests_list if current_test[0] is None else [current_test[1]]
 
     # load and set the filter
-    filters_suite = load_expressions_from_file(FILTERS_FILE)
-    current_filter = request.args.get('filter', DEFAULT_FILTER)
-    current_filter = DEFAULT_FILTER if current_filter not in filters_suite else current_filter
-    filter_dict = filters_suite.get(current_filter)
+    all_filters_list = load_expressions_from_file(FILTERS_FILE)
+    current_filter = get_current(all_filters_list, request.args.get('filter'), DEFAULT_FILTER)
 
-    activities = test_package(filepath, tests_suite, filter_dict)
+    activities = test_package(filepath, tests_to_run, current_filter[1])
     kwargs = {
         "package_name": package_name,
         "revision": revision,
         "activities": activities,
+
+        "all_tests_list": all_tests_list,
+        "tests_run_list": tests_to_run,
+        "current_test": current_test,
+
+        "all_filters_list": all_filters_list,
         "current_filter": current_filter,
     }
     return render_template('results.html', **kwargs)

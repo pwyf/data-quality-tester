@@ -3,6 +3,50 @@
 {% block body %}
 <h4>Test results for '{{ package_name }}' <small>{{ revision }}</small></h4>
 
+{% if current_test[0] -%}
+<p>
+  <strong>Current test:</strong> {{ current_test[0] }}<br>
+  <code>{{ current_test[1]['expression'] }}</code>
+</p>
+{%- endif %}
+
+<p>
+  Showing {{ total_filtered_activities }} activities
+
+{%- if current_filter[0] %} (filtering by {{ current_filter[0] }})
+{%- endif -%}
+</p>
+
+<form class="form-inline" method="GET">
+  <div class="form-group">
+    <label for="filter">Filter</label>
+    <select class="form-control" name="filter">
+      <option value="">No filter</option>
+      {%- for filter in all_filters_list %}
+        <option value="{{ filter['name'] }}"
+        {%- if current_filter[0] == filter['name'] %}
+        selected="selected"
+        {%- endif -%}
+        >{{ filter['name'] }}</option>
+      {%- endfor %}
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="test">Test</label>
+    <select class="form-control" name="test">
+      <option value="">All tests</option>
+      {%- for test in all_tests_list %}
+        <option value="{{ test['name'] }}"
+        {%- if current_test[0] == test['name'] %}
+        selected="selected"
+        {%- endif -%}
+        >{{ test['name'] }}</option>
+      {%- endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
 <div class="table-responsive">
   <table class="table table-striped">
     <thead>
