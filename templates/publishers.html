@@ -1,18 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
-<form>
-  <div class="row">
-    <div class="col-lg-6">
-      <div class="input-group">
-        <input type="text" class="form-control" name="q" placeholder="Search for...">
-        <span class="input-group-btn">
-          <button class="btn btn-primary" type="submit">Go!</button>
-        </span>
-      </div>
-    </div>
-  </div>
-</form>
+{% include '_search.html' %}
 
 <div class="table-responsive">
   <table class="table table-striped">
