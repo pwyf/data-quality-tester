@@ -163,6 +163,8 @@ def publisher(publisher):
     j = exec_request(registry_tmpl.format(publisher=publisher, offset=offset)).json()
     pagination = Pagination(page, PER_PAGE, j["result"]["count"])
     for result in j["result"]["results"]:
+        if result["num_resources"] == 0:
+            continue
         filetype = [extra["value"] for extra in result["extras"] if extra["key"] == "filetype"][0]
         for resource in result["resources"]:
             resources.append({
