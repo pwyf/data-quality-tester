@@ -113,7 +113,7 @@ def fetch_activity(filepath, iati_identifier):
     return etree.tostring(activities[0])
 
 def url_for_other_page(page):
-    args = request.view_args.copy()
+    args = request.args.copy()
     args['page'] = page
     return url_for(request.endpoint, **args)
 app.jinja_env.globals['url_for_other_page'] = url_for_other_page
@@ -123,13 +123,17 @@ def home():
     publishers = []
     j = exec_request("{registry_api}/organization_list?all_fields=true".format(
         registry_api=REGISTRY_API_BASE_URL,
-    )).json()
+    )).json()["result"]
+
+    search = request.args.get('q')
+    if search:
+        j = [x for x in j if search.lower() in x["title"].lower()]
 
     page = int(request.args.get('page', 1))
     offset = (page - 1) * PER_PAGE
-    results = j["result"][offset:offset + PER_PAGE]
+    results = j[offset:offset + PER_PAGE]
 
-    pagination = Pagination(page, PER_PAGE, len(j["result"]))
+    pagination = Pagination(page, PER_PAGE, len(j))
 
     for publisher in results:
         publishers.append({
