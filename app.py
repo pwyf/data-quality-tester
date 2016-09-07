@@ -164,14 +164,17 @@ def home():
 @app.route('/publisher/<publisher>')
 def publisher(publisher):
     resources = []
-    registry_tmpl = "{registry_api}/package_search?q=organization:{{publisher}}&rows={per_page}&start={{offset}}".format(
+    registry_tmpl = "{registry_api}/package_search?q=organization:{{publisher}}{{search}}&rows={per_page}&start={{offset}}".format(
         registry_api=REGISTRY_API_BASE_URL,
         per_page=PER_PAGE,
     )
     page = int(request.args.get('page', 1))
     offset = (page - 1) * PER_PAGE
 
-    j = exec_request(registry_tmpl.format(publisher=publisher, offset=offset)).json()
+    search = request.args.get('q')
+    searchstr = ' title:{}'.format(search) if search else ''
+
+    j = exec_request(registry_tmpl.format(publisher=publisher, offset=offset, search=searchstr)).json()
     pagination = Pagination(page, PER_PAGE, j["result"]["count"])
     for result in j["result"]["results"]:
         if result["num_resources"] == 0:
