@@ -115,7 +115,7 @@ def fetch_activity(filepath, iati_identifier):
     return etree.tostring(activities[0])
 
 def url_for_other_page(page):
-    args = request.args.copy()
+    args = dict(request.args.items() + request.view_args.items())
     args['page'] = page
     return url_for(request.endpoint, **args)
 app.jinja_env.globals['url_for_other_page'] = url_for_other_page
