@@ -2,6 +2,7 @@
 import logging
 import os.path
 import unicodecsv
+import urllib
 
 from flask import Flask, flash, render_template, redirect, request, url_for
 from foxpath import test as foxtest
@@ -11,10 +12,15 @@ from werkzeug.contrib.cache import SimpleCache  # MemcachedCache
 
 import codelists
 from pagination import Pagination
+import tmpl_filters
 
 
 app = Flask(__name__)
 app.secret_key = "super top secret key"
+
+app.jinja_env.globals['url_for_other_page'] = tmpl_filters.url_for_other_page
+app.jinja_env.globals['quote'] = tmpl_filters.quote
+
 CACHE_TIMEOUT = 86400  # 24 hours
 
 cache = SimpleCache()
@@ -125,12 +131,6 @@ def fetch_activity(filepath, iati_identifier):
     activities = doc.xpath("//iati-identifier[text() = '" + iati_identifier + "']/..")
     return etree.tostring(activities[0])
 
-def url_for_other_page(page):
-    args = dict(request.args.items() + request.view_args.items())
-    args['page'] = page
-    return url_for(request.endpoint, **args)
-app.jinja_env.globals['url_for_other_page'] = url_for_other_page
-
 @app.route('/')
 def home():
     publishers = []
@@ -234,6 +234,7 @@ def run_tests(package_name):
 @app.route('/activity/<package_name>/<iati_identifier>')
 def view_activity(package_name, iati_identifier):
     refresh = request.args.get("refresh", False)
+    iati_identifier = urllib.unquote(iati_identifier)
     url, revision, filepath = fetch_latest_package_version(package_name, refresh)
     download_package(url, filepath)
 
