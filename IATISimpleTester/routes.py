@@ -4,35 +4,28 @@ import os.path
 import unicodecsv
 import urllib
 
-from flask import Flask, flash, render_template, redirect, request, url_for
+from flask import flash, render_template, redirect, request, url_for
 from foxpath import test as foxtest
 from lxml import etree
 import requests
 from werkzeug.contrib.cache import SimpleCache  # MemcachedCache
 
+from IATISimpleTester import app
 import codelists
 from pagination import Pagination
-import tmpl_filters
 
-
-app = Flask(__name__)
-app.secret_key = "super top secret key"
-
-app.jinja_env.globals['url_for_other_page'] = tmpl_filters.url_for_other_page
-app.jinja_env.globals['quote'] = tmpl_filters.quote
 
 CACHE_TIMEOUT = 86400  # 24 hours
-
 cache = SimpleCache()
 # cache = MemcachedCache(['127.0.0.1:11211'])
-
 LISTS = codelists.CODELISTS
-LISTS["Agriculture"] = ["31110", "31120", "31130", "31140", "31150", "31161", "31162", "31163", "31164", "31165", "31166", "31181", "31182", "31191", "31192", "31193", "31194", "31195", "31210", "31220", "31261", "31281", "31282", "31291", "31310", "31320", "31381", "31382", "31391", "72040", "12240", "43040", "52010",]
-TESTS_FILE = "tests.csv"
-FILTERS_FILE = "filters.csv"
+LISTS["Agriculture"] = ["23070", "31110", "31120", "31130", "31140", "31150", "31161", "31162", "31163", "31164", "31165", "31166", "31181", "31182", "31191", "31192", "31193", "31194", "31195", "31210", "31220", "31261", "31281", "31282", "31291", "31310", "31320", "31381", "31382", "31391", "72040", "12240", "43040", "52010",]
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+UPLOAD_FOLDER = os.path.join(CURRENT_PATH, "uploads")
+TESTS_FILE = os.path.join(CURRENT_PATH, "tests.csv")
+FILTERS_FILE = os.path.join(CURRENT_PATH, "filters.csv")
 DEFAULT_FILTER = None
 DEFAULT_TEST = None
-UPLOAD_FOLDER = "uploads"
 REGISTRY_API_BASE_URL = "https://iatiregistry.org/api/3/action"
 PER_PAGE = 20
 
