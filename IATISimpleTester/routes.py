@@ -79,8 +79,9 @@ def load_expressions_from_file(filename):
 def run_test(activity, test_dict):
     try:
         result = test_dict["fn"](activity)
-    except Exception:
+    except Exception, e:
         result = 2  # ERROR
+        app.logger.warning("Test error: {} ({})".format(e.message, test_dict["name"]))
     return foxtest.result_t(result)
 
 def test_package(filepath, tests_list, filter_dict=None):
