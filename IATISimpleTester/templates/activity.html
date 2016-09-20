@@ -6,6 +6,22 @@
 {% from '_totaliser.html' import totaliser %}
 {{ totaliser(activity_results['results_percs']) }}
 
+<a href="#" data-toggle="modal" data-target="#detailsModal">Details</a>
+
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        {% for test in tests_run_list -%}
+        {{ test['name'] }}: {{ activity_results['results'][loop.index0] }}<br>
+        {%- endfor %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <pre class="prettyprint">{{ activity }}</pre>
 {% endblock %}
