@@ -72,17 +72,13 @@ def load_expressions_from_file(filename):
             {
                 'name': t["test_description"],
                 'expression': t["test_name"],
-                'fn': foxtest.generate_function(t["test_name"]),
-                'is_binary': foxtest.binary_test(t["test_name"]),
+                'fn': foxtest.generate_function(t["test_name"], LISTS),
             } for t in reader
         ]
 
 def test_activity(activity, test_dict):
     try:
-        if test_dict["is_binary"]:
-            result = test_dict["fn"]({"activity": activity, "lists": LISTS})
-        else:
-            result = test_dict["fn"](activity)
+        result = test_dict["fn"](activity)
     except Exception:
         result = 2  # ERROR
     return foxtest.result_t(result)
