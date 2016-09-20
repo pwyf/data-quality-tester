@@ -2,15 +2,10 @@
 from foxpath import test
 import unicodecsv
 import os
-import config
+from IATISimpleTester import config, helpers
 import optparse
 import sys
 
-TESTS = config.TESTS
-CURRENT_TEST = config.CURRENT_TEST
-DIR_FOR_TESTING = config.DIR_FOR_TESTING
-PACKAGEGROUP_NAME = config.PACKAGEGROUP_NAME
-LISTS = config.LISTS
 
 headers = [
            'result',
@@ -46,12 +41,12 @@ def run_tests(packages, csvfile, tests):
         print "Testing and writing for package", package['name']
         for atest in tests:
             for a in test.test_doc_json_out(package['absolute_filename'],
-                atest['expression'], CURRENT_TEST, LISTS)['activities']:
+                atest['expression'], config.CURRENT_TEST, config.LISTS)['activities']:
 
                 write_row(a, package, atest['name'])
-    
+
     print "Opening new CSV file, beginning testing"
-    
+
     writer = unicodecsv.DictWriter(csvfile, headers)
     hdict = dict([(h,h) for h in headers])
     writer.writerow(hdict)
@@ -61,25 +56,19 @@ def run_tests(packages, csvfile, tests):
 
     print "Complete"
 
-def get_tests_from_file(filename):
-    reader = unicodecsv.DictReader(file(filename))
-    for t in reader:
-        yield { "expression": t["test_name"],
-                "name": t["test_description"] }
-
 def run_packagegroup_tests(options):
     if options.packagegroup:
         package_group_name = options.packagegroup
     else:
         package_group_name = config.PACKAGEGROUP_NAME
 
-    packages = get_xml_in_dir(package_group_name, DIR_FOR_TESTING)
+    packages = get_xml_in_dir(package_group_name, config.DIR_FOR_TESTING)
 
     def wrapped_run_tests():
         if options.tests_file:
-            tests = [ t for t in get_tests_from_file(options.tests_file) ]
+            tests = helpers.load_expressions_from_csvfile(options.tests_file)
         else:
-            tests = TESTS
+            tests = config.TESTS
         if options.output_file:
             output_stream = open(options.output_file, 'w')
         else:
@@ -97,7 +86,7 @@ def get_options():
     parser.add_option("--output-file", dest="output_file", action="store")
     options, rest = parser.parse_args()
     return options
- 
+
 if __name__ == "__main__":
     options = get_options()
     run_packagegroup_tests(options)
