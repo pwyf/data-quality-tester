@@ -92,3 +92,5 @@ pyenv/
 
 # npm
 node_modules/
+
+config.py

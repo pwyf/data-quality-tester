@@ -27,7 +27,7 @@ Copyright (C) 2014, Mark Brough, Publish What You Fund. AGPL v3.0 licensed.
 
         sudo apt-get install python-dev libxml2-dev libxslt-dev
 
-2. Set up a virtualenv and activate: 
+2. Set up a virtualenv and activate:
 
         virtualenv ./pyenv
         source ./pyenv/bin/activate
@@ -38,8 +38,10 @@ Copyright (C) 2014, Mark Brough, Publish What You Fund. AGPL v3.0 licensed.
 
 4. Copy and edit config.py.tmpl:
 
+        cd IATISimpleTester
         cp config.py.tmpl config.py
         vim config.py
+        cd ..
 
 5. Run the script:
 
