@@ -130,9 +130,14 @@ def fetch_activity(filepath, iati_identifier):
         raise Exception
     return activities[0]
 
+def get_current(exp_list, current_name, default):
+    exp_dicts = {x["name"]: x for x in exp_list}
+    if current_name not in exp_dicts:
+        current_name = default
+    return current_name, exp_dicts.get(current_name)
 
 @app.route('/')
-def home():
+def show_home():
     publishers = []
     j = exec_request("{registry_api}/organization_list?all_fields=true".format(
         registry_api=REGISTRY_API_BASE_URL,
@@ -162,7 +167,7 @@ def home():
     return render_template('publishers.html', **kwargs)
 
 @app.route('/publisher/<publisher>')
-def publisher(publisher):
+def show_publisher(publisher):
     resources = []
     registry_tmpl = "{registry_api}/package_search?q=organization:{{publisher}}{{search}}&rows={per_page}&start={{offset}}".format(
         registry_api=REGISTRY_API_BASE_URL,
@@ -195,14 +200,8 @@ def publisher(publisher):
     }
     return render_template('publisher.html', **kwargs)
 
-def get_current(exp_list, current_name, default):
-    exp_dicts = {x["name"]: x for x in exp_list}
-    if current_name not in exp_dicts:
-        current_name = default
-    return current_name, exp_dicts.get(current_name)
-
-@app.route('/test/<package_name>')
-def run_tests(package_name):
+@app.route('/package/<package_name>')
+def show_package(package_name):
     refresh = request.args.get("refresh", False)
     url, revision, filepath = fetch_latest_package_version(package_name, refresh)
     download_package(url, filepath)
@@ -232,7 +231,7 @@ def run_tests(package_name):
     return render_template('package.html', **kwargs)
 
 @app.route('/activity/<package_name>/<iati_identifier>')
-def view_activity(package_name, iati_identifier):
+def show_activity(package_name, iati_identifier):
     refresh = request.args.get("refresh", False)
     iati_identifier = urllib.unquote(iati_identifier)
     url, revision, filepath = fetch_latest_package_version(package_name, refresh)

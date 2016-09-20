@@ -64,7 +64,7 @@
     <tbody>
       {%- for activity in activities_results %}
         <tr>
-          <td><a href="{{ url_for('view_activity', package_name=package_name, iati_identifier=quote(activity['iati_identifier'])) }}">{{ activity['iati_identifier'] }}</a></td>
+          <td><a href="{{ url_for('show_activity', package_name=package_name, iati_identifier=quote(activity['iati_identifier'])) }}">{{ activity['iati_identifier'] }}</a></td>
           <td>{{ activity['hierarchy'] }}</td>
           <td>
             {% from '_totaliser.html' import totaliser %}
