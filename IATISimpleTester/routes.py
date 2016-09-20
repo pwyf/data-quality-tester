@@ -65,7 +65,7 @@ def fetch_latest_package_version(package_name, refresh=False):
     filepath = os.path.join(UPLOAD_FOLDER, filename)
     return url, revision, filepath
 
-def load_expressions_from_file(filename):
+def load_expressions_from_csvfile(filename):
     with open(filename) as f:
         reader = unicodecsv.DictReader(f)
         return [
@@ -84,10 +84,18 @@ def run_test(activity, test_dict):
         app.logger.warning("Test error: {} ({})".format(e.message, test_dict["name"]))
     return foxtest.result_t(result)
 
-def test_package(filepath, tests_list, filter_dict=None):
-    results = []
+def load_activities_from_package(filepath, offset=None):
     doc = etree.parse(filepath)
     activities = doc.xpath("//iati-activity")
+    num_activities = len(activities)
+
+    if offset is not None:
+        activities = activities[offset:offset + PER_PAGE]
+
+    return activities, num_activities
+
+def test_activities(activities, tests_list, filter_dict=None):
+    results = []
     for activity in activities:
         act_test = test_activity(activity, tests_list, filter_dict)
         if not act_test:
@@ -207,15 +215,22 @@ def show_package(package_name):
     download_package(url, filepath)
 
     # load the tests
-    all_tests_list = load_expressions_from_file(TESTS_FILE)
+    all_tests_list = load_expressions_from_csvfile(TESTS_FILE)
     current_test = get_current(all_tests_list, request.args.get('test'), DEFAULT_TEST)
     tests_to_run = all_tests_list if current_test[0] is None else [current_test[1]]
 
     # load and set the filter
-    all_filters_list = load_expressions_from_file(FILTERS_FILE)
+    all_filters_list = load_expressions_from_csvfile(FILTERS_FILE)
     current_filter = get_current(all_filters_list, request.args.get('filter'), DEFAULT_FILTER)
 
-    activities_results = test_package(filepath, tests_to_run, current_filter[1])
+    page = int(request.args.get('page', 1))
+    offset = (page - 1) * PER_PAGE
+
+    activities, num_activities = load_activities_from_package(filepath, offset=offset)
+    activities_results = test_activities(activities, tests_to_run, current_filter[1])
+
+    pagination = Pagination(page, PER_PAGE, num_activities)
+
     kwargs = {
         "package_name": package_name,
         "revision": revision,
@@ -227,6 +242,8 @@ def show_package(package_name):
 
         "all_filters_list": all_filters_list,
         "current_filter": current_filter,
+
+        "pagination": pagination,
     }
     return render_template('package.html', **kwargs)
 
@@ -244,7 +261,7 @@ def show_activity(package_name, iati_identifier):
     activity_str = etree.tostring(activity).strip()
 
     # load the tests
-    all_tests_list = load_expressions_from_file(TESTS_FILE)
+    all_tests_list = load_expressions_from_csvfile(TESTS_FILE)
     current_test = get_current(all_tests_list, request.args.get('test'), DEFAULT_TEST)
     tests_to_run = all_tests_list if current_test[0] is None else [current_test[1]]
     # run tests
@@ -254,5 +271,9 @@ def show_activity(package_name, iati_identifier):
         "package_name": package_name,
         "activity": activity_str,
         "activity_results": activity_results,
+
+        "all_tests_list": all_tests_list,
+        "tests_run_list": tests_to_run,
+        "current_test": current_test,
     }
     return render_template('activity.html', **kwargs)
