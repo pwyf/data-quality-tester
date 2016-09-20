@@ -84,29 +84,30 @@ def run_test(activity, test_dict):
         app.logger.warning("Test error: {} ({})".format(e.message, test_dict["name"]))
     return foxtest.result_t(result)
 
-def load_activities_from_package(filepath, offset=None):
+def load_and_filter_activities_from_package(filepath, filter_dict=None, offset=None):
     doc = etree.parse(filepath)
     activities = doc.xpath("//iati-activity")
-    num_activities = len(activities)
 
+    if filter_dict:
+        filtered_activities = []
+        for activity in activities:
+            if run_test(activity, filter_dict) != "FAIL":
+                filtered_activities.append(activity)
+                ## This messes up the activity count, so we can't use it
+                # if offset is not None and len(filtered_activities) >= offset + PER_PAGE:
+                #     break
+        activities = filtered_activities
+
+    num_activities = len(activities)
     if offset is not None:
         activities = activities[offset:offset + PER_PAGE]
 
     return activities, num_activities
 
-def test_activities(activities, tests_list, filter_dict=None):
-    results = []
-    for activity in activities:
-        act_test = test_activity(activity, tests_list, filter_dict)
-        if not act_test:
-            continue
-        results.append(act_test)
+def test_activities(activities, tests_list):
+    return [test_activity(activity, tests_list) for activity in activities]
 
-    return results
-
-def test_activity(activity, tests_list, filter_dict=None):
-    if filter_dict and run_test(activity, filter_dict) == "FAIL":
-        return False
+def test_activity(activity, tests_list):
     act_test = {
         "results": [run_test(activity, test_dict) for test_dict in tests_list],
     }
@@ -226,8 +227,8 @@ def show_package(package_name):
     page = int(request.args.get('page', 1))
     offset = (page - 1) * PER_PAGE
 
-    activities, num_activities = load_activities_from_package(filepath, offset=offset)
-    activities_results = test_activities(activities, tests_to_run, current_filter[1])
+    activities, num_activities = load_and_filter_activities_from_package(filepath, current_filter[1], offset=offset)
+    activities_results = test_activities(activities, tests_to_run)
 
     pagination = Pagination(page, PER_PAGE, num_activities)
 
