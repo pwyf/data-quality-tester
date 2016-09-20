@@ -1,80 +1,15 @@
 #!/usr/bin/env python
 import logging
 import os.path
-import unicodecsv
 import urllib
 
 from flask import abort, flash, render_template, redirect, request, url_for
 from foxpath import test as foxtest
 from lxml import etree
-import requests
-from werkzeug.contrib.cache import SimpleCache  # MemcachedCache
 
-from IATISimpleTester import app
-import codelists
-from pagination import Pagination
+from IATISimpleTester import app, config, fetch, helpers
+from IATISimpleTester.pagination import Pagination
 
-
-CACHE_TIMEOUT = 86400  # 24 hours
-cache = SimpleCache()
-# cache = MemcachedCache(['127.0.0.1:11211'])
-LISTS = codelists.CODELISTS
-LISTS["Agriculture"] = ["23070", "31110", "31120", "31130", "31140", "31150", "31161", "31162", "31163", "31164", "31165", "31166", "31181", "31182", "31191", "31192", "31193", "31194", "31195", "31210", "31220", "31261", "31281", "31282", "31291", "31310", "31320", "31381", "31382", "31391", "72040", "12240", "43040", "52010",]
-CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
-UPLOAD_FOLDER = os.path.join(CURRENT_PATH, "uploads")
-TESTS_FILE = os.path.join(CURRENT_PATH, "tests.csv")
-FILTERS_FILE = os.path.join(CURRENT_PATH, "filters.csv")
-DEFAULT_FILTER = None
-DEFAULT_TEST = None
-REGISTRY_API_BASE_URL = "https://iatiregistry.org/api/3/action"
-PER_PAGE = 20
-
-def exec_request(url, refresh=False, *args, **kwargs):
-    app.logger.info('Fetching {} ...'.format(url))
-    if not refresh:
-        response = cache.get(url)
-        if response:
-            app.logger.info('Cache hit')
-            return response
-    response = requests.get(url, *args, **kwargs)
-    cache.set(url, response, CACHE_TIMEOUT)
-    return response
-
-def download_package(url, filepath):
-    # download if we don't have a cached copy
-    if not os.path.exists(filepath):
-        r = requests.get(url, stream=True)
-        with open(filepath, 'w') as f:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
-
-def fetch_latest_package_version(package_name, refresh=False):
-    registry_url = "{registry_api}/package_show?id={package_name}".format(
-        registry_api=REGISTRY_API_BASE_URL,
-        package_name=package_name
-    )
-    j = exec_request(registry_url, refresh=refresh).json()
-    resource = j["result"]["resources"][0]
-    url = resource["url"]
-    revision = resource["revision_id"]
-    filename = "{package_name}-{revision}.xml".format(
-        package_name=package_name,
-        revision=revision
-    )
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-    return url, revision, filepath
-
-def load_expressions_from_csvfile(filename):
-    with open(filename) as f:
-        reader = unicodecsv.DictReader(f)
-        return [
-            {
-                'name': t["test_description"],
-                'expression': t["test_name"],
-                'fn': foxtest.generate_function(t["test_name"], LISTS),
-            } for t in reader
-        ]
 
 def run_test(activity, test_dict):
     try:
@@ -94,13 +29,13 @@ def load_and_filter_activities_from_package(filepath, filter_dict=None, offset=N
             if run_test(activity, filter_dict) != "FAIL":
                 filtered_activities.append(activity)
                 ## This messes up the activity count, so we can't use it
-                # if offset is not None and len(filtered_activities) >= offset + PER_PAGE:
+                # if offset is not None and len(filtered_activities) >= offset + config.PER_PAGE:
                 #     break
         activities = filtered_activities
 
     num_activities = len(activities)
     if offset is not None:
-        activities = activities[offset:offset + PER_PAGE]
+        activities = activities[offset:offset + config.PER_PAGE]
 
     return activities, num_activities
 
@@ -139,17 +74,11 @@ def fetch_activity(filepath, iati_identifier):
         raise Exception
     return activities[0]
 
-def get_current(exp_list, current_name, default):
-    exp_dicts = {x["name"]: x for x in exp_list}
-    if current_name not in exp_dicts:
-        current_name = default
-    return current_name, exp_dicts.get(current_name)
-
 @app.route('/')
 def show_home():
     publishers = []
-    j = exec_request("{registry_api}/organization_list?all_fields=true".format(
-        registry_api=REGISTRY_API_BASE_URL,
+    j = fetch.exec_request("{registry_api}/organization_list?all_fields=true".format(
+        registry_api=config.REGISTRY_API_BASE_URL,
     )).json()["result"]
 
     search = request.args.get('q')
@@ -157,10 +86,10 @@ def show_home():
         j = [x for x in j if search.lower() in x["title"].lower()]
 
     page = int(request.args.get('page', 1))
-    offset = (page - 1) * PER_PAGE
-    results = j[offset:offset + PER_PAGE]
+    offset = (page - 1) * config.PER_PAGE
+    results = j[offset:offset + config.PER_PAGE]
 
-    pagination = Pagination(page, PER_PAGE, len(j))
+    pagination = Pagination(page, config.PER_PAGE, len(j))
 
     for publisher in results:
         publishers.append({
@@ -179,17 +108,17 @@ def show_home():
 def show_publisher(publisher):
     resources = []
     registry_tmpl = "{registry_api}/package_search?q=organization:{{publisher}}{{search}}&rows={per_page}&start={{offset}}".format(
-        registry_api=REGISTRY_API_BASE_URL,
-        per_page=PER_PAGE,
+        registry_api=config.REGISTRY_API_BASE_URL,
+        per_page=config.PER_PAGE,
     )
     page = int(request.args.get('page', 1))
-    offset = (page - 1) * PER_PAGE
+    offset = (page - 1) * config.PER_PAGE
 
     search = request.args.get('q')
     searchstr = ' title:{}'.format(search) if search else ''
 
-    j = exec_request(registry_tmpl.format(publisher=publisher, offset=offset, search=searchstr)).json()
-    pagination = Pagination(page, PER_PAGE, j["result"]["count"])
+    j = fetch.exec_request(registry_tmpl.format(publisher=publisher, offset=offset, search=searchstr)).json()
+    pagination = Pagination(page, config.PER_PAGE, j["result"]["count"])
     for result in j["result"]["results"]:
         if result["num_resources"] == 0:
             continue
@@ -212,25 +141,25 @@ def show_publisher(publisher):
 @app.route('/package/<package_name>')
 def show_package(package_name):
     refresh = request.args.get("refresh", False)
-    url, revision, filepath = fetch_latest_package_version(package_name, refresh)
-    download_package(url, filepath)
+    url, revision, filepath = fetch.latest_package_version(package_name, refresh)
+    fetch.download_package(url, filepath)
 
     # load the tests
-    all_tests_list = load_expressions_from_csvfile(TESTS_FILE)
-    current_test = get_current(all_tests_list, request.args.get('test'), DEFAULT_TEST)
+    all_tests_list = helpers.load_expressions_from_csvfile(config.TESTS_FILE)
+    current_test = helpers.get_current(all_tests_list, request.args.get('test'), config.DEFAULT_TEST)
     tests_to_run = all_tests_list if current_test[0] is None else [current_test[1]]
 
     # load and set the filter
-    all_filters_list = load_expressions_from_csvfile(FILTERS_FILE)
-    current_filter = get_current(all_filters_list, request.args.get('filter'), DEFAULT_FILTER)
+    all_filters_list = helpers.load_expressions_from_csvfile(config.FILTERS_FILE)
+    current_filter = helpers.get_current(all_filters_list, request.args.get('filter'), config.DEFAULT_FILTER)
 
     page = int(request.args.get('page', 1))
-    offset = (page - 1) * PER_PAGE
+    offset = (page - 1) * config.PER_PAGE
 
     activities, num_activities = load_and_filter_activities_from_package(filepath, current_filter[1], offset=offset)
     activities_results = test_activities(activities, tests_to_run)
 
-    pagination = Pagination(page, PER_PAGE, num_activities)
+    pagination = Pagination(page, config.PER_PAGE, num_activities)
 
     kwargs = {
         "package_name": package_name,
@@ -252,8 +181,8 @@ def show_package(package_name):
 def show_activity(package_name, iati_identifier):
     refresh = request.args.get("refresh", False)
     iati_identifier = urllib.unquote(iati_identifier)
-    url, revision, filepath = fetch_latest_package_version(package_name, refresh)
-    download_package(url, filepath)
+    url, revision, filepath = fetch.latest_package_version(package_name, refresh)
+    fetch.download_package(url, filepath)
 
     try:
         activity = fetch_activity(filepath, iati_identifier)
@@ -262,8 +191,8 @@ def show_activity(package_name, iati_identifier):
     activity_str = etree.tostring(activity).strip()
 
     # load the tests
-    all_tests_list = load_expressions_from_csvfile(TESTS_FILE)
-    current_test = get_current(all_tests_list, request.args.get('test'), DEFAULT_TEST)
+    all_tests_list = helpers.load_expressions_from_csvfile(config.TESTS_FILE)
+    current_test = helpers.get_current(all_tests_list, request.args.get('test'), config.DEFAULT_TEST)
     tests_to_run = all_tests_list if current_test[0] is None else [current_test[1]]
     # run tests
     activity_results = test_activity(activity, tests_to_run)
