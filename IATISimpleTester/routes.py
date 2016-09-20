@@ -4,7 +4,7 @@ import os.path
 import unicodecsv
 import urllib
 
-from flask import flash, render_template, redirect, request, url_for
+from flask import abort, flash, render_template, redirect, request, url_for
 from foxpath import test as foxtest
 from lxml import etree
 import requests
@@ -76,7 +76,7 @@ def load_expressions_from_file(filename):
             } for t in reader
         ]
 
-def test_activity(activity, test_dict):
+def run_test(activity, test_dict):
     try:
         result = test_dict["fn"](activity)
     except Exception:
@@ -88,37 +88,47 @@ def test_package(filepath, tests_list, filter_dict=None):
     doc = etree.parse(filepath)
     activities = doc.xpath("//iati-activity")
     for activity in activities:
-        if filter_dict and test_activity(activity, filter_dict) == "FAIL":
+        act_test = test_activity(activity, tests_list, filter_dict)
+        if not act_test:
             continue
-        act_test = {
-            "results": [test_activity(activity, test_dict) for test_dict in tests_list],
-        }
-        act_test["results_percs"] = {
-            "PASS": 0,
-            "FAIL": 0,
-            "ERROR": 0,
-            "NOT-RELEVANT": 0,
-        }
-        for result in act_test["results"]:
-            act_test["results_percs"][result] += 1
-        for result, total in act_test["results_percs"].items():
-            act_test["results_percs"][result] = 100. * total / len(tests_list)
-        try:
-            act_test["hierarchy"] = activity.xpath("@hierarchy")[0]
-        except IndexError:
-            act_test["hierarchy"] = ""
-        try:
-            act_test["iati_identifier"] = activity.xpath('iati-identifier/text()')[0]
-        except IndexError:
-            act_test["iati_identifier"] = "Unknown"
         results.append(act_test)
 
     return results
 
+def test_activity(activity, tests_list, filter_dict=None):
+    if filter_dict and run_test(activity, filter_dict) == "FAIL":
+        return False
+    act_test = {
+        "results": [run_test(activity, test_dict) for test_dict in tests_list],
+    }
+    act_test["results_percs"] = {
+        "PASS": 0,
+        "FAIL": 0,
+        "ERROR": 0,
+        "NOT-RELEVANT": 0,
+    }
+    for result in act_test["results"]:
+        act_test["results_percs"][result] += 1
+    for result, total in act_test["results_percs"].items():
+        act_test["results_percs"][result] = 100. * total / len(tests_list)
+    try:
+        act_test["hierarchy"] = activity.xpath("@hierarchy")[0]
+    except IndexError:
+        act_test["hierarchy"] = ""
+    try:
+        act_test["iati_identifier"] = activity.xpath('iati-identifier/text()')[0]
+    except IndexError:
+        act_test["iati_identifier"] = "Unknown"
+    return act_test
+
 def fetch_activity(filepath, iati_identifier):
     doc = etree.parse(filepath)
     activities = doc.xpath("//iati-identifier[text() = '" + iati_identifier + "']/..")
-    return etree.tostring(activities[0])
+    if len(activities) != 1:
+        # something has gone wrong
+        raise Exception
+    return activities[0]
+
 
 @app.route('/')
 def home():
@@ -205,11 +215,11 @@ def run_tests(package_name):
     all_filters_list = load_expressions_from_file(FILTERS_FILE)
     current_filter = get_current(all_filters_list, request.args.get('filter'), DEFAULT_FILTER)
 
-    activities = test_package(filepath, tests_to_run, current_filter[1])
+    activities_results = test_package(filepath, tests_to_run, current_filter[1])
     kwargs = {
         "package_name": package_name,
         "revision": revision,
-        "activities": activities,
+        "activities_results": activities_results,
 
         "all_tests_list": all_tests_list,
         "tests_run_list": tests_to_run,
@@ -218,7 +228,7 @@ def run_tests(package_name):
         "all_filters_list": all_filters_list,
         "current_filter": current_filter,
     }
-    return render_template('results.html', **kwargs)
+    return render_template('package.html', **kwargs)
 
 @app.route('/activity/<package_name>/<iati_identifier>')
 def view_activity(package_name, iati_identifier):
@@ -227,9 +237,22 @@ def view_activity(package_name, iati_identifier):
     url, revision, filepath = fetch_latest_package_version(package_name, refresh)
     download_package(url, filepath)
 
-    activity = fetch_activity(filepath, iati_identifier).strip()
+    try:
+        activity = fetch_activity(filepath, iati_identifier)
+    except:
+        return abort(404)
+    activity_str = etree.tostring(activity).strip()
+
+    # load the tests
+    all_tests_list = load_expressions_from_file(TESTS_FILE)
+    current_test = get_current(all_tests_list, request.args.get('test'), DEFAULT_TEST)
+    tests_to_run = all_tests_list if current_test[0] is None else [current_test[1]]
+    # run tests
+    activity_results = test_activity(activity, tests_to_run)
+
     kwargs = {
         "package_name": package_name,
-        "activity": activity,
+        "activity": activity_str,
+        "activity_results": activity_results,
     }
     return render_template('activity.html', **kwargs)

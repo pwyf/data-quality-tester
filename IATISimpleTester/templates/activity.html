@@ -3,6 +3,10 @@
 {% block body %}
 <h4>Activity from <a href="{{ url_for('run_tests', package_name=package_name) }}">{{ package_name }}</a></h4>
 
+{% from '_totaliser.html' import totaliser %}
+{{ totaliser(activity_results['results_percs']) }}
+
+
 <pre class="prettyprint">{{ activity }}</pre>
 {% endblock %}
 
