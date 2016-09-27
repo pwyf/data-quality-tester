@@ -4,75 +4,10 @@ import os.path
 import urllib
 
 from flask import abort, flash, render_template, redirect, request, url_for
-from foxpath import test as foxtest
-from lxml import etree
 
 from IATISimpleTester import app, config, fetch, helpers
 from IATISimpleTester.pagination import Pagination
 
-
-def run_test(activity, test_dict):
-    try:
-        result = test_dict["fn"](activity)
-    except Exception, e:
-        result = 2  # ERROR
-        app.logger.warning("Test error: {} ({})".format(e.message, test_dict["name"]))
-    return foxtest.result_t(result)
-
-def load_and_filter_activities_from_package(filepath, filter_dict=None, offset=None):
-    doc = etree.parse(filepath)
-    activities = doc.xpath("//iati-activity")
-
-    if filter_dict:
-        filtered_activities = []
-        for activity in activities:
-            if run_test(activity, filter_dict) != "FAIL":
-                filtered_activities.append(activity)
-                ## This messes up the activity count, so we can't use it
-                # if offset is not None and len(filtered_activities) >= offset + config.PER_PAGE:
-                #     break
-        activities = filtered_activities
-
-    num_activities = len(activities)
-    if offset is not None:
-        activities = activities[offset:offset + config.PER_PAGE]
-
-    return activities, num_activities
-
-def test_activities(activities, tests_list):
-    return [test_activity(activity, tests_list) for activity in activities]
-
-def test_activity(activity, tests_list):
-    act_test = {
-        "results": [run_test(activity, test_dict) for test_dict in tests_list],
-    }
-    act_test["results_percs"] = {
-        "PASS": 0,
-        "FAIL": 0,
-        "ERROR": 0,
-        "NOT-RELEVANT": 0,
-    }
-    for result in act_test["results"]:
-        act_test["results_percs"][result] += 1
-    for result, total in act_test["results_percs"].items():
-        act_test["results_percs"][result] = 100. * total / len(tests_list)
-    try:
-        act_test["hierarchy"] = activity.xpath("@hierarchy")[0]
-    except IndexError:
-        act_test["hierarchy"] = ""
-    try:
-        act_test["iati_identifier"] = activity.xpath('iati-identifier/text()')[0]
-    except IndexError:
-        act_test["iati_identifier"] = "Unknown"
-    return act_test
-
-def fetch_activity(filepath, iati_identifier):
-    doc = etree.parse(filepath)
-    activities = doc.xpath("//iati-identifier[text() = '" + iati_identifier + "']/..")
-    if len(activities) != 1:
-        # something has gone wrong
-        raise Exception
-    return activities[0]
 
 @app.route('/')
 def show_home():
@@ -146,18 +81,18 @@ def show_package(package_name):
 
     # load the tests
     all_tests_list = helpers.load_expressions_from_csvfile(config.TESTS_FILE)
-    current_test = helpers.get_current(all_tests_list, request.args.get('test'), config.DEFAULT_TEST)
+    current_test = helpers.select_expression(all_tests_list, request.args.get('test'), config.DEFAULT_TEST)
     tests_to_run = all_tests_list if current_test[0] is None else [current_test[1]]
 
     # load and set the filter
     all_filters_list = helpers.load_expressions_from_csvfile(config.FILTERS_FILE)
-    current_filter = helpers.get_current(all_filters_list, request.args.get('filter'), config.DEFAULT_FILTER)
+    current_filter = helpers.select_expression(all_filters_list, request.args.get('filter'), config.DEFAULT_FILTER)
 
     page = int(request.args.get('page', 1))
     offset = (page - 1) * config.PER_PAGE
 
-    activities, num_activities = load_and_filter_activities_from_package(filepath, current_filter[1], offset=offset)
-    activities_results = test_activities(activities, tests_to_run)
+    activities, num_activities = helpers.load_and_filter_activities_from_package(filepath, current_filter[1], offset=offset)
+    activities_results = [helpers.test_activity(activity, tests_to_run) for activity in activities]
 
     pagination = Pagination(page, config.PER_PAGE, num_activities)
 
@@ -185,17 +120,17 @@ def show_activity(package_name, iati_identifier):
     fetch.download_package(url, filepath)
 
     try:
-        activity = fetch_activity(filepath, iati_identifier)
+        activity = helpers.fetch_activity(filepath, iati_identifier)
     except:
         return abort(404)
-    activity_str = etree.tostring(activity).strip()
+    activity_str = helpers.activity_to_string(activity)
 
     # load the tests
     all_tests_list = helpers.load_expressions_from_csvfile(config.TESTS_FILE)
-    current_test = helpers.get_current(all_tests_list, request.args.get('test'), config.DEFAULT_TEST)
+    current_test = helpers.select_expression(all_tests_list, request.args.get('test'), config.DEFAULT_TEST)
     tests_to_run = all_tests_list if current_test[0] is None else [current_test[1]]
     # run tests
-    activity_results = test_activity(activity, tests_to_run)
+    activity_results = helpers.test_activity(activity, tests_to_run)
 
     kwargs = {
         "package_name": package_name,
