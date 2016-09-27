@@ -6,7 +6,7 @@ for each activity for a given dictionary of tests.
 
 ## License: AGPL v3
 
-Copyright (C) 2014, Mark Brough, Publish What You Fund. AGPL v3.0 licensed.
+Copyright © 2016, Publish What You Fund. AGPL v3.0 licensed.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
