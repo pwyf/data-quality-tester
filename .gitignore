@@ -93,4 +93,4 @@ pyenv/
 # npm
 node_modules/
 
-config.py
+/IATISimpleTester/config.py
