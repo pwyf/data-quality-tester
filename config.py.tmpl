@@ -1,5 +1,7 @@
 import os.path
 
+import yaml
+
 
 class Config(object):
     SECRET_KEY = 'super top secret key'
@@ -27,8 +29,8 @@ class Config(object):
     ]
     PER_PAGE = 20
 
-    import codelists
-    CODELISTS = codelists.CODELISTS
+    with open('codelists.yaml') as f:
+        CODELISTS = yaml.load(f)
     CODELISTS['Agriculture'] = ['23070', '31110', '31120', '31130', '31140', '31150', '31161', '31162', '31163', '31164', '31165', '31166', '31181', '31182', '31191', '31192', '31193', '31194', '31195', '31210', '31220', '31261', '31281', '31282', '31291', '31310', '31320', '31381', '31382', '31391', '72040', '12240', '43040', '52010',]
 
 
