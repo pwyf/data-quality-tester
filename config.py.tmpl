@@ -10,8 +10,8 @@ class Config(object):
     REGISTRY_API_BASE_URL = 'https://iatiregistry.org/api/3/action'
     CACHE_TIMEOUT = 86400  # 24 hours
     CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
-    UPLOAD_FOLDER = os.path.join(CURRENT_PATH, 'uploads')
-    ALLOWED_EXTENSIONS = set(['xml'])
+    UPLOAD_FOLDER = os.path.join(CURRENT_PATH, 'media')
+    ALLOWED_EXTENSIONS = ('xml',)
     TEST_GROUPINGS = [
         {
             'name': 'IATI Rulesets',
