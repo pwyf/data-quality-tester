@@ -1,3 +1,4 @@
+{% if pagination.has_next or pagination.has_prev %}
 <div class="text-center">
   <nav aria-label="Page navigation">
     <ul class="pagination pagination-lg">
@@ -35,3 +36,4 @@
     </ul>
   </nav>
 </div>
+{% endif %}

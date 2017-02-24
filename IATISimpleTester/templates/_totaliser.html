@@ -1,16 +1,10 @@
-{% macro totaliser(results_percs) %}
+{% macro totaliser(results) %}
 <div class="progress">
-  <div class="progress-bar progress-bar-success" style="width: {{ results_percs['PASS'] }}%">
-    <span class="sr-only">{{ results_percs['PASS'] }}% Pass</span>
+  <div id="num-pass" class="progress-bar progress-bar-success" style="width: {{ 100 * results['pass'] / (results['pass'] + results['fail']) }}%">
+    <span class="sr-only">{{ 100 * results['pass'] / (results['pass'] + results['fail']) }}% Pass</span>
   </div>
-  <div class="progress-bar progress-bar-danger" style="width: {{ results_percs['FAIL'] }}%">
-    <span class="sr-only">{{ results_percs['FAIL'] }}% Fail</span>
-  </div>
-  <div class="progress-bar progress-bar-warning" style="width: {{ results_percs['ERROR'] }}%">
-    <span class="sr-only">{{ results_percs['ERROR'] }}% Error</span>
-  </div>
-  <div class="progress-bar progress-bar-default" style="width: {{ results_percs['NOT-RELEVANT'] }}%">
-    <span class="sr-only">{{ results_percs['NOT-RELEVANT'] }}% Not relevant</span>
+  <div id="num-fail" class="progress-bar progress-bar-danger" style="width: {{ 100 * results['fail'] / (results['pass'] + results['fail']) }}%">
+    <span class="sr-only">{{ 100 * results['fail'] / (results['pass'] + results['fail']) }}% Fail</span>
   </div>
 </div>
 {% endmacro %}

@@ -2,49 +2,39 @@
 from foxpath import test
 import unicodecsv
 import os
-from IATISimpleTester import config, helpers
+from IATISimpleTester import helpers
+from config import Config
 import optparse
 import sys
 
 
 headers = [
-           'result',
-           'iati-identifier',
-           'hierarchy',
-           'test-name',
-           'package-name',
-           'current-result',
-            ]
+    'result',
+    'iati-identifier',
+    'hierarchy',
+    'recipient-country',
+    'test-name',
+    'package-name',
+    'current-result',
+]
 
-def get_xml_in_dir(start_string, relative_dir):
+def get_xml_in_dir(package_group_name, relative_dir):
     filenames = []
 
     current_script_dir = os.path.dirname(os.path.abspath(__file__))
     thedir = os.path.join(current_script_dir, os.path.abspath(relative_dir))
 
     for file in os.listdir(thedir):
-        if (file.startswith(start_string) and file.endswith(".xml")):
+        if (file.startswith(package_group_name) and file.endswith(".xml")):
             abs_filename = os.path.join(thedir, file)
-            filenames.append({'absolute_filename': abs_filename,
-                              'filename': file,
-                              'name': os.path.splitext(file)[0]})
+            filenames.append({
+                'absolute_filename': abs_filename,
+                'filename': file,
+                'name': os.path.splitext(file)[0]
+            })
     return filenames
 
-def run_tests(packages, csvfile, tests):
-
-    def write_row(a, package, t_name):
-        a['test-name'] = t_name
-        a['package-name'] = package['name']
-        writer.writerow(a)
-
-    def write_package(package):
-        print "Testing and writing for package", package['name']
-        for atest in tests:
-            for a in test.test_doc_json_out(package['absolute_filename'],
-                atest['expression'], config.CURRENT_TEST, config.LISTS)['activities']:
-
-                write_row(a, package, atest['name'])
-
+def run_tests(packages, packagegroup_condition, csvfile, tests):
     print "Opening new CSV file, beginning testing"
 
     writer = unicodecsv.DictWriter(csvfile, headers)
@@ -52,7 +42,20 @@ def run_tests(packages, csvfile, tests):
     writer.writerow(hdict)
 
     for package in packages:
-        write_package(package)
+        print "Testing and writing for package", package['name']
+        for atest in tests:
+            # test a package against one test
+            results = test.test_doc_json_out(
+                package['absolute_filename'],
+                atest['expression'],
+                packagegroup_condition,
+                Config.CURRENT_TEST,
+                Config.LISTS
+            )
+            for activity_result in results['activities']:
+                activity_result['test-name'] = atest['name']
+                activity_result['package-name'] = package['name']
+                writer.writerow(activity_result)
 
     print "Complete"
 
@@ -60,29 +63,37 @@ def run_packagegroup_tests(options):
     if options.packagegroup:
         package_group_name = options.packagegroup
     else:
-        package_group_name = config.PACKAGEGROUP_NAME
+        package_group_name = Config.PACKAGEGROUP_NAME
 
-    packages = get_xml_in_dir(package_group_name, config.DIR_FOR_TESTING)
+    if options.packagecondition:
+        package_condition = options.packagecondition
+    else:
+        package_condition = Config.PACKAGEGROUP_CONDITION
 
-    def wrapped_run_tests():
-        if options.tests_file:
-            tests = helpers.load_expressions_from_csvfile(options.tests_file)
-        else:
-            tests = config.TESTS
-        if options.output_file:
-            output_stream = open(options.output_file, 'w')
-        else:
-            output_stream = sys.stdout
+    if options.dir_for_testing:
+        dir_for_testing = options.dir_for_testing
+    else:
+        dir_for_testing = Config.DIR_FOR_TESTING
 
-        return run_tests(packages, output_stream, tests)
+    packages = get_xml_in_dir(package_group_name, dir_for_testing)
 
-    wrapped_run_tests()
+    if options.tests_file:
+        tests = helpers.load_expressions_from_csvfile(options.tests_file)
+    else:
+        tests = helpers.load_expressions_from_csvfile(Config.TESTS_FILE)
+    if options.output_file:
+        output_stream = open(options.output_file, 'w')
+    else:
+        output_stream = sys.stdout
+
+    return run_tests(packages, package_condition, output_stream, tests)
 
 def get_options():
     parser = optparse.OptionParser()
-    parser.add_option("--package-group", dest="packagegroup",
-                      action="store")
+    parser.add_option("--package-group", dest="packagegroup", action="store")
+    parser.add_option("--package-condition", dest="packagecondition", action="store")
     parser.add_option("--tests-file", dest="tests_file", action="store")
+    parser.add_option("--dir-for-testing", dest="dir_for_testing", action="store")
     parser.add_option("--output-file", dest="output_file", action="store")
     options, rest = parser.parse_args()
     return options

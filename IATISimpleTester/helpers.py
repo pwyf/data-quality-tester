@@ -1,81 +1,73 @@
-import unicodecsv
-
-from foxpath import test as foxtest
+import yaml
+from foxpath import Foxpath
 from lxml import etree
 
-from IATISimpleTester import app, config
+from IATISimpleTester import app
 
 
-# parse a {filters; tests} csv and generate tests
-def load_expressions_from_csvfile(filename):
+SCORES_DICT = {
+    "pass": 0,
+    "fail": 0,
+    "error": 0,
+    "not-relevant": 0,
+}
+
+# parse a {filters; tests} yaml and generate tests
+def load_expressions_from_yaml(filename):
     with open(filename) as f:
-        reader = unicodecsv.DictReader(f)
-        return [
+        reader = yaml.load(f)
+        tests = [
             {
-                'name': t["test_description"],
-                'expression': t["test_name"],
-                'fn': foxtest.generate_function(t["test_name"], config.LISTS),
-            } for t in reader
+                'id': t['description'],
+                'expression': t['expression'],
+            }
+            for indicator in reader['indicators'] for t in indicator['tests']
         ]
+        filters = None
+        if 'filters' in reader:
+            filters = [
+                {
+                    'id': f['description'],
+                    'expression': f['expression'],
+                }
+                for f in reader['filters']
+            ]
+        return tests, filters
 
 # given an expression list and the name of an expression,
 # select it,
-def select_expression(expression_list, expression_name, default_expression_name):
-    expression_dicts = {x["name"]: x for x in expression_list}
+def select_expression(expression_list, expression_name, default_expression_name=None):
+    expression_dicts = {x["id"]: x for x in expression_list}
     if expression_name not in expression_dicts:
         expression_name = default_expression_name
     return expression_name, expression_dicts.get(expression_name)
 
-# Run a test on an activity;
-# Turn the result into something human-readable
-def run_test(activity, test_dict):
-    try:
-        result = test_dict["fn"](activity)
-    except Exception, e:
-        result = 2  # ERROR
-        app.logger.warning("Test error: {} ({})".format(e.message, test_dict["name"]))
-    return foxtest.result_t(result)
+def test_activities(activities, tests_list):
+    foxpath = Foxpath()
+    foxtests = foxpath.load_tests(tests_list, app.config['CODELISTS'])
+    activities_results = foxpath.test_activities(activities, foxtests)
+    results_summary = foxpath.summarize_results(activities_results)
 
-def test_activity(activity, tests_list):
-    act_test = {
-        "results": [run_test(activity, test_dict) for test_dict in tests_list],
-    }
-    act_test["results_percs"] = {
-        "PASS": 0,
-        "FAIL": 0,
-        "ERROR": 0,
-        "NOT-RELEVANT": 0,
-    }
-    for result in act_test["results"]:
-        act_test["results_percs"][result] += 1
-    for result, total in act_test["results_percs"].items():
-        act_test["results_percs"][result] = 100. * total / len(tests_list)
-    try:
-        act_test["hierarchy"] = activity.xpath("@hierarchy")[0]
-    except IndexError:
-        act_test["hierarchy"] = ""
-    try:
-        act_test["iati_identifier"] = activity.xpath('iati-identifier/text()')[0]
-    except IndexError:
-        act_test["iati_identifier"] = "Unknown"
-    return act_test
+    return activities_results, results_summary
 
-def load_and_filter_activities_from_package(filepath, filter_dict=None, offset=None):
+def load_activities_from_package(filepath):
     doc = etree.parse(filepath)
-    activities = doc.xpath("//iati-activity")
+    return doc.xpath("//iati-activity")
 
+def filter_activities(activities, filter_dict=None):
     if filter_dict:
+        foxpath = Foxpath()
+        foxtests = foxpath.load_tests([filter_dict], app.config['CODELISTS'])
+        activities_results = foxpath.test_activities(activities, foxtests)
+
         filtered_activities = []
-        for activity in activities:
-            if run_test(activity, filter_dict) != "FAIL":
+        for idx, activity in enumerate(activities):
+            if activities_results[idx]['results'][filter_dict['id']] == 'pass':
                 filtered_activities.append(activity)
+
         activities = filtered_activities
 
-    num_activities = len(activities)
-    if offset is not None:
-        activities = activities[offset:offset + config.PER_PAGE]
-
-    return activities, num_activities
+    return activities
 
 # fetch an activity from a file by its IATI identifier
 def fetch_activity(filepath, iati_identifier):
@@ -87,4 +79,8 @@ def fetch_activity(filepath, iati_identifier):
     return activities[0]
 
 def activity_to_string(activity):
-    return etree.tostring(activity).strip()
+    return etree.tostring(activity).strip().decode("utf-8")
+
+def allowed_file_extension(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']

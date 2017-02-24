@@ -8,10 +8,11 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Dashboard</title>
+    <title>Data Quality Checker</title>
 
     <!-- Bootstrap core CSS -->
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
     {% block extra_css %}{% endblock %}
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -22,9 +23,11 @@
   </head>
 
   <body>
+    {% include '_navigation.html' %}
+
     <div class="container">
       <div class="row">
-          <h2 class="sub-header"><a href="{{ url_for('show_home') }}">IATI Simple Tester</a></h2>
+          <h2 class="sub-header">Data Quality Checker</h2>
           {% include '_notifications.html' %}
 
           {% block body %}{% endblock %}

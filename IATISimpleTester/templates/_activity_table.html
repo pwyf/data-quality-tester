@@ -1,0 +1,66 @@
+<p>
+  Showing {{ num_activities }} activities
+
+{%- if current_filter[0] %} (filtering by {{ current_filter[0] }})
+{%- endif -%}
+</p>
+
+<form class="form-inline" method="GET">
+  <div class="form-group">
+    <label for="filter">Filter</label>
+    <select class="form-control" name="filter">
+      <option value="">No filter</option>
+      {%- for filter in [] %}
+        <option value="{{ filter['name'] }}"
+        {%- if current_filter[0] == filter['name'] %}
+        selected="selected"
+        {%- endif -%}
+        >{{ filter['name'] }}</option>
+      {%- endfor %}
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="test">Test</label>
+    <select class="form-control" name="test">
+      <option value="">All tests</option>
+      {%- for test in all_tests_list %}
+        <option value="{{ test['name'] }}"
+        {%- if current_test[0] == test['name'] %}
+        selected="selected"
+        {%- endif -%}
+        >{{ test['name'] }}</option>
+      {%- endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <colgroup>
+       <col span="1" style="width: 20%;">
+       <col span="1" style="width: 10%;">
+       <col span="1" style="width: 70%;">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>IATI Identifier</th>
+        <th>Hierarchy</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%- for activity in activities_results %}
+        <tr>
+          <td><a href="{{ url_for('activity', package_name=package_name, iati_identifier=quote(activity['iati_identifier'])) }}">{{ activity['iati_identifier'] }}</a></td>
+          <td>{{ activity['hierarchy'] }}</td>
+          <td>
+            {{ totaliser(activity['results_percs']) }}
+          </td>
+        </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% include '_pagination.html' %}

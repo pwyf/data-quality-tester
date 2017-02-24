@@ -1,6 +1,7 @@
-lxml==2.3.4
-foxpath>=0.99.24
-unicodecsv
+lxml==3.7.2
+-e git+https://github.com/pwyf/foxpath-tools#egg=foxpath
+pyyaml
 
 Flask
 requests
+pylibmc

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+  <fieldset>
+    <legend>Upload File</legend>
+    <label for="file">File:</label>
+    <input type="file" name="file" id="file" />
+    <span class="help-block">Upload an XML file of IATI data.</span>
+    <button type="submit" class="btn btn-primary">Upload</button>
+  </fieldset>
+</form>
+
+{% endblock %}

@@ -21,7 +21,7 @@
           {% endif %}
 
           {% if resource["filetype"] == "activity" %}
-          <a href="{{ url_for('show_package', package_name=resource["package_name"]) }}">{{ resource["title"] }}</a>
+          <a href="{{ url_for('package', package_name=resource["package_name"]) }}">{{ resource["title"] }}</a>
           {% else %}
           {{ resource["title"] }}
           {% endif %}

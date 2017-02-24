@@ -1,26 +1,59 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h4>Activity from <a href="{{ url_for('show_package', package_name=package_name) }}">{{ package_name }}</a></h4>
+<h4>Activity from <a href="{{ url_for('package', package_name=package_name) }}">{{ package_name }}</a></h4>
 
 {% from '_totaliser.html' import totaliser %}
 {{ totaliser(activity_results['results_percs']) }}
 
-<a href="#" data-toggle="modal" data-target="#detailsModal">Details</a>
+<div style="display:none" class="summary" id="pass-info">
+  <h2>Great!</h2>
 
-<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        {% for test in tests_run_list -%}
-        {{ test['name'] }}: {{ activity_results['results'][loop.index0] }}<br>
-        {%- endfor %}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
+  <p>This activity <strong>does</strong> include:</p>
+  <ul>
+  {% for test in all_tests_list -%}
+  {% if activity_results['results'][test['id']] == 'pass' %}
+  <li>{{ test['id'] }} (<a href="#">more info</a>) (<a href="#">show</a>)</li>
+  {% endif %}
+  {%- endfor %}
+  </ul>
+</div>
+
+<div style="display:none" class="summary" id="fail-info">
+  <h2>Uh oh…</h2>
+
+  <p>This activity <strong>doesn’t (but should)</strong> include:</p>
+  <ul>
+  {% for test in all_tests_list -%}
+  {% if activity_results['results'][test['id']] == 'fail' %}
+  <li>{{ test['id'] }} (<a href="#">more info</a>) (<a href="#">show</a>)</li>
+  {% endif %}
+  {%- endfor %}
+  </ul>
+</div>
+
+<div style="display:none" class="summary" id="not-relevant-info">
+  <h2>Not relevant tests</h2>
+
+  <ul>
+  {% for test in all_tests_list -%}
+  {% if activity_results['results'][test['id']] == 'not-relevant' %}
+  <li>{{ test['id'] }} (<a href="#">more info</a>) (<a href="#">show</a>)</li>
+  {% endif %}
+  {%- endfor %}
+  </ul>
+</div>
+
+<div style="display:none" class="summary" id="error-info">
+  <h2>Erroring tests</h2>
+
+  <ul>
+  {% for test in all_tests_list -%}
+  {% if activity_results['results'][test['id']] == 'error' %}
+  <li>{{ test['id'] }} (<a href="#">more info</a>) (<a href="#">show</a>)</li>
+  {% endif %}
+  {%- endfor %}
+  </ul>
 </div>
 
 <pre class="prettyprint">{{ activity }}</pre>
@@ -35,8 +68,5 @@ pre { white-space: pre-wrap; }
 {% block extra_js %}
 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=false&amp;skin=sons-of-obsidian"></script>
 <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
-<script>
-  var p = document.getElementsByClassName("prettyprint")[0];
-  p.innerText = vkbeautify.xml(p.innerText);
-</script>
+<script src="{{ url_for('static', filename='js/activity.js') }}"></script>
 {% endblock %}

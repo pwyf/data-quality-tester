@@ -1,80 +1,105 @@
 {% extends "base.html" %}
+{% from '_totaliser.html' import totaliser %}
 
 {% block body %}
-<h4>Test results for '{{ package_name }}' <small>{{ revision }}</small></h4>
 
-{% if current_test[0] -%}
-<p>
-  <strong>Current test:</strong> {{ current_test[0] }}<br>
-  <code>{{ current_test[1]['expression'] }}</code>
-</p>
-{%- endif %}
+<h4>Results for {{ package_name }} ({{ num_activities|commify }} activities)</h4>
 
-<p>
-  Showing {{ total_filtered_activities }} activities
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+{% for grouping in groupings %}
 
-{%- if current_filter[0] %} (filtering by {{ current_filter[0] }})
-{%- endif -%}
-</p>
+  {% if (results_summary[grouping['name']]['overall']['pass'] + results_summary[grouping['name']]['overall']['fail']) == 0 %}
 
-<form class="form-inline" method="GET">
-  <div class="form-group">
-    <label for="filter">Filter</label>
-    <select class="form-control" name="filter">
-      <option value="">No filter</option>
-      {%- for filter in all_filters_list %}
-        <option value="{{ filter['name'] }}"
-        {%- if current_filter[0] == filter['name'] %}
-        selected="selected"
-        {%- endif -%}
-        >{{ filter['name'] }}</option>
-      {%- endfor %}
-    </select>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="heading{{ loop.index0 }}">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ loop.index0 }}" aria-expanded="false" aria-controls="collapse{{ loop.index0 }}">
+          <h4>File contains no relevant {{ grouping['name'] }} data</h4>
+        </a>
+      </h4>
+    </div>
   </div>
-  <div class="form-group">
-    <label for="test">Test</label>
-    <select class="form-control" name="test">
-      <option value="">All tests</option>
-      {%- for test in all_tests_list %}
-        <option value="{{ test['name'] }}"
-        {%- if current_test[0] == test['name'] %}
-        selected="selected"
-        {%- endif -%}
-        >{{ test['name'] }}</option>
-      {%- endfor %}
-    </select>
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+
+  {% else %}
+
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="heading{{ loop.index0 }}">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ loop.index0 }}" aria-expanded="false" aria-controls="collapse{{ loop.index0 }}">
+          <h4>{{ (100 * results_summary[grouping['name']]['overall']['pass'] / (results_summary[grouping['name']]['overall']['pass'] + results_summary[grouping['name']]['overall']['fail']))|int }}% overall (against {{ grouping['name'] }} indicators)</h4>
+        </a>
+      </h4>
+    </div>
+    <div id="collapse{{ loop.index0 }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ loop.index0 }}">
+      <div class="panel-body">
+
+<p>{{ grouping['description'] }}</p>
+
+<h4>
+  {% if (100 * results_summary[grouping['name']]['overall']['pass'] / (results_summary[grouping['name']]['overall']['pass'] + results_summary[grouping['name']]['overall']['fail'])) == 100 %}
+
+  Great! There’s nothing left to fix according to the {{ grouping['name'] }} indicators.
+
+  {% elif (100 * results_summary[grouping['name']]['overall']['pass'] / (results_summary[grouping['name']]['overall']['pass'] + results_summary[grouping['name']]['overall']['fail'])) > 75 %}
+
+  Almost there! There are a couple of things to improve here.
+
+  {% elif (100 * results_summary[grouping['name']]['overall']['pass'] / (results_summary[grouping['name']]['overall']['pass'] + results_summary[grouping['name']]['overall']['fail'])) > 50 %}
+
+  Good start! There are a few things to improve here.
+
+  {% else %}
+
+  Let’s get to work!
+
+  {% endif %}
+</h4>
+
+{{ totaliser(results_summary[grouping['name']]['overall']) }}
 
 <div class="table-responsive">
   <table class="table table-striped">
     <colgroup>
-       <col span="1" style="width: 20%;">
-       <col span="1" style="width: 10%;">
+       <col span="1" style="width: 30%;">
        <col span="1" style="width: 70%;">
     </colgroup>
     <thead>
-      <tr>
-        <th>IATI Identifier</th>
-        <th>Hierarchy</th>
-        <th>Results</th>
-      </tr>
     </thead>
     <tbody>
-      {%- for activity in activities_results %}
-        <tr>
-          <td><a href="{{ url_for('show_activity', package_name=package_name, iati_identifier=quote(activity['iati_identifier'])) }}">{{ activity['iati_identifier'] }}</a></td>
-          <td>{{ activity['hierarchy'] }}</td>
-          <td>
-            {% from '_totaliser.html' import totaliser %}
-            {{ totaliser(activity['results_percs']) }}
-          </td>
-        </tr>
-      {%- endfor %}
+    {% for test in all_tests_list[grouping['name']] %}
+    {% if (results_summary[grouping['name']]['by-test'][test['id']]['pass'] + results_summary[grouping['name']]['by-test'][test['id']]['fail']) > 0 %}
+    <tr>
+      <td>
+        <strong><a href="{{ url_for('package', package_name=package_name, test=test['id']) }}">{{ test['id'] }}</a></strong>
+      </td>
+      <td>
+        {{ (100 * results_summary[grouping['name']]['by-test'][test["id"]]['pass'] / (results_summary[grouping['name']]['by-test'][test["id"]]['pass'] + results_summary[grouping['name']]['by-test'][test['id']]['fail']))|int }}% of activities pass ({{ results_summary[grouping['name']]['by-test'][test['id']]['pass'] }} / {{ (results_summary[grouping['name']]['by-test'][test['id']]['pass'] + results_summary[grouping['name']]['by-test'][test['id']]['fail']) }})
+
+        {% if results_summary[grouping['name']]['by-test'][test["id"]]['pass'] > 0 %}
+        <a href="{{ url_for('activity', package_name=package_name, iati_identifier='test', standard=grouping['name']) }}">Show a good example</a>
+        {% endif %}
+
+        {% if results_summary[grouping['name']]['by-test'][test["id"]]['pass'] > 0 and results_summary[grouping['name']]['by-test'][test["id"]]['fail'] > 0 %}
+        |
+        {% endif %}
+
+        {% if results_summary[grouping['name']]['by-test'][test["id"]]['fail'] > 0 %}
+        <a href="{{ url_for('activity', package_name=package_name, iati_identifier='test', standard=grouping['name']) }}">Show a bad example</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% endif %}
+    {% endfor %}
     </tbody>
   </table>
 </div>
 
-{% include '_pagination.html' %}
+
+
+      </div>
+    </div>
+  </div>
+  {% endif %}
+{% endfor %}
+</div>
 {% endblock %}

@@ -1,0 +1,115 @@
+indicators:
+ - indicator-description: null
+   indicator-name: Start dates before end dates
+   tests:
+    - description: result indicator start dates should be before end dates
+      expression: >
+       `result/indicator/period/period-start/@iso-date`
+       should be before
+       `result/indicator/period/period-end/@iso-date`
+
+    - description: recipient-org-budget start dates should be before end dates
+      expression: >
+       `recipient-org-budget/period-start/@iso-date`
+       should be before
+       `recipient-org-budget/period-end/@iso-date`
+
+    - description: recipient-region-budget start dates should be before end dates
+      expression: >
+       `recipient-region-budget/period-start/@iso-date`
+       should be before
+       `recipient-region-budget/period-end/@iso-date`
+
+    - description: planned-disbursement start dates should be before end dates
+      expression: >
+       `planned-disbursement/period-start/@iso-date`
+       should be before
+       `planned-disbursement/period-end/@iso-date`
+
+    - description: recipient-country-budget start dates should be before end dates
+      expression: >
+       `recipient-country-budget/period-start/@iso-date`
+       should be before
+       `recipient-country-budget/period-end/@iso-date`
+
+    - description: total-expenditure start dates should be before end dates
+      expression: >
+       `total-expenditure/period-start/@iso-date`
+       should be before
+       `total-expenditure/period-end/@iso-date`
+
+ - indicator-description: null
+   indicator-name: Elements that should exist
+   tests:
+    - description: start or planned start dates should be declared
+      expression: >
+       `activity-date[@type="1"]` should be present
+       or `activity-date[@type="2"]` should be present
+
+    - description: sectors should be present
+      expression: >
+       `sector` should be present
+       or `transaction/sector` should be present
+
+    - description: participating-org ref should be present
+      expression: >
+       `participating-org/@ref` should be present
+       or `participating-org/narrative` should be present
+
+    - description: reporting-org ref is valid
+      expression: >
+       `reporting-org/@ref` should match the regex [^\/\&\|\?]+
+
+    - description: iati-identifier is valid
+      expression: >
+       `iati-identifier/text()` should match the regex [^\/\&\|\?]+
+
+    - description: participating-org ref is valid
+      expression: >
+       `participating-org/@ref` should match the regex [^\/\&\|\?]+
+
+    - description: provider-org ref is valid
+      expression: >
+       `transaction/provider-org/@ref` should match the regex [^\/\&\|\?]+
+
+    - description: receiver-org ref is valid
+      expression: >
+       `transaction/receiver-org/@ref` should match the regex [^\/\&\|\?]+
+
+    - description: planned start dates should be before end dates
+      expression: >
+       `activity-date[@type='1']/@iso-date`
+       should be before
+       `activity-date[@type='3']/@iso-date`
+
+    - description: actual start dates should be before end dates
+      expression: >
+       `activity-date[@type='2']/@iso-date`
+       should be before
+       `activity-date[@type='4']/@iso-date`
+
+    - description: actual start dates should be in the past
+      expression: >
+       `activity-date[@type='2']/@iso-date`
+       should be today, or in the past
+
+    - description: actual end dates should be in the past
+      expression: >
+       `activity-date[@type='4']/@iso-date`
+       should be today, or in the past
+
+    - description: budget start dates should be before end dates
+      expression: >
+       `budget/period-start/@iso-date`
+       should be before
+       `budget/period-end/@iso-date`
+
+    - description: transaction date should be in the past
+      expression: >
+       `transaction/transaction-date/@iso-date`
+       should be today, or in the past
+
+    - description: value date should be in the past
+      expression: >
+       `transaction/value-date/@iso-date`
+       should be today, or in the past

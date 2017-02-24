@@ -14,7 +14,7 @@
     <tbody>
       {% for publisher in publishers %}
       <tr>
-        <td><a href="{{ url_for('show_publisher', publisher=publisher["code"]) }}">{{ publisher["name"] }}</a></td>
+        <td><a href="{{ url_for('publisher', publisher=publisher["code"]) }}">{{ publisher["name"] }}</a></td>
         <td>{{ publisher["num_packages"] }}</td>
       </tr>
       {% endfor %}
