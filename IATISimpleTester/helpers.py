@@ -5,13 +5,6 @@ from lxml import etree
 from IATISimpleTester import app
 
 
-SCORES_DICT = {
-    "pass": 0,
-    "fail": 0,
-    "error": 0,
-    "not-relevant": 0,
-}
-
 # parse a {filters; tests} yaml and generate tests
 def load_expressions_from_yaml(filename):
     with open(filename) as f:
