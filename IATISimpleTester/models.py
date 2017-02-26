@@ -82,9 +82,8 @@ class SuppliedData(db.Model):
                 # save the file
                 filename = file.filename
                 filename = secure_filename(filename)
-                local_filepath = join(self.id, filename)
-                filepath = join(app.config['UPLOAD_FOLDER'], local_filepath)
-                makedirs(dirname(filepath), exist_ok=True)
+                makedirs(self.upload_dir(), exist_ok=True)
+                filepath = join(self.upload_dir(), filename)
                 file.save(filepath)
         elif raw_text:
             filename = 'test.xml'
