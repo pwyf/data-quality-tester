@@ -42,6 +42,9 @@ class SuppliedData(db.Model):
         return all([getattr(token, qualifying_attr)
             for qualifying_attr in qualifying])
 
+    def upload_dir(self):
+        return join(app.config['UPLOAD_FOLDER'], self.id)
+
     def download(url):
         if not self.is_valid(source_url):
             raise BadUrlException
@@ -63,19 +66,18 @@ class SuppliedData(db.Model):
             if not filename.endswith(file_extension):
                 filename = filename + '.' + file_extension
         filename = secure_filename(filename)
-        local_filepath = join(self.id, filename)
-        filepath = join(app.config['UPLOAD_FOLDER'], local_filepath)
+        filepath = join(self.upload_dir(), filename)
         with open(filepath, 'wb') as f:
             for block in r.iter_content(1024):
                 f.write(block)
-        return local_filepath
+        return filename
 
     def __init__(self, source_url, file, raw_text, form_name):
         self.id = self.generate_uuid()
 
         if source_url:
-            local_filepath = self.download(source_url)
-        if file:
+            filename = self.download(source_url)
+        elif file:
             if file.filename != '' and self.allowed_file_extension(file.filename):
                 # save the file
                 filename = file.filename
@@ -84,15 +86,14 @@ class SuppliedData(db.Model):
                 filepath = join(app.config['UPLOAD_FOLDER'], local_filepath)
                 makedirs(dirname(filepath), exist_ok=True)
                 file.save(filepath)
-        if raw_text:
+        elif raw_text:
             filename = 'test.xml'
-            local_filepath = join(self.id, filename)
-            filepath = join(app.config['UPLOAD_FOLDER'], local_filepath)
+            filepath = join(self.upload_dir(), filename)
             with open(filepath, 'w') as f:
                 f.write(raw_text)
 
         self.source_url = source_url
-        self.original_file = local_filepath
+        self.original_file = join(self.id, filename)
         self.form_name = form_name
 
         self.created = datetime.utcnow()
