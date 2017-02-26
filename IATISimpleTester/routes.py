@@ -5,7 +5,7 @@ from urllib import parse
 from flask import abort, flash, render_template, redirect, request, url_for
 from werkzeug.utils import secure_filename
 
-from . import app, fetch, helpers
+from IATISimpleTester import app, fetch, helpers
 from .pagination import Pagination
 
 

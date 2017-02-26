@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from . import tmpl_filters
+from IATISimpleTester import tmpl_filters
 
 
 app = Flask(__name__)
@@ -16,4 +16,4 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-from . import routes
+from IATISimpleTester import routes
