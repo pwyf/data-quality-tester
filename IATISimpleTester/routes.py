@@ -5,7 +5,7 @@ from urllib import parse
 from flask import abort, flash, render_template, redirect, request, url_for
 
 from IATISimpleTester import app, fetch, helpers
-from .pagination import Pagination
+from IATISimpleTester.pagination import Pagination
 
 
 @app.route('/')
