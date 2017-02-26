@@ -45,6 +45,9 @@ class SuppliedData(db.Model):
     def upload_dir(self):
         return join(app.config['UPLOAD_FOLDER'], self.id)
 
+    def path_to_file(self):
+        return join(app.config['UPLOAD_FOLDER'], self.original_file)
+
     def download(url):
         if not self.is_valid(source_url):
             raise BadUrlException
