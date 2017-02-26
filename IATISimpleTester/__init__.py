@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
 from . import tmpl_filters
 
@@ -11,5 +12,8 @@ app.jinja_env.filters['commify'] = tmpl_filters.commify
 
 app.config.from_object('config.Config')
 app.secret_key = app.config['SECRET_KEY']
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
 
 from . import routes

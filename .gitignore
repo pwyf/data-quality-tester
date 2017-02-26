@@ -95,3 +95,6 @@ ENV/
 node_modules/
 
 /config.py
+
+# sqlite3
+*.sqlite3
