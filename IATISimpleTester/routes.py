@@ -3,7 +3,6 @@ import os.path
 from urllib import parse
 
 from flask import abort, flash, render_template, redirect, request, url_for
-from werkzeug.utils import secure_filename
 
 from IATISimpleTester import app, fetch, helpers
 from .pagination import Pagination
@@ -12,20 +11,6 @@ from .pagination import Pagination
 @app.route('/')
 def home():
     return render_template('upload.html')
-
-@app.route('/upload', methods=['POST'])
-def upload():
-    if 'file' not in request.files:
-        flash('No file part', 'danger')
-        return redirect(url_for('home'))
-    file = request.files['file']
-    if file.filename == '':
-        flash('No selected file', 'danger')
-        return redirect(url_for('home'))
-    if file and helpers.allowed_file_extension(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return redirect(url_for('package', package_name=filename))
 
 @app.route('/publishers')
 def publishers():

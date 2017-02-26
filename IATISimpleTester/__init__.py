@@ -16,4 +16,4 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-from IATISimpleTester import routes
+from IATISimpleTester import routes, uploader, models

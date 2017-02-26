@@ -80,7 +80,3 @@ def fetch_activity(filepath, iati_identifier):
 
 def activity_to_string(activity):
     return etree.tostring(activity).strip().decode("utf-8")
-
-def allowed_file_extension(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']

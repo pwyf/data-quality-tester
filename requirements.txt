@@ -3,6 +3,7 @@ lxml==3.7.2
 pyyaml
 requests
 pylibmc
+rfc6266==0.0.4
 
 Flask
 Flask-Migrate==2.0.3
