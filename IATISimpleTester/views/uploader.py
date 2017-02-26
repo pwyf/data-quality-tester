@@ -34,4 +34,4 @@ def upload():
     if request.args.get('output') == 'json':
         return jsonify(resp)
 
-    return redirect(url_for('package', id_=data.id))
+    return redirect(url_for('explore', uuid=data.id))

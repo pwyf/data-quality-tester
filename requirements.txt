@@ -2,7 +2,6 @@ lxml==3.7.2
 -e git+https://github.com/pwyf/foxpath-tools#egg=foxpath
 pyyaml
 requests
-pylibmc
 rfc6266==0.0.4
 
 Flask
