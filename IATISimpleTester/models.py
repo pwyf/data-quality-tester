@@ -48,12 +48,13 @@ class SuppliedData(db.Model):
     def path_to_file(self):
         return join(app.config['MEDIA_FOLDER'], self.original_file)
 
-    def download(url):
-        if not self.is_valid(source_url):
+    def download(self, url):
+        if not self.is_valid(url):
             raise BadUrlException
-        r = requests.get(source_url, headers={'User-Agent': 'Publish What You Fund Simple Tester'}, stream=True)
+        r = requests.get(url, headers={'User-Agent': 'Publish What You Fund Simple Tester'}, stream=True)
         r.raise_for_status()
         content_type = r.headers.get('content-type', '').split(';')[0].lower()
+        file_extension = None
         if content_type in ('text/xml', 'application/xml',):
             file_extension = 'xml'
 
@@ -69,6 +70,7 @@ class SuppliedData(db.Model):
             if not filename.endswith(file_extension):
                 filename = filename + '.' + file_extension
         filename = secure_filename(filename)
+        makedirs(self.upload_dir(), exist_ok=True)
         filepath = join(self.upload_dir(), filename)
         with open(filepath, 'wb') as f:
             for block in r.iter_content(1024):
@@ -90,6 +92,7 @@ class SuppliedData(db.Model):
                 file.save(filepath)
         elif raw_text:
             filename = 'test.xml'
+            makedirs(self.upload_dir(), exist_ok=True)
             filepath = join(self.upload_dir(), filename)
             with open(filepath, 'w') as f:
                 f.write(raw_text)
