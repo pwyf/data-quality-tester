@@ -6,6 +6,7 @@ from IATISimpleTester import app, db
 from IATISimpleTester.models import SuppliedData
 
 
+@app.route('/upload.json', methods=['GET', 'POST'])
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
@@ -33,7 +34,7 @@ def upload():
     db.session.add(data)
     db.session.commit()
 
-    if request.args.get('output') == 'json':
+    if request.path.endswith('json'):
         resp = {}
         resp['success'] = True
         resp['data'] = {
