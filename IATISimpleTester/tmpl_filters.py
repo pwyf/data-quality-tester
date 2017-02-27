@@ -18,3 +18,13 @@ def quote(value):
 @app.template_filter('commify')
 def commify(value):
     return '{value:,}'.format(value=value)
+
+@app.template_filter('pluralize')
+def pluralize(number, singular, plural=None):
+    if number == 1:
+        return singular
+    else:
+        if plural:
+            return plural
+        else:
+            return singular + 's'
