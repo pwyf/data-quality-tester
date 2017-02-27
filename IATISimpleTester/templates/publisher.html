@@ -3,7 +3,7 @@
 {% block body %}
 <h4>All packages published by {{ publisher }}</h4>
 
-{% include '_search.html' %}
+{% include 'partials/_search.html' %}
 
 <div class="table-responsive">
   <table class="table table-striped">
@@ -32,5 +32,5 @@
   </table>
 </div>
 
-{% include '_pagination.html' %}
+{% include 'partials/_pagination.html' %}
 {% endblock %}
