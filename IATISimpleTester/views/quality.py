@@ -1,6 +1,7 @@
 from flask import render_template, jsonify, request
 
 from IATISimpleTester import app, db, helpers
+from IATISimpleTester.pagination import Pagination
 from IATISimpleTester.models import SuppliedData
 
 
@@ -26,18 +27,17 @@ def package_quality(uuid):
 
     # single_test = helpers.select_expression(all_tests_list, request.args.get('test'))
 
-    # page = int(request.args.get('page', 1))
-    # offset = (page - 1) * app.config['PER_PAGE']
-
     activities = helpers.filter_activities(all_activities, current_filter)
     activities_results, results_summary = helpers.test_activities(activities, all_tests_list)
 
-    # pagination = Pagination(page, app.config['PER_PAGE'], num_activities)
-
-    # activities_results[id_] = activities_results[offset:offset + app.config['PER_PAGE']]
+    page = int(request.args.get('page', 1))
+    offset = (page - 1) * app.config['PER_PAGE']
+    pagination = Pagination(page, app.config['PER_PAGE'], len(activities))
+    activities_results = activities_results[offset:offset + app.config['PER_PAGE']]
 
     resp['success'] = True
     resp['data'] = {
+        'page': page,
         'total-activities': len(all_activities),
         'total-filtered-activities': len(activities),
         'results': activities_results,
