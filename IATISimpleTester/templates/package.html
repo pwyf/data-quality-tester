@@ -70,7 +70,7 @@
     {% if (results_summary[grouping['name']]['by-test'][test['id']]['pass'] + results_summary[grouping['name']]['by-test'][test['id']]['fail']) > 0 %}
     <tr>
       <td>
-        <strong><a href="{{ url_for('package', package_name=package_name, test=test['id']) }}">{{ test['id'] }}</a></strong>
+        <strong>{{ test['id'] }}</strong>
       </td>
       <td>
         {{ (100 * results_summary[grouping['name']]['by-test'][test["id"]]['pass'] / (results_summary[grouping['name']]['by-test'][test["id"]]['pass'] + results_summary[grouping['name']]['by-test'][test['id']]['fail']))|int }}% of activities pass ({{ results_summary[grouping['name']]['by-test'][test['id']]['pass'] }} / {{ (results_summary[grouping['name']]['by-test'][test['id']]['pass'] + results_summary[grouping['name']]['by-test'][test['id']]['fail']) }})
