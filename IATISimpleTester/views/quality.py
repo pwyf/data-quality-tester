@@ -6,7 +6,7 @@ from IATISimpleTester.models import SuppliedData
 
 @app.route('/quality/<uuid:uuid>')
 def package_quality(uuid):
-    data = SuppliedData.query.get(str(uuid))
+    data = SuppliedData.query.get_or_404(str(uuid))
     all_activities = helpers.load_activities_from_package(data.path_to_file())
 
     tests = request.args.get('tests')
