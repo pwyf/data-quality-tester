@@ -79,4 +79,37 @@
   </div>
 </div>
 
+<div class="row" id="how-to-use">
+  <div class="col-xs-12">
+    <div class="panel panel-default">
+      <div class="panel-body">
+
+        <h1 class="heading-in-panel"> <small>Using the Data Quality Checker</small> </h1>
+        <p> You can upload, paste or provide a link to data published using the <a href="http://iatistandard.org">International Aid Transparency Initiative (IATI) Standard</a>.</p>
+
+        <p>If your data passes basic validation checks, the tool will then present a report on data quality, and information about the contents of your file.</p>
+        <p>Data is stored for 7 days at a randomly generated URL. You can share this link with others to support discussion of data quality.</p>
+        <p>To preview how the Data Quality Checker works, try <a href="{{ url_for('upload', source_url='http://sage2iati.publishwhatyoufund.org/publish-what-you-fund/activity.xml') }}">loading some sample data.</a> </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  $(function() {
+    $("#collapseTwo").attr('class', 'panel-collapse collapse');
+    $("#collapseThree").attr('class', 'panel-collapse collapse');
+
+    $('form').submit(function() {
+      $('#loading').css({"display": "block"});
+      $('#accordion').hide();
+    });
+
+    $(window).unload(function() {
+      $('#loading').css({"display": "none"});
+    })
+  });
+</script>
 {% endblock %}

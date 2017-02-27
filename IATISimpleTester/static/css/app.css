@@ -2,3 +2,15 @@
 body {
   padding-top: 50px;
 }
+
+#accordion .panel-heading {
+    cursor: pointer;
+}
+
+.panel-title a {
+  text-decoration: none;
+}
+
+.panel-title .glyphicon {
+  padding-right: 15px;
+}
