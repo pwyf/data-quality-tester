@@ -6,6 +6,7 @@ from IATISimpleTester.models import SuppliedData
 
 @app.route('/quality/<uuid:uuid>')
 def package_quality(uuid):
+    resp = {}
     data = SuppliedData.query.get_or_404(str(uuid))
     all_activities = helpers.load_activities_from_package(data.path_to_file())
 
@@ -35,4 +36,12 @@ def package_quality(uuid):
 
     # activities_results[id_] = activities_results[offset:offset + app.config['PER_PAGE']]
 
-    return jsonify({'success': True, 'data': {'results': activities_results, 'summary': results_summary}})
+    resp['success'] = True
+    resp['data'] = {
+        'total-activities': len(all_activities),
+        'total-filtered-activities': len(activities),
+        'results': activities_results,
+        'results-summary': results_summary,
+    }
+
+    return jsonify(resp)
