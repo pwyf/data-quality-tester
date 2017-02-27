@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from os import makedirs
-from os.path import join, dirname
+from os.path import join
 from urllib.parse import urlparse
 import uuid
 
