@@ -7,7 +7,7 @@ from IATISimpleTester.models import SuppliedData
 
 
 class FlushDataCommand(Command):
-    'Delete files that are older than 7 days (or all files)'
+    'Delete files that are older than 7 days (or all files, using the --all switch)'
 
     option_list = (
         Option('--all', '-a', dest='flush_all', action='store_true'),

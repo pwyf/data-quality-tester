@@ -10,23 +10,26 @@ class Config(object):
     REGISTRY_API_BASE_URL = 'https://iatiregistry.org/api/3/action'
     CACHE_TIMEOUT = 86400  # 24 hours
     CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
-    UPLOAD_FOLDER = os.path.join(CURRENT_PATH, 'media')
+    MEDIA_FOLDER = os.path.join(CURRENT_PATH, 'media')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(os.path.join(CURRENT_PATH, 'db.sqlite3'))
     ALLOWED_EXTENSIONS = ('xml',)
-    TEST_GROUPINGS = [
-        {
+    TEST_SETS = {
+        'rulesets': {
             'name': 'IATI Rulesets',
             'description': 'These rules catch stuff that doesn’t really make sense, e.g. end dates before start dates.',
             'tests_file': os.path.join(CURRENT_PATH, 'test_definitions', '202-ruleset.yaml'),
-        }, {
+        },
+        'openag': {
             'name': 'Open Ag',
             'description': 'These tests only run on agricultural activities. They search for the existence of bits of data that are crucial for agricultural data to begin to be useful.',
             'tests_file': os.path.join(CURRENT_PATH, 'test_definitions', 'ag-tests.yaml'),
-        }, {
+        },
+        'pwyf': {
             'name': 'Publish What You Fund',
             'description': 'These tests only run on current data. They comprise the automated component of the Aid Transparency Index, which aims to rank donors by data quality.',
             'tests_file': os.path.join(CURRENT_PATH, 'test_definitions', 'pwyf-tests.yaml'),
-        }
-    ]
+        },
+    }
     PER_PAGE = 20
 
     with open('codelists.yaml') as f:

@@ -1,1 +1,1 @@
-from IATISimpleTester.views import pages, uploader
+from IATISimpleTester.views import explore, pages, quality, uploader

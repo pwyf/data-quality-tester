@@ -43,10 +43,10 @@ class SuppliedData(db.Model):
             for qualifying_attr in qualifying])
 
     def upload_dir(self):
-        return join(app.config['UPLOAD_FOLDER'], self.id)
+        return join(app.config['MEDIA_FOLDER'], self.id)
 
     def path_to_file(self):
-        return join(app.config['UPLOAD_FOLDER'], self.original_file)
+        return join(app.config['MEDIA_FOLDER'], self.original_file)
 
     def download(url):
         if not self.is_valid(source_url):

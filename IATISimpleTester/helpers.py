@@ -9,23 +9,23 @@ from IATISimpleTester import app
 def load_expressions_from_yaml(filename):
     with open(filename) as f:
         reader = yaml.load(f)
-        tests = [
+    tests = [
+        {
+            'id': t['description'],
+            'expression': t['expression'],
+        }
+        for indicator in reader['indicators'] for t in indicator['tests']
+    ]
+    filters = None
+    if 'filters' in reader:
+        filters = [
             {
-                'id': t['description'],
-                'expression': t['expression'],
+                'id': f['description'],
+                'expression': f['expression'],
             }
-            for indicator in reader['indicators'] for t in indicator['tests']
+            for f in reader['filters']
         ]
-        filters = None
-        if 'filters' in reader:
-            filters = [
-                {
-                    'id': f['description'],
-                    'expression': f['expression'],
-                }
-                for f in reader['filters']
-            ]
-        return tests, filters
+    return tests, filters
 
 # given an expression list and the name of an expression,
 # select it,
