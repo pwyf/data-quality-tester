@@ -4,9 +4,7 @@ from IATISimpleTester import app, db
 from IATISimpleTester.models import SuppliedData
 
 
-@app.route('/data/<uuid>')
+@app.route('/data/<uuid:uuid>')
 def explore(uuid):
-    data = SuppliedData.query.get(uuid)
-    print(data.id)
-
+    data = SuppliedData.query.get(str(uuid))
     return jsonify({'success': True})
