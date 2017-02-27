@@ -5,17 +5,16 @@ from flask import request, url_for
 from IATISimpleTester import app
 
 
+@app.template_global('url_for_other_page')
 def url_for_other_page(page):
     args = {**request.args, **request.view_args}
     args['page'] = page
     return url_for(request.endpoint, **args)
 
+@app.template_global('quote')
 def quote(value):
     return parse.quote(value, safe='')
 
+@app.template_filter('commify')
 def commify(value):
     return '{value:,}'.format(value=value)
-
-app.jinja_env.globals['url_for_other_page'] = url_for_other_page
-app.jinja_env.globals['quote'] = quote
-app.jinja_env.filters['commify'] = commify
