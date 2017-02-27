@@ -16,6 +16,7 @@
     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
       <div class="panel-body">
         <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
             <div class="form-group"><label class="control-label" for="id_original_file">Upload a file (.xml)</label><div class="row bootstrap3-multi-input"><div class="col-xs-12"><input class="" id="id_original_file" name="original_file" title="" type="file" /></div></div></div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">
@@ -39,6 +40,7 @@
     <div id="collapseTwo" class="panel-collapse show-open-if-noscript" role="tabpanel" aria-labelledby="headingTwo">
       <div class="panel-body">
         <form action="{{ url_for('upload') }}" id="fetchURL" method="POST">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
             <div class="form-group"><label class="control-label" for="id_source_url">Supply a URL</label><input class="form-control" id="id_source_url" maxlength="2000" name="source_url" placeholder="Supply a URL" required="required" title="" type="url" /></div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">
@@ -62,6 +64,7 @@
     <div id="collapseThree" class="panel-collapse show-open-if-noscript" role="tabpanel" aria-labelledby="headingThree">
       <div class="panel-body">
         <form action="{{ url_for('upload') }}" method="POST">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
             <div class="form-group"><label class="control-label" for="id_paste">Paste (XML only)</label><textarea class="form-control" cols="40" id="id_paste" name="paste" placeholder="Paste (XML only)" required="required" rows="10" title="">
 </textarea></div>
             <div class="form-group">
