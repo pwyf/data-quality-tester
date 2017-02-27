@@ -1,3 +1,5 @@
+from lxml import etree
+
 from flask import render_template, jsonify, request
 
 from IATISimpleTester import app, db, helpers
@@ -8,8 +10,22 @@ from IATISimpleTester.models import SuppliedData
 @app.route('/quality/<uuid:uuid>.json')
 @app.route('/quality/<uuid:uuid>')
 def package_quality(uuid):
+    response = _package_quality(uuid)
+    if request.path.endswith('.json'):
+        return jsonify(response)
+    return render_template('quality.html')
+
+def _package_quality(uuid):
     data = SuppliedData.query.get_or_404(str(uuid))
-    all_activities = helpers.load_activities_from_package(data.path_to_file())
+
+    try:
+        doc = etree.parse(data.path_to_file())
+    except etree.XMLSyntaxError:
+        return {
+            'success': False,
+            'error': 'Failed to parse',
+        }
+    all_activities = doc.xpath("//iati-activity")
 
     tests = request.args.get('tests')
     filter_ = request.args.get('filter')
@@ -35,14 +51,15 @@ def package_quality(uuid):
     pagination = Pagination(page, app.config['PER_PAGE'], len(activities))
     activities_results = activities_results[offset:offset + app.config['PER_PAGE']]
 
-    if request.path.endswith('.json'):
-        resp = {}
-        resp['success'] = True
-        resp['data'] = {
-            'page': page,
-            'total-activities': len(all_activities),
-            'total-filtered-activities': len(activities),
-            'results': activities_results,
-            'results-summary': results_summary,
-        }
-        return jsonify(resp)
+    context = {
+        'page': page,
+        'total-activities': len(all_activities),
+        'total-filtered-activities': len(activities),
+        'results': activities_results,
+        'results-summary': results_summary,
+    }
+
+    return {
+        'success': True,
+        'data': context,
+    }

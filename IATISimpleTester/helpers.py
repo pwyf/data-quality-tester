@@ -43,10 +43,6 @@ def test_activities(activities, tests_list):
 
     return activities_results, results_summary
 
-def load_activities_from_package(filepath):
-    doc = etree.parse(filepath)
-    return doc.xpath("//iati-activity")
-
 def filter_activities(activities, filter_dict=None):
     if filter_dict:
         foxpath = Foxpath()
