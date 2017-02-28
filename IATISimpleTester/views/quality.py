@@ -26,14 +26,14 @@ def _package_quality(uuid):
     except OSError:
         return {
             'success': False,
-            'error': 'File no longer exists',
+            'error': 'Sorry – The file no longer exists',
         }, 500
     except etree.XMLSyntaxError:
         return {
             'success': False,
-            'error': 'Failed to parse',
+            'error': 'The file appears to be invalid',
         }, 500
-    all_activities = doc.xpath("//iati-activity")
+    all_activities = doc.xpath('//iati-activity')
 
     tests = request.args.get('tests')
     filter_ = request.args.get('filter')
