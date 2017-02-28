@@ -9,22 +9,10 @@ from IATISimpleTester import app
 def load_expressions_from_yaml(filename):
     with open(filename) as f:
         reader = yaml.load(f)
-    tests = [
-        {
-            'id': t['description'],
-            'expression': t['expression'],
-        }
-        for indicator in reader['indicators'] for t in indicator['tests']
-    ]
+    tests = [t for indicator in reader['indicators'] for t in indicator['tests']]
     filters = None
     if 'filters' in reader:
-        filters = [
-            {
-                'id': f['description'],
-                'expression': f['expression'],
-            }
-            for f in reader['filters']
-        ]
+        filters = reader['filters']
     return tests, filters
 
 # given an expression list and the name of an expression,
@@ -51,7 +39,7 @@ def filter_activities(activities, filter_dict=None):
 
         filtered_activities = []
         for idx, activity in enumerate(activities):
-            if activities_results[idx]['results'][filter_dict['id']] == 'pass':
+            if activities_results[idx]['results'][filter_dict['name']] == 'pass':
                 filtered_activities.append(activity)
 
         activities = filtered_activities

@@ -1,65 +1,64 @@
 indicators:
- - indicator-description: Agriculture
-   indicator-name: agriculture
+ - name: Agriculture
    tests:
-    - description: Reporting org name should be present
+    - name: Reporting org name should be present
       expression: >
        `reporting-org/text()` should be present
 
-    - description: Reporting org reference should be present
+    - name: Reporting org reference should be present
       expression: >
        `reporting-org/@ref` should be present
 
-    - description: Reporting org type should be present
+    - name: Reporting org type should be present
       expression: >
        `reporting-org/@type` should be present
 
-    - description: Default currency should be present
+    - name: Default currency should be present
       expression: >
        `@default-currency` should be present
 
-    - description: Default language should be present
+    - name: Default language should be present
       expression: >
        `@xml:lang` should be present
 
-    - description: Inline results should be present
+    - name: Inline results should be present
       expression: >
        `result` should be present
 
-    - description: Link to results doc should be present
+    - name: Link to results doc should be present
       expression: >
        `document-link/category[@code='A08']` should be present
 
-    - description: Inline budget should be present
+    - name: Inline budget should be present
       expression: >
        `budget` should be present
 
-    - description: Budget start date should be present
+    - name: Budget start date should be present
       expression: >
        `budget/period-start/@iso-date` should be present
 
-    - description: Budget end date should be present
+    - name: Budget end date should be present
       expression: >
        `budget/period-end/@iso-date` should be present
 
-    - description: Budget value should be present
+    - name: Budget value should be present
       expression: >
        `budget/value` should be present
 
-    - description: Document links should be present
+    - name: Document links should be present
       expression: >
        `document-link` should be present
 
-    - description: Location data should be present
+    - name: Location data should be present
       expression: >
        `location/point/pos` should be present
 
-    - description: Contact info should be present
+    - name: Contact info should be present
       expression: >
        `contact-info` should be present
 
 filters:
- - description: Agriculture sector code
+ - name: Agriculture sector code
    expression: >
     at least one `sector/@code` should be on the Agriculture codelist
     or at least one `transaction/sector/@code` should be on the Agriculture codelist

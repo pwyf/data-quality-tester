@@ -1,0 +1,16 @@
+41114 does not use sector at activity hierarchy 1
+EU-4 does not use transaction at activity hierarchy 1
+GB-1 does not use participating-org at activity hierarchy 1
+GB-1 does not use sector at activity hierarchy 1
+SE-6 does not use sector at activity hierarchy 1
+US-18 does not use aid-type at activity hierarchy 2
+US-18 does not use aid-type at activity hierarchy 3
+US-18 does not use capital-spend at activity hierarchy 2
+US-18 does not use finance-type at activity hierarchy 2
+US-18 does not use finance-type at activity hierarchy 3
+US-18 does not use flow-type at activity hierarchy 2
+US-18 does not use flow-type at activity hierarchy 3
+US-18 does not use result at activity hierarchy 2
+US-18 does not use sector at activity hierarchy 1
+US-18 does not use sector at activity hierarchy 2
+US-18 does not use tied-status at activity hierarchy 3
