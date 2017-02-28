@@ -1,6 +1,6 @@
 from lxml import etree
 
-from flask import flash, redirect, render_template, jsonify, request, url_for
+from flask import abort, flash, redirect, render_template, jsonify, request, url_for
 
 from IATISimpleTester import app, db, helpers
 from IATISimpleTester.pagination import Pagination
@@ -71,3 +71,29 @@ def _package_quality(uuid):
         'success': True,
         'data': context,
     }, 200
+
+@app.route('/quality/<uuid:uuid>/<path:iati_identifier>')
+def activity_quality(uuid, iati_identifier):
+    data = SuppliedData.query.get_or_404(str(uuid))
+    try:
+        doc = etree.parse(data.path_to_file())
+    except OSError:
+        return {
+            'success': False,
+            'error': 'Sorry – The file no longer exists',
+        }, 500
+    except etree.XMLSyntaxError:
+        return {
+            'success': False,
+            'error': 'The file appears to be invalid',
+        }, 500
+    activity = doc.xpath('//iati-activity/iati-identifier[text()="{}"]/..'.format(iati_identifier))
+    if len(activity) != 1:
+        return abort(404)
+    activity = activity[0]
+    activity_str = helpers.activity_to_string(activity)
+    context = {
+        'activity': activity_str,
+        'uuid': uuid,
+    }
+    return render_template('activity.html', **context)

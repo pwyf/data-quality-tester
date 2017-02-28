@@ -1,60 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h4>Activity from <a href="{{ url_for('package', package_name=package_name) }}">{{ package_name }}</a></h4>
-
-{% from '_totaliser.html' import totaliser %}
-{{ totaliser(activity_results['results_percs']) }}
-
-<div style="display:none" class="summary" id="pass-info">
-  <h2>Great!</h2>
-
-  <p>This activity <strong>does</strong> include:</p>
-  <ul>
-  {% for test in all_tests_list -%}
-  {% if activity_results['results'][test['id']] == 'pass' %}
-  <li>{{ test['id'] }} (<a href="#">more info</a>) (<a href="#">show</a>)</li>
-  {% endif %}
-  {%- endfor %}
-  </ul>
-</div>
-
-<div style="display:none" class="summary" id="fail-info">
-  <h2>Uh oh…</h2>
-
-  <p>This activity <strong>doesn’t (but should)</strong> include:</p>
-  <ul>
-  {% for test in all_tests_list -%}
-  {% if activity_results['results'][test['id']] == 'fail' %}
-  <li>{{ test['id'] }} (<a href="#">more info</a>) (<a href="#">show</a>)</li>
-  {% endif %}
-  {%- endfor %}
-  </ul>
-</div>
-
-<div style="display:none" class="summary" id="not-relevant-info">
-  <h2>Not relevant tests</h2>
-
-  <ul>
-  {% for test in all_tests_list -%}
-  {% if activity_results['results'][test['id']] == 'not-relevant' %}
-  <li>{{ test['id'] }} (<a href="#">more info</a>) (<a href="#">show</a>)</li>
-  {% endif %}
-  {%- endfor %}
-  </ul>
-</div>
-
-<div style="display:none" class="summary" id="error-info">
-  <h2>Erroring tests</h2>
-
-  <ul>
-  {% for test in all_tests_list -%}
-  {% if activity_results['results'][test['id']] == 'error' %}
-  <li>{{ test['id'] }} (<a href="#">more info</a>) (<a href="#">show</a>)</li>
-  {% endif %}
-  {%- endfor %}
-  </ul>
-</div>
+<h4><a href="{{ url_for('package_quality', uuid=uuid) }}">Go back</a></h4>
 
 <pre class="prettyprint">{{ activity }}</pre>
 {% endblock %}
