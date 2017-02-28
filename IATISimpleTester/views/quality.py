@@ -87,13 +87,12 @@ def activity_quality(uuid, iati_identifier):
             'success': False,
             'error': 'The file appears to be invalid',
         }, 500
-    activity = doc.xpath('//iati-activity/iati-identifier[text()="{}"]/..'.format(iati_identifier))
-    if len(activity) != 1:
+
+    activity = helpers.fetch_activity(doc, iati_identifier)
+    if not activity:
         return abort(404)
-    activity = activity[0]
-    activity_str = helpers.activity_to_string(activity)
     context = {
-        'activity': activity_str,
+        'activity': helpers.activity_to_string(activity),
         'uuid': uuid,
     }
     return render_template('activity.html', **context)
