@@ -1,3 +1,59 @@
+components:
+ - name: Commitments
+   indicators:
+    - Quality of FOIA legislation
+    - Implementation schedules
+    - Accessibility
+
+ - name: Organisation planning
+   indicators:
+    - Organisation strategy
+    - Annual report
+    - Allocation policy
+    - Audit
+    - Procurement policy
+    - Country or sector strategy
+
+ - name: Finance and budgets
+   indicators:
+    - Total organisation budget
+    - Disaggregated budget
+    - Commitments
+    - Disbursements and expenditure
+    - Budget
+    - Budget Docs
+    - Contracts
+    - Tenders
+
+ - name: Local level monitoring
+   indicators:
+    - Title
+    - Description
+    - Planned dates
+    - Actual dates
+    - Current status
+    - Contact details
+    - Objectives
+    - Sector
+    - Sub-national location
+    - Tied Aid Status
+    - Conditions
+
+ - name: Aid and beyond - Joining up
+   indicators:
+    - Implementer
+    - Unique ID
+    - Flow Type
+    - Aid Type
+    - Finance Type
+    - Budget Identifier
+
+ - name: Performance
+   indicators:
+    - Evaluations
+    - Results
+    - Impact Appraisals
+
 indicators:
  - name: Commitments
    tests:
