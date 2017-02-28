@@ -47,7 +47,7 @@ def _package_quality(uuid):
     all_tests_list, all_filters_list = helpers.load_expressions_from_yaml(test_set['tests_file'])
 
     # set the filter
-    current_filter = all_filters_list[0] if filter_ else None
+    current_filter = all_filters_list[0] #  if filter_ else None
 
     # single_test = helpers.select_expression(all_tests_list, request.args.get('test'))
 
