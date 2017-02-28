@@ -1,6 +1,6 @@
 import os.path
 
-from flask import abort, request, jsonify, redirect, url_for
+from flask import abort, flash, request, jsonify, redirect, url_for
 
 from IATISimpleTester import app, db
 from IATISimpleTester.models import SuppliedData
@@ -9,6 +9,7 @@ from IATISimpleTester.models import SuppliedData
 @app.route('/upload.json', methods=['GET', 'POST'])
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
+    api_request = request.path.endswith('json')
     if request.method == 'POST':
         form_data = request.form
     else:
@@ -28,13 +29,16 @@ def upload():
     if not form_name:
         # no form data submitted.
         # Do something sensible here
-        return abort(404)
+        if api_request:
+            return abort(404)
+        flash('Something went wrong.', 'danger')
+        return redirect(url_for('home'))
 
     data = SuppliedData(source_url, original_file, raw_text, form_name)
     db.session.add(data)
     db.session.commit()
 
-    if request.path.endswith('json'):
+    if api_request:
         resp = {}
         resp['success'] = True
         resp['data'] = {
