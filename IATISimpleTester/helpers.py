@@ -56,4 +56,4 @@ def fetch_activity(filepath, iati_identifier):
     return activities[0]
 
 def activity_to_string(activity):
-    return etree.tostring(activity).strip().decode("utf-8")
+    return etree.tostring(activity, pretty_print=True).strip().decode('utf-8')
