@@ -13,10 +13,10 @@ def package_quality(uuid):
     response, status = _package_quality(uuid)
     if request.path.endswith('.json'):
         return jsonify(response), status
-    if status == 200:
-        return render_template('quality.html', **response['data'])
-    flash(response['error'], 'danger')
-    return redirect(url_for('home'))
+    if status != 200:
+        flash(response['error'], 'danger')
+        return redirect(url_for('home'))
+    return render_template('quality.html', **response['data'])
 
 def _package_quality(uuid):
     data = SuppliedData.query.get_or_404(str(uuid))
