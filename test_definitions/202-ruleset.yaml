@@ -1,41 +1,81 @@
 indicators:
- - name: Start dates before end dates
+ - name: Start dates chronologically before end dates
    tests:
-    - name: result indicator start dates should be before end dates
+    - name: result indicator start dates should be chronologically before end dates
       expression: >
        `result/indicator/period/period-start/@iso-date`
        should be before
        `result/indicator/period/period-end/@iso-date`
 
-    - name: recipient-org-budget start dates should be before end dates
+    - name: recipient-org-budget start dates should be chronologically before end dates
       expression: >
        `recipient-org-budget/period-start/@iso-date`
        should be before
        `recipient-org-budget/period-end/@iso-date`
 
-    - name: recipient-region-budget start dates should be before end dates
+    - name: recipient-region-budget start dates should be chronologically before end dates
       expression: >
        `recipient-region-budget/period-start/@iso-date`
        should be before
        `recipient-region-budget/period-end/@iso-date`
 
-    - name: planned-disbursement start dates should be before end dates
+    - name: planned-disbursement start dates should be chronologically before end dates
       expression: >
        `planned-disbursement/period-start/@iso-date`
        should be before
        `planned-disbursement/period-end/@iso-date`
 
-    - name: recipient-country-budget start dates should be before end dates
+    - name: recipient-country-budget start dates should be chronologically before end dates
       expression: >
        `recipient-country-budget/period-start/@iso-date`
        should be before
        `recipient-country-budget/period-end/@iso-date`
 
-    - name: total-expenditure start dates should be before end dates
+    - name: total-expenditure start dates should be chronologically before end dates
       expression: >
        `total-expenditure/period-start/@iso-date`
        should be before
        `total-expenditure/period-end/@iso-date`
+
+    - name: planned start dates should be chronologically before end dates
+      expression: >
+       `activity-date[@type='1']/@iso-date`
+       should be before
+       `activity-date[@type='3']/@iso-date`
+
+    - name: actual start dates should be chronologically before end dates
+      expression: >
+       `activity-date[@type='2']/@iso-date`
+       should be before
+       `activity-date[@type='4']/@iso-date`
+
+    - name: budget start dates should be chronologically before end dates
+      expression: >
+       `budget/period-start/@iso-date`
+       should be before
+       `budget/period-end/@iso-date`
+
+ - name: Actual (known) dates should be in the past
+   tests:
+    - name: actual start dates should be in the past
+      expression: >
+       `activity-date[@type='2']/@iso-date`
+       should be today, or in the past
+
+    - name: actual end dates should be in the past
+      expression: >
+       `activity-date[@type='4']/@iso-date`
+       should be today, or in the past
+
+    - name: transaction date should be in the past
+      expression: >
+       `transaction/transaction-date/@iso-date`
+       should be today, or in the past
+
+    - name: value date should be in the past
+      expression: >
+       `transaction/value-date/@iso-date`
+       should be today, or in the past
 
  - name: Elements that should be present
    tests:
@@ -73,41 +113,3 @@ indicators:
     - name: receiver-org ref is valid
       expression: >
        `transaction/receiver-org/@ref` should match the regex [^\/\&\|\?]+
-
-    - name: planned start dates should be before end dates
-      expression: >
-       `activity-date[@type='1']/@iso-date`
-       should be before
-       `activity-date[@type='3']/@iso-date`
-
-    - name: actual start dates should be before end dates
-      expression: >
-       `activity-date[@type='2']/@iso-date`
-       should be before
-       `activity-date[@type='4']/@iso-date`
-
-    - name: actual start dates should be in the past
-      expression: >
-       `activity-date[@type='2']/@iso-date`
-       should be today, or in the past
-
-    - name: actual end dates should be in the past
-      expression: >
-       `activity-date[@type='4']/@iso-date`
-       should be today, or in the past
-
-    - name: budget start dates should be before end dates
-      expression: >
-       `budget/period-start/@iso-date`
-       should be before
-       `budget/period-end/@iso-date`
-
-    - name: transaction date should be in the past
-      expression: >
-       `transaction/transaction-date/@iso-date`
-       should be today, or in the past
-
-    - name: value date should be in the past
-      expression: >
-       `transaction/value-date/@iso-date`
-       should be today, or in the past
