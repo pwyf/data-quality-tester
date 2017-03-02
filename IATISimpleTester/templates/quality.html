@@ -3,34 +3,7 @@
 
 {% block body %}
 
-<div class="row" style="padding-bottom: 20px;">
-  <form method="get">
-    <div class="row">
-      <div class="col-lg-6">
-        {% for k, v in params.items() %}
-          {% if k not in ['uuid', 'filter'] %}
-          <input type="hidden" name="{{ k }}" value="{{ v }}" />
-          {% endif %}
-        {% endfor %}
-        <div class="input-group">
-          <select class="form-control" name="filter">
-            <option value="true"
-            {%- if not params['filter'] == 'false' %} selected="selected"
-            {%- endif -%}
-            >Current activities ({{ total_filtered_activities }} activities)</option>
-            <option value="false"
-            {%- if params['filter'] == 'false' %} selected="selected"
-            {%- endif -%}
-            >All activities ({{ total_activities }} activities)</option>
-          </select>
-          <span class="input-group-btn">
-            <button class="btn btn-default" type="submit">Go!</button>
-          </span>
-        </div><!-- /input-group -->
-      </div><!-- /.col-lg-6 -->
-    </div><!-- /.row -->
-  </form>
-</div>
+{% include 'partials/_filter_activities.html' %}
 
 <div class="row">
   {% if params['component'] %}

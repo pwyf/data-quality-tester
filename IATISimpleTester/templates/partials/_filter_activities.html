@@ -1,0 +1,28 @@
+{% if total_activities != total_filtered_activities %}
+<div class="row">
+  <div class="col-lg-6">
+    <form method="get" class="filter-form">
+      {% for k, v in params.items() %}
+        {% if k not in ['uuid', 'filter'] %}
+        <input type="hidden" name="{{ k }}" value="{{ v }}" />
+        {% endif %}
+      {% endfor %}
+      <div class="input-group">
+        <select class="form-control" name="filter">
+          <option value="true"
+          {%- if not params['filter'] == 'false' %} selected="selected"
+          {%- endif -%}
+          >Current activities ({{ total_filtered_activities }} activities)</option>
+          <option value="false"
+          {%- if params['filter'] == 'false' %} selected="selected"
+          {%- endif -%}
+          >All activities ({{ total_activities }} activities)</option>
+        </select>
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="submit">Go!</button>
+        </span>
+      </div><!-- /input-group -->
+    </form>
+  </div><!-- /.col-lg-6 -->
+</div><!-- /.row -->
+{% endif %}
