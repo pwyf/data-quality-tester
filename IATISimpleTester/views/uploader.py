@@ -1,15 +1,22 @@
 import os.path
 
-from flask import abort, flash, request, jsonify, redirect, url_for
+from flask import abort, flash, jsonify, redirect, request, url_for
 
-from IATISimpleTester import app, db
+from IATISimpleTester import db
+from IATISimpleTester.exceptions import BadUrlException, NoFormDataException
 from IATISimpleTester.models import SuppliedData
 
 
-@app.route('/upload.json', methods=['GET', 'POST'])
-@app.route('/upload', methods=['GET', 'POST'])
 def upload():
-    api_request = request.path.endswith('json')
+    try:
+        supplied_data = _upload()
+    except (NoFormDataException, BadUrlException) as e:
+        flash(str(e), 'danger')
+        return redirect(url_for('home'))
+
+    return redirect(url_for('explore', uuid=supplied_data.id))
+
+def _upload():
     if request.method == 'POST':
         form_data = request.form
     else:
@@ -29,22 +36,10 @@ def upload():
     if not form_name:
         # no form data submitted.
         # Do something sensible here
-        if api_request:
-            return abort(404)
-        flash('Something went wrong.', 'danger')
-        return redirect(url_for('home'))
+        raise NoFormDataException('The form didn\'t submit properly. Please try again.')
 
-    data = SuppliedData(source_url, original_file, raw_text, form_name)
-    db.session.add(data)
+    supplied_data = SuppliedData(source_url, original_file, raw_text, form_name)
+    db.session.add(supplied_data)
     db.session.commit()
 
-    if api_request:
-        resp = {}
-        resp['success'] = True
-        resp['data'] = {
-            'id': data.id,
-            'original_file': data.original_file,
-        }
-        return jsonify(resp)
-
-    return redirect(url_for('explore', uuid=data.id))
+    return supplied_data

@@ -1,10 +1,10 @@
 {% macro totaliser(results) %}
 <div class="progress">
-  <div id="num-pass" class="progress-bar progress-bar-success" style="width: {{ 100 * results['pass'] / (results['pass'] + results['fail']) }}%">
-    <span class="sr-only">{{ 100 * results['pass'] / (results['pass'] + results['fail']) }}% Pass</span>
+  <div id="num-pass" class="progress-bar progress-bar-striped" style="width: {{ 100 * results }}%; background-color: {{ results|colorify }}">
+    <span class="sr-only">{{ (100 * results)|round|int }}% Pass</span>
   </div>
-  <div id="num-fail" class="progress-bar progress-bar-danger" style="width: {{ 100 * results['fail'] / (results['pass'] + results['fail']) }}%">
-    <span class="sr-only">{{ 100 * results['fail'] / (results['pass'] + results['fail']) }}% Fail</span>
+  <div id="num-fail" class="progress-bar" style="width: {{ 100 * (1 - results) }}%; background-color: #222">
+    <span class="sr-only">{{ (100 * (1 - results))|round|int }}% Fail</span>
   </div>
 </div>
 {% endmacro %}

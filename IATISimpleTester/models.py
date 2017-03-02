@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+import json
 from os import makedirs
 from os.path import join
 from urllib.parse import urlparse
@@ -10,10 +11,7 @@ import rfc6266  # (content-disposition header parser)
 from werkzeug.utils import secure_filename
 
 from IATISimpleTester import app, db
-
-
-class BadUrlException(Exception):
-    pass
+from IATISimpleTester.exceptions import BadUrlException
 
 
 class SuppliedData(db.Model):
@@ -50,7 +48,7 @@ class SuppliedData(db.Model):
 
     def download(self, url):
         if not self.is_valid(url):
-            raise BadUrlException
+            raise BadUrlException('That source URL appears to be invalid. Please try again.')
         r = requests.get(url, headers={'User-Agent': 'Publish What You Fund Simple Tester'}, stream=True)
         r.raise_for_status()
         content_type = r.headers.get('content-type', '').split(';')[0].lower()
@@ -102,3 +100,24 @@ class SuppliedData(db.Model):
         self.form_name = form_name
 
         self.created = datetime.utcnow()
+
+    def path_to_results(self, test_set, filtering):
+        filename = 'results-{test_set}-{filter_name}.json'.format(
+            test_set=test_set,
+            filter_name='filtered' if filtering else 'all',
+        )
+        return join(self.upload_dir(), filename)
+
+    def get_results(self, test_set, filtering):
+        path_to_results = self.path_to_results(test_set, filtering)
+        try:
+            with open(path_to_results) as f:
+                j = json.load(f)
+        except FileNotFoundError:
+            return None
+        return j
+
+    def set_results(self, data, test_set, filtering):
+        path_to_results = self.path_to_results(test_set, filtering)
+        with open(path_to_results, 'w') as f:
+            json.dump(data, f)

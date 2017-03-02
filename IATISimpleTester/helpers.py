@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import yaml
 from foxpath import Foxpath
 from lxml import etree
@@ -6,14 +8,9 @@ from IATISimpleTester import app
 
 
 # parse a {filters; tests} yaml and generate tests
-def load_expressions_from_yaml(filename):
+def load_from_yaml(filename):
     with open(filename) as f:
-        reader = yaml.load(f)
-    tests = [t for indicator in reader['indicators'] for t in indicator['tests']]
-    filters = None
-    if 'filters' in reader:
-        filters = reader['filters']
-    return tests, filters
+        return yaml.load(f)
 
 # given an expression list and the name of an expression,
 # select it,
@@ -30,6 +27,16 @@ def test_activities(activities, tests_list):
     results_summary = foxpath.summarize_results(activities_results)
 
     return activities_results, results_summary
+
+def group_by(groupings, results):
+    results_by_grouping = defaultdict(int)
+    for grouping, subgroupings in groupings.items():
+        for subgrouping in subgroupings:
+            if subgrouping not in results:
+                continue
+            results_by_grouping[grouping] += results[subgrouping]
+        results_by_grouping[grouping] /= len(subgroupings)
+    return results_by_grouping
 
 def filter_activities(activities, filter_dict=None):
     if filter_dict:

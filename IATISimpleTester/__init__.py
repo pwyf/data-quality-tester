@@ -10,4 +10,4 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-from IATISimpleTester import models, views, tmpl_filters, middleware
+from IATISimpleTester import routes, models, views, middleware, tmpl_filters, exceptions

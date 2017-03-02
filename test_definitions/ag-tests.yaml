@@ -57,8 +57,8 @@ indicators:
       expression: >
        `contact-info` should be present
 
-filters:
- - name: Agriculture sector code
-   expression: >
-    at least one `sector/@code` should be on the Agriculture codelist
-    or at least one `transaction/sector/@code` should be on the Agriculture codelist
+filter:
+  name: Agriculture sector code
+  expression: >
+   at least one `sector/@code` should be on the Agriculture codelist
+   or at least one `transaction/sector/@code` should be on the Agriculture codelist

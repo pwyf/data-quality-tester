@@ -7,10 +7,22 @@ body {
     cursor: pointer;
 }
 
-.panel-title a {
+.panel-group .panel-title a {
   text-decoration: none;
 }
 
-.panel-title .glyphicon {
-  padding-right: 15px;
+.panel-group .panel-title .glyphicon {
+  padding-right: 10px;
+}
+
+.quality-panels {
+  margin-bottom: 20px;
+}
+
+.quality-panels .glyphicon {
+  float: right;
+}
+
+.filter-form {
+  padding-bottom: 20px;
 }
