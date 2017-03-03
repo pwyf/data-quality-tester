@@ -20,10 +20,8 @@ def package_quality(uuid):
     return render_template('quality.html', **context)
 
 def _package_quality(uuid):
-    data = SuppliedData.query.get_or_404(str(uuid))
-
-    context = {}
     params = {'uuid': str(uuid)}
+    data = SuppliedData.query.get_or_404(str(uuid))
 
     # hardcode a testset to use
     test_set_id = app.config['DEFAULT_TEST_SET']
