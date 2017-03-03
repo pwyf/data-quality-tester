@@ -117,12 +117,12 @@ class SuppliedData(db.Model):
 
         self.created = datetime.utcnow()
 
-    def get_results(self, test_set_id, filtering=False):
+    def get_results(self, test_set_id, filtering):
         return Results(self, test_set_id, filtering)
 
 
 class Results():
-    def __init__(self, supplied_data, test_set_id, filtering=False):
+    def __init__(self, supplied_data, test_set_id, filtering):
         # these are set by compute_results()
 
         self.supplied_data = supplied_data
