@@ -126,7 +126,7 @@ indicators:
        and `default-aid-type/@code` is not A02
        and `transaction/aid-type/@code` is not A01
        and `transaction/aid-type/@code` is not A02
-       then at least one `country-budget-items[@vocabulary="1"]/ budget-item/@code`  should be on the BudgetIdentifier codelist
+       then at least one `country-budget-items[@vocabulary="1"]/ budget-item/@code` should be on the BudgetIdentifier codelist
 
     - name: Budget identifier, economic classification
       expression: >
@@ -147,17 +147,17 @@ indicators:
     - name: Collaboration type uses standard codelist
       expression: >
        if `activity-status/@code` is at least 2
-       then at least one `collaboration-type/@code` should be on the   CollaborationType codelist
+       then at least one `collaboration-type/@code` should be on the CollaborationType codelist
 
  - name: Contact details
    tests:
-    - name: Contact information for the activity
+    - name: Contact information
       expression: >
        `contact-info` should be present
 
  - name: Procurement
    tests:
-    - name: Document - Contract
+    - name: Contract document
       expression: >
        if `activity-status/@code` is at least 2
        and `default-aid-type/@code` is not A01
@@ -165,7 +165,7 @@ indicators:
        then `document-link/category[@code="A06"]` should be present
        or `document-link/category[@code="A11"]` should be present
 
-    - name: Document - Tenders
+    - name: Tenders document
       expression: >
        if `activity-status/@code` is at least 2
        and `default-aid-type/@code` is not A01
@@ -192,7 +192,7 @@ indicators:
       expression: >
        `activity-status` should be present
 
-    - name: Activity status, only once
+    - name: Activity status uses standard codelist
       expression: >
        at least one `activity-status/@code` should be on the ActivityStatus codelist
 
@@ -201,22 +201,22 @@ indicators:
     - name: Activity date actual end date
       expression: >
        if `activity-status/@code` is at least 3
-       then `activity-date[@type="end-actual"]|activity-date[@type="4"]` should  be  present
+       then `activity-date[@type="end-actual"]|activity-date[@type="4"]` should be present
 
     - name: Activity date actual start date
       expression: >
        if `activity-status/@code` is at least 2
-       then `activity-date[@type="start-actual"]|activity-date[@type="2"]` should  be  present
+       then `activity-date[@type="start-actual"]|activity-date[@type="2"]` should be present
 
  - name: Planned dates
    tests:
     - name: Activity date planned end date
       expression: >
-       `activity-date[@type="end-planned"]|activity-date[@type="3"]` should be   present
+       `activity-date[@type="end-planned"]|activity-date[@type="3"]` should be present
 
     - name: Activity date planned start date
       expression: >
-       `activity-date[@type="start-planned"]|activity-date[@type="1"]` should be   present
+       `activity-date[@type="start-planned"]|activity-date[@type="1"]` should be present
 
  - name: Description
    tests:
@@ -226,7 +226,7 @@ indicators:
 
     - name: Description, more than 40 chars
       expression: >
-       `description/text()|description/narrative/text()` should have more than  40  characters
+       `description/text()|description/narrative/text()` should have more than 40 characters
 
  - name: Evaluations
    tests:
@@ -246,8 +246,8 @@ indicators:
     - name: Finance type uses standard codelist
       expression: >
        if `activity-status/@code` is at least 2
-       then at least one `default-finance-type/@code` should be on the  FinanceType codelist
-       or at least one `transaction/finance-type/@code` should be on the  FinanceType codelist
+       then at least one `default-finance-type/@code` should be on the FinanceType codelist
+       or at least one `transaction/finance-type/@code` should be on the FinanceType codelist
 
  - name: Flow Type
    tests:
@@ -350,7 +350,7 @@ indicators:
       expression: >
        if `activity-status/@code` is at least 2
        then at least one `default-tied-status/@code` should be on the TiedStatus codelist
-       or at least one `transaction/tied-status/@code` should be on the  TiedStatus codelist
+       or at least one `transaction/tied-status/@code` should be on the TiedStatus codelist
 
  - name: Title
    tests:
