@@ -3,7 +3,7 @@ import os.path
 from flask import abort, flash, jsonify, redirect, request, url_for
 
 from IATISimpleTester import db
-from IATISimpleTester.exceptions import BadUrlException, NoFormDataException
+from IATISimpleTester.lib.exceptions import BadUrlException, NoFormDataException
 from IATISimpleTester.models import SuppliedData
 
 

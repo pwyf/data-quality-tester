@@ -53,13 +53,5 @@ def filter_activities(activities, filter_dict=None):
 
     return activities
 
-# fetch an activity from a file by its IATI identifier
-def fetch_activity(doc, iati_identifier):
-    activities = doc.xpath('//iati-identifier[text()="{}"]/..'.format(iati_identifier))
-    if len(activities) != 1:
-        # something has gone wrong
-        return None
-    return activities[0]
-
 def activity_to_string(activity):
     return etree.tostring(activity, pretty_print=True).strip().decode('utf-8')

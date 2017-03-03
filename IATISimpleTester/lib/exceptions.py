@@ -12,3 +12,7 @@ class FileGoneException(Exception):
 
 class InvalidXMLException(Exception):
     pass
+
+
+class ActivityNotFoundException(Exception):
+    pass

@@ -35,19 +35,28 @@ def colorify(number):
     colorify(0)  # returns 255, 0, 0
     colorify(0.5)  # returns 255, 255, 0
     colorify(1)  # returns 0, 255, 0
-
-    TODO: totaliser colours:
-    b4607a 0%
-    e8984d 25%
-    f8cc4e 50%
-    9faf34 75%
-    6c89b2 100%
     '''
-    b = 0
-    if number < 0.5:
-        r = 255
-        g = int(number / 0.5 * 255)
-    else:
-        r = int(255 * 2 * (1 - number))
-        g = 255
-    return 'rgb({r}, {g}, {b})'.format(r=r, g=g, b=b)
+    # b = 0
+    # if number < 0.5:
+    #    r = 255
+    #    g = int(number / 0.5 * 255)
+    # else:
+    #    r = int(255 * 2 * (1 - number))
+    #    g = 255
+    # return 'rgb({r}, {g}, {b})'.format(r=r, g=g, b=b)
+
+    # Methodology colours:
+    colours = (
+        ((180, 96, 122), 0),
+        ((232, 152, 77), 0.25),
+        ((248, 204, 78), 0.5),
+        ((159, 175, 52), 0.75),
+        ((108, 137, 178), 1),
+    )
+    prev_colour, prev_perc = colours[0]
+    for colour, perc in colours[1:]:
+        if number <= perc:
+            dist = (number - prev_perc) / (perc - prev_perc)
+            return 'rgb({}, {}, {})'.format(*(int(dist * (colour[d] - prev_colour[d]) + prev_colour[d]) for d in range(3)))
+        prev_colour = colour
+        prev_perc = perc

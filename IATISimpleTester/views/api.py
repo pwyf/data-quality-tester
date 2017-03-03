@@ -1,6 +1,6 @@
 from flask import abort, jsonify
 
-from IATISimpleTester.exceptions import BadUrlException, FileGoneException, InvalidXMLException, NoFormDataException
+from IATISimpleTester.lib.exceptions import BadUrlException, FileGoneException, InvalidXMLException, NoFormDataException
 from IATISimpleTester.views import quality, uploader
 
 
