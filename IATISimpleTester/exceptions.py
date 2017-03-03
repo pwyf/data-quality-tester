@@ -4,3 +4,11 @@ class BadUrlException(Exception):
 
 class NoFormDataException(Exception):
     pass
+
+
+class FileGoneException(Exception):
+    pass
+
+
+class InvalidXMLException(Exception):
+    pass
