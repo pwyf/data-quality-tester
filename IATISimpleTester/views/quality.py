@@ -26,10 +26,8 @@ def _package_quality(uuid):
     params = {'uuid': str(uuid)}
 
     # hardcode a testset to use
-    test_set_id = 'pwyf'
-
-    if request.args.get('filter') != 'false':
-        filtering = True
+    test_set_id = app.config['DEFAULT_TEST_SET']
+    filtering = request.args.get('filter') != 'false'
 
     results = data.get_results(test_set_id, filtering)
     context = {
@@ -53,9 +51,6 @@ def activity_quality(uuid, iati_identifier):
     except ActivityNotFoundException:
         return abort(404)
 
-    activity = helpers.fetch_activity(doc, iati_identifier)
-    if not activity:
-        return abort(404)
     context = {
         'activity': helpers.activity_to_string(activity),
         'uuid': uuid,
