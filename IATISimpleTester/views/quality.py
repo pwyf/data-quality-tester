@@ -23,7 +23,6 @@ def _package_quality(uuid):
     params = {'uuid': str(uuid)}
     data = SuppliedData.query.get_or_404(str(uuid))
 
-    # hardcode a testset to use
     test_set_id = app.config['DEFAULT_TEST_SET']
     filtering = request.args.get('filter') != 'false'
 
