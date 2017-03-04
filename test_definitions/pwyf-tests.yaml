@@ -54,6 +54,59 @@ components:
     - Results
 
 indicators:
+ - name: Annual report
+   tests:
+    - name: Annual report
+      expression: >
+       `document-link/category[@code="B01"]` should be present
+
+ - name: Allocation policy
+   tests:
+    - name: Allocation policy
+      expression: >
+       `document-link/category[@code="B04"]` should be present
+
+ - name: Audit
+   tests:
+    - name: Audit
+      expression: >
+       `document-link/category[@code="B06"]` should be present
+
+ - name: Procurement policy
+   tests:
+    - name: Procurement policy
+      expression: >
+       `document-link/category[@code="B05"]` should be present
+
+ - name: Country or sector strategy
+   tests:
+    - name: Country or sector strategy
+      expression: >
+       `document-link/category[@code="B02"]` should be present
+
+ - name: Budget
+   tests:
+    - name: Budget
+      expression: >
+       if `activity-status/@code` is at least 2
+       then `budget` should be available forward annually
+       or `planned-disbursement` should be available forward annually
+
+    - name: Budget, by quarters
+      expression: >
+       if `activity-status/@code` is at least 2
+       then `budget` should be available forward quarterly
+       or `planned-disbursement` should be available forward quarterly
+
+ - name: Budget Docs
+   tests:
+    - name: Budget document
+      expression: >
+       if `activity-status/@code` is at least 2
+       and `default-aid-type/@code` is not A01
+       and `transaction/aid-type/@code` is not A01
+       then `document-link/category[@code="A05"]` should be present
+
  - name: Commitments
    tests:
     - name: Commitments
@@ -76,6 +129,149 @@ indicators:
         transaction/transaction-type[@code="4"]`
        should be present
 
+ - name: Procurement
+   tests:
+    - name: Contract document
+      expression: >
+       if `activity-status/@code` is at least 2
+       and `default-aid-type/@code` is not A01
+       and `transaction/aid-type/@code` is not A01
+       then `document-link/category[@code="A06"]` should be present
+       or `document-link/category[@code="A11"]` should be present
+
+    - name: Tenders document
+      expression: >
+       if `activity-status/@code` is at least 2
+       and `default-aid-type/@code` is not A01
+       and `transaction/aid-type/@code` is not A01
+       then `document-link/category[@code="A10"]` should be present
+
+ - name: Title
+   tests:
+    - name: Title
+      expression: >
+       `title/text()|title/narrative/text()` should be present
+
+    - name: Title, more than 10 chars
+      expression: >
+       `title/text()|title/narrative/text()` should have more than 10 characters
+
+ - name: Description
+   tests:
+    - name: Description
+      expression: >
+       `description/text()|description/narrative/text()` should be present
+
+    - name: Description, more than 40 chars
+      expression: >
+       `description/text()|description/narrative/text()` should have more than 40 characters
+
+ - name: Planned dates
+   tests:
+    - name: Activity date planned end date
+      expression: >
+       `activity-date[@type="end-planned"]|activity-date[@type="3"]` should be present
+
+    - name: Activity date planned start date
+      expression: >
+       `activity-date[@type="start-planned"]|activity-date[@type="1"]` should be present
+
+ - name: Actual dates
+   tests:
+    - name: Activity date actual end date
+      expression: >
+       if `activity-status/@code` is at least 3
+       then `activity-date[@type="end-actual"]|activity-date[@type="4"]` should be present
+
+    - name: Activity date actual start date
+      expression: >
+       if `activity-status/@code` is at least 2
+       then `activity-date[@type="start-actual"]|activity-date[@type="2"]` should be present
+
+ - name: Current status
+   tests:
+    - name: Activity status
+      expression: >
+       `activity-status` should be present
+
+    - name: Activity status uses standard codelist
+      expression: >
+       at least one `activity-status/@code` should be on the ActivityStatus codelist
+
+ - name: Contact details
+   tests:
+    - name: Contact information
+      expression: >
+       `contact-info` should be present
+
+ - name: Sector
+   tests:
+    - name: Sector
+      expression: >
+       `sector` should be present
+       or `transaction/sector` should be present
+
+    - name: Sector uses standard codelist
+      expression: >
+       at least one
+         `sector[@vocabulary="DAC"]/@code |
+          sector[not(@vocabulary)]/@code |
+          sector[@vocabulary="1"]/@code |
+          transaction/sector[@vocabulary="1"]/@code |
+          transaction/sector[not(@vocabulary)]/@code`
+       should be on the Sector codelist
+
+ - name: Sub-national location
+   tests:
+    - name: Location (sub-national)
+      expression: >
+       if `activity-status/@code` is at least 2
+       and `recipient-region/@code` is not 998
+       then `location` should be present
+
+    - name: Location (sub-national) coordinates or point
+      expression: >
+       if `activity-status/@code` is at least 2
+       and `recipient-region/@code` is not 998
+       then `location/coordinates` should be present
+       or `location/point` should be present
+
+ - name: Unique ID
+   tests:
+    - name: Unique IATI Identifier
+      expression: >
+       `iati-identifier` should be present
+
+    - name: IATI Identifier starts with reporting org ref
+      expression: >
+       `iati-identifier/text()`
+       should start with `reporting-org/@ref`
+       or `iati-identifier/text()`
+       should start with `other-identifier[@type="B1"]/@ref`
+
+ - name: Implementer
+   tests:
+    - name: Implementing organisation
+      expression: >
+       if `activity-status/@code` is at least 2
+       then
+       `participating-org[@role="Implementing"] |
+        participating-org[@role="4"]` should be present
+
+ - name: Flow Type
+   tests:
+    - name: Flow type
+      expression: >
+       if `activity-status/@code` is at least 2
+       then `default-flow-type` should be present
+       or `transaction/flow-type` should be present
+
+    - name: Flow type uses standard codelist
+      expression: >
+       if `activity-status/@code` is at least 2
+       then at least one `default-flow-type/@code` should be on the FlowType codelist
+       or at least one `transaction/flow-type/@code` should be on the FlowType codelist
+
  - name: Aid Type
    tests:
     - name: Default aid type
@@ -90,32 +286,45 @@ indicators:
        then at least one `default-aid-type/@code` should be on the AidType codelist
        or at least one `transaction/aid-type/@code` should be on the AidType codelist
 
- - name: Allocation policy
+ - name: Finance Type
    tests:
-    - name: Allocation policy
-      expression: >
-       `document-link/category[@code="B04"]` should be present
-
- - name: Annual report
-   tests:
-    - name: Annual report
-      expression: >
-       `document-link/category[@code="B01"]` should be present
-
- - name: Audit
-   tests:
-    - name: Audit
-      expression: >
-       `document-link/category[@code="B06"]` should be present
-
- - name: Budget Docs
-   tests:
-    - name: Document - Budget document
+    - name: Default finance type
       expression: >
        if `activity-status/@code` is at least 2
-       and `default-aid-type/@code` is not A01
-       and `transaction/aid-type/@code` is not A01
-       then `document-link/category[@code="A05"]` should be present
+       then `default-finance-type` should be present
+       or `transaction/finance-type` should be present
+
+    - name: Finance type uses standard codelist
+      expression: >
+       if `activity-status/@code` is at least 2
+       then at least one `default-finance-type/@code` should be on the FinanceType codelist
+       or at least one `transaction/finance-type/@code` should be on the FinanceType codelist
+
+ - name: Tied Aid Status
+   tests:
+    - name: Tied aid status
+      expression: >
+       if `activity-status/@code` is at least 2
+       then `default-tied-status` should be present
+       or `transaction/tied-status` should be present
+
+    - name: Tied aid status uses standard codelist
+      expression: >
+       if `activity-status/@code` is at least 2
+       then at least one `default-tied-status/@code` should be on the TiedStatus codelist
+       or at least one `transaction/tied-status/@code` should be on the TiedStatus codelist
+
+ - name: Conditions
+   tests:
+    - name: Conditions data
+      expression: >
+       if `activity-status/@code` is at least 2
+       then `conditions` should be present
+
+    - name: Conditions document
+      expression: >
+       if `activity-status/@code` is at least 2
+       then `document-link/category[@code="A04"]` should be present
 
  - name: Budget Identifier
    tests:
@@ -137,255 +346,27 @@ indicators:
        and `transaction/aid-type/@code` is not A02
        then `capital-spend` should be present
 
- - name: Collaboration Type
-   tests:
-    - name: Collaboration type
-      expression: >
-       if `activity-status/@code` is at least 2
-       then `collaboration-type` should be present
-
-    - name: Collaboration type uses standard codelist
-      expression: >
-       if `activity-status/@code` is at least 2
-       then at least one `collaboration-type/@code` should be on the CollaborationType codelist
-
- - name: Contact details
-   tests:
-    - name: Contact information
-      expression: >
-       `contact-info` should be present
-
- - name: Procurement
-   tests:
-    - name: Contract document
-      expression: >
-       if `activity-status/@code` is at least 2
-       and `default-aid-type/@code` is not A01
-       and `transaction/aid-type/@code` is not A01
-       then `document-link/category[@code="A06"]` should be present
-       or `document-link/category[@code="A11"]` should be present
-
-    - name: Tenders document
-      expression: >
-       if `activity-status/@code` is at least 2
-       and `default-aid-type/@code` is not A01
-       and `transaction/aid-type/@code` is not A01
-       then `document-link/category[@code="A10"]` should be present
-
- - name: Budget
-   tests:
-    - name: Budget
-      expression: >
-       if `activity-status/@code` is at least 2
-       then `budget` should be available forward annually
-       or `planned-disbursement` should be available forward annually
-
-    - name: Budget, by quarters
-      expression: >
-       if `activity-status/@code` is at least 2
-       then `budget` should be available forward quarterly
-       or `planned-disbursement` should be available forward quarterly
-
- - name: Current status
-   tests:
-    - name: Activity status
-      expression: >
-       `activity-status` should be present
-
-    - name: Activity status uses standard codelist
-      expression: >
-       at least one `activity-status/@code` should be on the ActivityStatus codelist
-
- - name: Actual dates
-   tests:
-    - name: Activity date actual end date
-      expression: >
-       if `activity-status/@code` is at least 3
-       then `activity-date[@type="end-actual"]|activity-date[@type="4"]` should be present
-
-    - name: Activity date actual start date
-      expression: >
-       if `activity-status/@code` is at least 2
-       then `activity-date[@type="start-actual"]|activity-date[@type="2"]` should be present
-
- - name: Planned dates
-   tests:
-    - name: Activity date planned end date
-      expression: >
-       `activity-date[@type="end-planned"]|activity-date[@type="3"]` should be present
-
-    - name: Activity date planned start date
-      expression: >
-       `activity-date[@type="start-planned"]|activity-date[@type="1"]` should be present
-
- - name: Description
-   tests:
-    - name: Description
-      expression: >
-       `description/text()|description/narrative/text()` should be present
-
-    - name: Description, more than 40 chars
-      expression: >
-       `description/text()|description/narrative/text()` should have more than 40 characters
-
- - name: Evaluations
-   tests:
-    - name: Document - Review of project performance and evaluation document
-      expression: >
-       if `activity-status/@code` is at least 3
-       then `document-link/category[@code="A07"]` should be present
-
- - name: Finance Type
-   tests:
-    - name: Default finance type
-      expression: >
-       if `activity-status/@code` is at least 2
-       then `default-finance-type` should be present
-       or `transaction/finance-type` should be present
-
-    - name: Finance type uses standard codelist
-      expression: >
-       if `activity-status/@code` is at least 2
-       then at least one `default-finance-type/@code` should be on the FinanceType codelist
-       or at least one `transaction/finance-type/@code` should be on the FinanceType codelist
-
- - name: Flow Type
-   tests:
-    - name: Flow type
-      expression: >
-       if `activity-status/@code` is at least 2
-       then `default-flow-type` should be present
-       or `transaction/flow-type` should be present
-
-    - name: Flow type uses standard codelist
-      expression: >
-       if `activity-status/@code` is at least 2
-       then at least one `default-flow-type/@code` should be on the FlowType codelist
-       or at least one `transaction/flow-type/@code` should be on the FlowType codelist
-
- - name: Impact Appraisals
-   tests:
-    - name: Document - Pre- and post-project impact appraisal
-      expression: >
-       if `activity-status/@code` is at least 2
-       then `document-link/category[@code="A01"]` should be present
-
- - name: Implementer
-   tests:
-    - name: Implementing organisation
-      expression: >
-       if `activity-status/@code` is at least 2
-       then
-       `participating-org[@role="Implementing"] |
-        participating-org[@role="4"]` should be present
-
- - name: Sub-national location
-   tests:
-    - name: Location (sub-national)
-      expression: >
-       if `activity-status/@code` is at least 2
-       and `recipient-region/@code` is not 998
-       then `location` should be present
-
-    - name: Location (sub-national) coordinates or point
-      expression: >
-       if `activity-status/@code` is at least 2
-       and `recipient-region/@code` is not 998
-       then `location/coordinates` should be present
-       or `location/point` should be present
-
- - name: MoU
-   tests:
-    - name: Document - Memorandum of understanding document
-      expression: >
-       if `activity-status/@code` is at least 2
-       then `document-link/category[@code="A09"]` should be present
-
  - name: Objectives
    tests:
-    - name: Document - Objectives / Purpose of activity document
+    - name: Objectives / Purpose of activity document
       expression: >
        if `activity-status/@code` is at least 2
        then `document-link/category[@code="A02"]` should be present
        or `description[@type="2"]` should be present
 
- - name: Procurement policy
+ - name: Impact Appraisals
    tests:
-    - name: Procurement policy
-      expression: >
-       `document-link/category[@code="B05"]` should be present
-
- - name: Sector
-   tests:
-    - name: Sector
-      expression: >
-       `sector` should be present
-       or `transaction/sector` should be present
-
-    - name: Sector uses standard codelist
-      expression: >
-       at least one
-         `sector[@vocabulary="DAC"]/@code |
-          sector[not(@vocabulary)]/@code |
-          sector[@vocabulary="1"]/@code |
-          transaction/sector[@vocabulary="1"]/@code |
-          transaction/sector[not(@vocabulary)]/@code`
-       should be on the Sector codelist
-
- - name: Country or sector strategy
-   tests:
-    - name: Country or sector strategy
-      expression: >
-       `document-link/category[@code="B02"]` should be present
-
- - name: Tied Aid Status
-   tests:
-    - name: Tied aid status
+    - name: Pre- and post-project impact appraisal documents
       expression: >
        if `activity-status/@code` is at least 2
-       then `default-tied-status` should be present
-       or `transaction/tied-status` should be present
+       then `document-link/category[@code="A01"]` should be present
 
-    - name: Tied aid status uses standard codelist
-      expression: >
-       if `activity-status/@code` is at least 2
-       then at least one `default-tied-status/@code` should be on the TiedStatus codelist
-       or at least one `transaction/tied-status/@code` should be on the TiedStatus codelist
-
- - name: Title
+ - name: Evaluations
    tests:
-    - name: Title
+    - name: Project performance and evaluation document
       expression: >
-       `title/text()|title/narrative/text()` should be present
-
-    - name: Title, more than 10 chars
-      expression: >
-       `title/text()|title/narrative/text()` should have more than 10 characters
-
- - name: Unique ID
-   tests:
-    - name: Unique IATI Identifier
-      expression: >
-       `iati-identifier` should be present
-
-    - name: IATI Identifier starts with reporting org ref
-      expression: >
-       `iati-identifier/text()`
-       should start with `reporting-org/@ref`
-       or `iati-identifier/text()`
-       should start with `other-identifier[@type="B1"]/@ref`
-
- - name: Conditions
-   tests:
-    - name: Conditions data
-      expression: >
-       if `activity-status/@code` is at least 2
-       then `conditions` should be present
-
-    - name: Conditions document
-      expression: >
-       if `activity-status/@code` is at least 2
-       then `document-link/category[@code="A04"]` should be present
+       if `activity-status/@code` is at least 3
+       then `document-link/category[@code="A07"]` should be present
 
  - name: Results
    tests:
