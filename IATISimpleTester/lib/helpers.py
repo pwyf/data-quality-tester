@@ -1,7 +1,6 @@
 from collections import defaultdict
 
 import yaml
-from foxpath import Foxpath
 from lxml import etree
 
 from IATISimpleTester import app
@@ -20,14 +19,6 @@ def select_expression(expression_list, expression_name, default_expression_name=
         expression_name = default_expression_name
     return expression_name, expression_dicts.get(expression_name)
 
-def test_activities(activities, tests_list):
-    foxpath = Foxpath()
-    foxtests = foxpath.load_tests(tests_list, app.config['CODELISTS'])
-    activities_results = foxpath.test_activities(activities, foxtests)
-    results_summary = foxpath.summarize_results(activities_results)
-
-    return activities_results, results_summary
-
 def group_by(groupings, results):
     results_by_grouping = defaultdict(int)
     for grouping, subgroupings in groupings.items():
@@ -38,20 +29,14 @@ def group_by(groupings, results):
         results_by_grouping[grouping] /= len(subgroupings)
     return results_by_grouping
 
-def filter_activities(activities, filter_dict=None):
-    if filter_dict:
-        foxpath = Foxpath()
-        foxtests = foxpath.load_tests([filter_dict], app.config['CODELISTS'])
-        activities_results = foxpath.test_activities(activities, foxtests)
+def load_tests_and_filter(test_set_id):
+    # load the tests
+    test_set = app.config['TEST_SETS'][test_set_id]
+    test_data = load_from_yaml(test_set['tests_file'])
+    tests = [t for i in test_data['indicators'] for t in i['tests']]
+    # set the filter
+    filter_ = test_data['filter']
+    return tests, filter_
 
-        filtered_activities = []
-        for idx, activity in enumerate(activities):
-            if activities_results[idx]['results'][filter_dict['name']] == 'pass':
-                filtered_activities.append(activity)
-
-        activities = filtered_activities
-
-    return activities
-
-def activity_to_string(activity):
-    return etree.tostring(activity, pretty_print=True).strip().decode('utf-8')
+def slugify(inp):
+    return inp.lower().replace(' ', '-')

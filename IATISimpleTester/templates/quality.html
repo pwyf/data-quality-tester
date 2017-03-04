@@ -12,7 +12,7 @@
   <div class="panel-body">
   {% endif %}
 
-  {% for test_name, result_dict in results.items() %}
+  {% for test_name, result_dict in results.percentages.items() %}
   <div class="col-sm-6 quality-panels">
       <div class="panel panel-primary">
         <div class="panel-heading"><h3 class="panel-title"><a href="{{ url_for('package_quality', **dict(params, component=test_name)) }}">{{ test_name }}</a>

@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from datetime import datetime
 from enum import Enum
 import json
@@ -6,6 +7,7 @@ from os.path import join
 from urllib.parse import urlparse
 import uuid
 
+from foxpath import Foxpath
 from lxml import etree
 import requests
 import rfc6266  # (content-disposition header parser)
@@ -36,6 +38,25 @@ class SuppliedData(db.Model):
     def generate_uuid(self):
        return str(uuid.uuid4())
 
+    def parse(self):
+        try:
+            doc = etree.parse(self.path_to_file())
+        except OSError:
+            raise FileGoneException('Sorry – The file no longer exists.')
+        except etree.XMLSyntaxError:
+            raise InvalidXMLException('The file does not appear to be a valid XML file.')
+        return doc
+
+    def get_activities(self):
+        return self.parse().xpath('//iati-activity')
+
+    def get_activity(self, iati_identifier):
+        doc = self.parse()
+        activities = doc.xpath('//iati-activity/iati-identifier[text()="{}"]/..'.format(iati_identifier))
+        if len(activities) != 1:
+            raise ActivityNotFoundException('The requested activity couldn\'t be found in that file.')
+        return Activity(activities[0])
+
     def is_valid(self, url):
         qualifying = ('scheme', 'netloc',)
         token = urlparse(url)
@@ -47,20 +68,6 @@ class SuppliedData(db.Model):
 
     def path_to_file(self):
         return join(app.config['MEDIA_FOLDER'], self.original_file)
-
-    def parse(self, iati_identifier=None):
-        try:
-            doc = etree.parse(self.path_to_file())
-        except OSError:
-            raise FileGoneException('Sorry – The file no longer exists.')
-        except etree.XMLSyntaxError:
-            raise InvalidXMLException('The file does not appear to be a valid XML file.')
-        if iati_identifier:
-            activity = doc.xpath('//iati-activity/iati-identifier[text()="{}"]/..'.format(iati_identifier))
-            if len(activity) != 1:
-                raise ActivityNotFoundException('The requested activity couldn\'t be found in that file.')
-            return activity[0]
-        return doc.xpath('//iati-activity')
 
     def download(self, url):
         if not self.is_valid(url):
@@ -117,53 +124,67 @@ class SuppliedData(db.Model):
 
         self.created = datetime.utcnow()
 
-    def get_results(self, test_set_id, filtering):
-        return Results(self, test_set_id, filtering)
+    def get_results(self, tests, filter_=None, iati_identifier=None):
+        return Results(self, tests, filter_, iati_identifier)
 
+class Activity():
+    def __init__(self, el):
+        self.el = el
+
+    def __str__(self):
+        return etree.tostring(self.el, pretty_print=True).strip().decode('utf-8')
 
 class Results():
-    def __init__(self, supplied_data, test_set_id, filtering):
-        # these are set by compute_results()
-
+    def __init__(self, supplied_data, tests, filter_=None, iati_identifier=None):
         self.supplied_data = supplied_data
-        self.test_set_id = test_set_id
-        self.tests, self.filtering, self.filter = self.load_tests_and_filter(filtering)
-        data = self.load()
-        if not data:
-            data = self.compute_results()
-        self.total_activities = data['total_activities']
-        self.total_filtered_activities = data['total_filtered_activities']
-        self.by_test = data['by_test']
-        self.save()
+        self.tests = tests
+        self.filter_ = filter_
+        self.iati_identifier = iati_identifier
+        self.all = self.generate(tests, filter_, iati_identifier)
+        summary = Foxpath.summarize_results(self.all)
+        self.by_test = OrderedDict(zip([x['name'] for x in tests], summary))
 
-    def get_path(self):
-        filename = 'results-{test_set_id}-{filter_name}.json'.format(
-            test_set_id=self.test_set_id,
-            filter_name='filtered' if self.filtering else 'all',
-        )
-        return join(self.supplied_data.upload_dir(), filename)
-
-    def load(self):
-        path_to_results = self.get_path()
+    def generate(self, tests, filter_, iati_identifier):
+        foxpath = Foxpath()
+        foxtests = foxpath.load_tests(tests, app.config['CODELISTS'])
+        if iati_identifier:
+            activity = self.get_activity(iati_identifier)
+            results = foxpath.test_activities([activity], foxtests)
         try:
-            with open(path_to_results) as f:
-                j = json.load(f)
+            results = self.load_cache(filter_ is not None)
         except FileNotFoundError:
-            return False
-        return j
+            activities = self.supplied_data.get_activities()
+            if filter_:
+                activities = self.filter_activities(activities, filter_)
+            results = foxpath.test_activities(activities, foxtests)
+            self.save_cache(results, filter_ is not None)
+        return results
 
-    def load_tests_and_filter(self, filtering):
-        # load the tests
-        test_set = app.config['TEST_SETS'][self.test_set_id]
-        test_data = helpers.load_from_yaml(test_set['tests_file'])
-        tests = [t for i in test_data['indicators'] for t in i['tests']]
-        # set the filter
-        if filtering and 'filter' in test_data:
-            filter_ = test_data['filter']
-        else:
-            filter_ = None
-            filtering = False
-        return tests, filtering, filter_
+    def filter_activities(self, activities, filter_):
+        foxpath = Foxpath()
+        foxtests = foxpath.load_tests([filter_], app.config['CODELISTS'])
+        activities_results = foxpath.test_activities(activities, foxtests)
+
+        filtered_activities = []
+        for idx, activity in enumerate(activities):
+            if activities_results[idx]['results'][0] == 1:
+                filtered_activities.append(activity)
+
+        return filtered_activities
+
+    def path_to_file(self, filtering):
+        return join(self.supplied_data.upload_dir(), 'results-pwyf-{}.json').format('filtered' if filtering else 'all')
+
+    def save_cache(self, results, filtering):
+        filepath = self.path_to_file(filtering)
+        with open(filepath, 'w') as f:
+            json.dump(results, f)
+
+    def load_cache(self, filtering):
+        filepath = self.path_to_file(filtering)
+        with open(filepath) as f:
+            j = json.load(f)
+        return j
 
     # page = int(request.args.get('page', 1))
     # offset = (page - 1) * app.config['PER_PAGE']
@@ -182,29 +203,12 @@ class Results():
     #     perc_by_component = helpers.group_by(components, perc_by_indicator)
     #     context['results'] = perc_by_component
 
-    def compute_results(self):
-        all_activities = self.supplied_data.parse()
-        total_activities = len(all_activities)
+    def get_fails(self):
+        for activity in self.all:
+            pass
 
-        total_filtered_activities = None
-        if self.filter:
-            filtered_activities = helpers.filter_activities(all_activities, self.filter)
-            total_filtered_activities = len(filtered_activities)
-
-        activities = filtered_activities if self.filtering else all_activities
-
-        activities_results, by_test = helpers.test_activities(activities, self.tests)
-        return {
-            'total_activities': total_activities,
-            'total_filtered_activities': total_filtered_activities,
-            'by_test': by_test,
-        }
-
-    def save(self):
-        with open(self.get_path(), 'w') as f:
-            data = {
-                'total_activities': self.total_activities,
-                'total_filtered_activities': self.total_filtered_activities,
-                'by_test': self.by_test,
-            }
-            json.dump(data, f)
+    @property
+    def percentages(self):
+        print(self.by_test)
+        percs = [(k, v[1] / (v[1] + v[0])) for k, v in self.by_test.items() if v[1] + v[0] > 0]
+        return OrderedDict(sorted(percs, key=lambda x: x[1], reverse=True))

@@ -1,6 +1,6 @@
 from flask import abort, jsonify
 
-from IATISimpleTester.lib.exceptions import BadUrlException, FileGoneException, InvalidXMLException, NoFormDataException
+from IATISimpleTester.lib.exceptions import ActivityNotFoundException, BadUrlException, FileGoneException, InvalidXMLException, NoFormDataException
 from IATISimpleTester.views import quality, uploader
 
 
@@ -13,10 +13,20 @@ def package_quality(uuid):
             'error': str(e),
         }
         return jsonify(response), 500
+    response['data']['results'] = response['data']['results'].all
     return jsonify(response)
 
 def activity_quality(uuid, iati_identifier):
-    pass
+    try:
+        response = quality._activity_quality(uuid, iati_identifier)
+    except ActivityNotFoundException as e:
+        response = {
+            'success': False,
+            'error': str(e),
+        }
+        return jsonify(response), 404
+    response['data']['results'] = response['data']['results'].by_test
+    return jsonify(response)
 
 def upload():
     try:

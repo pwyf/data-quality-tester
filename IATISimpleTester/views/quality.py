@@ -1,12 +1,10 @@
-from collections import OrderedDict
-
 from lxml import etree
 from flask import abort, flash, jsonify, redirect, render_template, request, url_for
 
 from IATISimpleTester import app, db
 from IATISimpleTester.lib import helpers
 from IATISimpleTester.lib.exceptions import FileGoneException, InvalidXMLException, ActivityNotFoundException
-from IATISimpleTester.models import SuppliedData
+from IATISimpleTester.models import SuppliedData, Results
 
 
 def package_quality(uuid):
@@ -26,14 +24,15 @@ def _package_quality(uuid):
     test_set_id = app.config['DEFAULT_TEST_SET']
     filtering = request.args.get('filter') != 'false'
 
-    results = data.get_results(test_set_id, filtering)
-    context = {
-        'total_activities': results.total_activities,
-        'total_filtered_activities': results.total_filtered_activities,
-    }
+    tests, filter_ = helpers.load_tests_and_filter(test_set_id)
 
-    perc_by_test = OrderedDict([(k, v['pass'] / (v['pass'] + v['fail'])) for k, v in results.by_test.items() if v['pass'] + v['fail'] > 0])
-    context['results'] = perc_by_test
+    if not filtering:
+        filter_ = None
+
+    results = data.get_results(tests, filter_)
+    context = {
+        'results': results,
+    }
 
     return {
         'success': True,
@@ -42,17 +41,39 @@ def _package_quality(uuid):
     }
 
 def activity_quality(uuid, iati_identifier):
-    data = SuppliedData.query.get_or_404(str(uuid))
     try:
-        activity = data.parse(iati_identifier)
+        response = _activity_quality(uuid, iati_identifier)
     except ActivityNotFoundException:
         return abort(404)
+    context = response['data']
+    context['params'] = response['params']
+    return render_template('activity.html', **context)
+
+def _activity_quality(uuid, iati_identifier):
+    params = {
+        'uuid': str(uuid),
+        'iati_identifier': iati_identifier,
+    }
+    data = SuppliedData.query.get_or_404(str(uuid))
+
+    test_set_id = app.config['DEFAULT_TEST_SET']
+    filtering = request.args.get('filter') != 'false'
+
+    tests, filter_ = helpers.load_tests_and_filter(test_set_id)
+
+    activity = data.get_activity(iati_identifier)
+    results = data.get_results(tests, filter_)
 
     context = {
-        'activity': helpers.activity_to_string(activity),
-        'uuid': uuid,
+        'results': results,
+        'activity': str(activity),
     }
-    return render_template('activity.html', **context)
+
+    return {
+        'success': True,
+        'data': context,
+        'params': params,
+    }
 
 def explore(uuid):
     data = SuppliedData.query.get_or_404(str(uuid))
