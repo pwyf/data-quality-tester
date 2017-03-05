@@ -4,55 +4,55 @@ indicators:
     - name: result indicator start dates should be chronologically before end dates
       expression: >
        `result/indicator/period/period-start/@iso-date`
-       should be before
+       should be chronologically before
        `result/indicator/period/period-end/@iso-date`
 
     - name: recipient-org-budget start dates should be chronologically before end dates
       expression: >
        `recipient-org-budget/period-start/@iso-date`
-       should be before
+       should be chronologically before
        `recipient-org-budget/period-end/@iso-date`
 
     - name: recipient-region-budget start dates should be chronologically before end dates
       expression: >
        `recipient-region-budget/period-start/@iso-date`
-       should be before
+       should be chronologically before
        `recipient-region-budget/period-end/@iso-date`
 
     - name: planned-disbursement start dates should be chronologically before end dates
       expression: >
        `planned-disbursement/period-start/@iso-date`
-       should be before
+       should be chronologically before
        `planned-disbursement/period-end/@iso-date`
 
     - name: recipient-country-budget start dates should be chronologically before end dates
       expression: >
        `recipient-country-budget/period-start/@iso-date`
-       should be before
+       should be chronologically before
        `recipient-country-budget/period-end/@iso-date`
 
     - name: total-expenditure start dates should be chronologically before end dates
       expression: >
        `total-expenditure/period-start/@iso-date`
-       should be before
+       should be chronologically before
        `total-expenditure/period-end/@iso-date`
 
     - name: planned start dates should be chronologically before end dates
       expression: >
        `activity-date[@type='1']/@iso-date`
-       should be before
+       should be chronologically before
        `activity-date[@type='3']/@iso-date`
 
     - name: actual start dates should be chronologically before end dates
       expression: >
        `activity-date[@type='2']/@iso-date`
-       should be before
+       should be chronologically before
        `activity-date[@type='4']/@iso-date`
 
     - name: budget start dates should be chronologically before end dates
       expression: >
        `budget/period-start/@iso-date`
-       should be before
+       should be chronologically before
        `budget/period-end/@iso-date`
 
  - name: Actual (known) dates should be in the past
