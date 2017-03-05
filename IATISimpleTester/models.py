@@ -209,6 +209,5 @@ class Results():
 
     @property
     def percentages(self):
-        print(self.by_test)
         percs = [(k, v[1] / (v[1] + v[0])) for k, v in self.by_test.items() if v[1] + v[0] > 0]
         return OrderedDict(sorted(percs, key=lambda x: x[1], reverse=True))
