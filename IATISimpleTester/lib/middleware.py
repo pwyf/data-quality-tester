@@ -25,10 +25,6 @@ def generate_csrf_token():
 def ceil(val):
     return maths.ceil(val)
 
-@app.template_global('length')
-def length(val):
-    return len(val)
-
 @app.errorhandler(404)
 def not_found(e):
     return generic_error(e)
