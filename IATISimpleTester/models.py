@@ -200,9 +200,9 @@ class Component():
 class Results():
     def __init__(self, supplied_data, test_set, current_tests=None, filter_=None):
         self.supplied_data = supplied_data
-        self.tests = test_set.all_tests
-        self.filter_ = filter_
-        self.all, self.meta = self._test_and_cache(self.tests, self.filter_)
+        self.test_set = test_set
+        self.filter = filter_
+        self.all, self.meta = self._test_and_cache(test_set.all_tests)
         if current_tests:
             for x in self.all:
                 x['results'] = dict(filter(lambda y: y[0] in current_tests, x['results'].items()))
@@ -221,21 +221,21 @@ class Results():
             results = list(filter(lambda x: x['score'] == score, results))
         return results
 
-    def _test_and_cache(self, tests, filter_):
+    def _test_and_cache(self, tests):
         meta = {}
         foxpath = Foxpath()
         foxtests = foxpath.load_tests(tests, app.config['CODELISTS'])
         try:
-            results = self.load_cache(self.path_to_file(filter_ is not None))
+            results = self.load_cache(self.path_to_file())
         except FileNotFoundError:
             activities = self.supplied_data.get_activities()
             meta['total_activities'] = len(activities)
-            if filter_:
-                activities = Results.filter_activities(activities, filter_)
+            if self.filter:
+                activities = Results.filter_activities(activities, self.filter)
                 meta['total_filtered_activities'] = len(activities)
                 self.save_cache(meta, join(self.supplied_data.upload_dir(), 'meta.json'))
             results = foxpath.test_activities(activities, foxtests, explain=True)
-            self.save_cache(results, self.path_to_file(filter_ is not None))
+            self.save_cache(results, self.path_to_file())
 
         if 'total_filtered_activities' not in meta:
             try:
@@ -258,8 +258,10 @@ class Results():
 
         return filtered_activities
 
-    def path_to_file(self, filtering):
-        return join(self.supplied_data.upload_dir(), 'results-pwyf-{}.json').format('filtered' if filtering else 'all')
+    def path_to_file(self):
+        filtering = 'filtered' if self.filter is not None else 'all'
+        filename = 'results-{test_set_id}-{filtering}.json'.format(test_set_id=self.test_set.id, filtering=filtering)
+        return join(self.supplied_data.upload_dir(), filename)
 
     def save_cache(self, results, filepath):
         with open(filepath, 'w') as f:

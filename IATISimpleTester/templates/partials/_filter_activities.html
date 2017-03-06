@@ -11,7 +11,7 @@
         <option value="true"
         {%- if not params['filter'] == 'false' %} selected="selected"
         {%- endif -%}
-        >Current activities ({{ results['meta']['total_filtered_activities']|commify }} in total)</option>
+        >{{ test_set.filter['name'] }} ({{ results['meta']['total_filtered_activities']|commify }} in total)</option>
         <option value="false"
         {%- if params['filter'] == 'false' %} selected="selected"
         {%- endif -%}

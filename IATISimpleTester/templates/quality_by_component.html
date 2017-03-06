@@ -23,7 +23,10 @@
               {{ results.summary_by_test[test_name][1]|commify }}
               out of
               {{ (results.summary_by_test[test_name][0] + results.summary_by_test[test_name][1])|commify }}
-              relevant activities pass this test.
+              {% if test_set.filter and not params['filter'] == 'false' %}
+              relevant
+              {% endif %}
+              activities pass this test.
             </div>
           </div>
       </div>
