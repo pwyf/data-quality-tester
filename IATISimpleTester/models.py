@@ -205,6 +205,14 @@ class Results():
         # summary by test
         self.summary_by_test = Foxpath.summarize_results(self.all)
 
+    def for_test(self, test_name):
+        return [{
+            'iati-identifier': x['iati-identifier'],
+            'hierarchy': x['hierarchy'],
+            'score': x['results'][test_name][0],
+            'explanation': x['results'][test_name][1],
+        } for x in self.all]
+
     def _test_and_cache(self, tests, filter_):
         meta = {}
         foxpath = Foxpath()

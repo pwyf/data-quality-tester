@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<h4>{{ params['test'] }}</h4>
+
+<pre><code>{{ test_set.get_test(params['test'])['expression'] }}</code></pre>
+
+{% for result in results_for_test %}
+  <h4>{{ result['iati-identifier'] }}</h4>
+  <p>
+    {% if result['score'] != 1 %}
+    {{result['explanation']}}
+    {% endif %}
+  </p>
+{% endfor %}
+{% endblock %}

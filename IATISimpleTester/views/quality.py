@@ -95,7 +95,29 @@ def package_quality_by_test(uuid, test):
     return render_template('quality_by_test.html', **context)
 
 def _package_quality_by_test(uuid, test):
-    pass
+    params = {
+        'uuid': str(uuid),
+        'test': test,
+    }
+    params.update(request.args)
+    supplied_data = SuppliedData.query.get_or_404(str(uuid))
+    filter_activities = request.args.get('filter') != 'false'
+    test_set = TestSet(request.args.get('test_set'))
+
+    filter_ = test_set.filter if filter_activities else None
+
+    results = Results(supplied_data, test_set, [test], filter_)
+    results_for_test = results.for_test(params['test'])
+    context = {
+        'results_for_test': results_for_test,
+        'test_set': test_set,
+    }
+
+    return {
+        'success': True,
+        'data': context,
+        'params': params,
+    }
 
 def activity_quality(uuid, iati_identifier):
     try:
