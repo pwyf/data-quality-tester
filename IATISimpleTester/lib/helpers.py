@@ -18,6 +18,5 @@ def slugify(inp):
     return inp.lower().replace(' ', '-')
 
 def pprint(explanation):
-    print(explanation)
     explanation = explanation.strip().capitalize().replace('\n', '<br>') + '.'
     return re.sub(r'`([^`]*)`', r'<code>\1</code>', explanation)
