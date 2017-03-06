@@ -118,20 +118,20 @@ indicators:
    tests:
     - name: IATI identifier (regex)
       expression: >
-       `iati-identifier/text()` should match the regex ^[^\/\&\|\?]+$
+       `iati-identifier/text()` should match the regex `^[^\/\&\|\?]+$`
 
     - name: Reporting organisation reference (regex)
       expression: >
-       `reporting-org/@ref` should match the regex ^[^\/\&\|\?]+$
+       `reporting-org/@ref` should match the regex `^[^\/\&\|\?]+$`
 
     - name: Participating organisation reference (regex)
       expression: >
-       `participating-org/@ref` should match the regex ^[^\/\&\|\?]+$
+       `participating-org/@ref` should match the regex `^[^\/\&\|\?]+$`
 
     - name: Provider organisation reference (regex)
       expression: >
-       `transaction/provider-org/@ref` should match the regex ^[^\/\&\|\?]+$
+       `transaction/provider-org/@ref` should match the regex `^[^\/\&\|\?]+$`
 
     - name: Receiver organisation reference (regex)
       expression: >
-       `transaction/receiver-org/@ref` should match the regex [^\/\&\|\?]+
+       `transaction/receiver-org/@ref` should match the regex `[^\/\&\|\?]+`
