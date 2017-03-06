@@ -23,8 +23,8 @@ def _package_overview(uuid):
     params.update(dict(request.args.items()))
 
     supplied_data = SuppliedData.query.get_or_404(str(uuid))
-    filter_activities = request.args.get('filter') != 'false'
-    test_set_id = request.args.get('test_set')
+    filter_activities = params.get('filter') != 'false'
+    test_set_id = params.get('test_set')
     test_set = TestSet(test_set_id)
 
     all_tests = test_set.all_tests
@@ -65,8 +65,8 @@ def _package_quality_by_component(uuid, component_filter):
     params = {'uuid': str(uuid), 'component': component_filter}
     params.update(dict(request.args.items()))
     supplied_data = SuppliedData.query.get_or_404(str(uuid))
-    filter_activities = request.args.get('filter') != 'false'
-    test_set = TestSet(request.args.get('test_set'))
+    filter_activities = params.get('filter') != 'false'
+    test_set = TestSet(params.get('test_set'))
 
     component = test_set.components.get(component_filter)
     if not component:
@@ -102,8 +102,8 @@ def _package_quality_by_test(uuid, test):
     }
     params.update(dict(request.args.items()))
     supplied_data = SuppliedData.query.get_or_404(str(uuid))
-    filter_activities = request.args.get('filter') != 'false'
-    test_set = TestSet(request.args.get('test_set'))
+    filter_activities = params.get('filter') != 'false'
+    test_set = TestSet(params.get('test_set'))
 
     filter_ = test_set.filter if filter_activities else None
 
@@ -135,8 +135,8 @@ def _activity_quality(uuid, iati_identifier):
         'iati_identifier': iati_identifier,
     }
     supplied_data = SuppliedData.query.get_or_404(str(uuid))
-    filter_activities = request.args.get('filter') != 'false'
-    component_filter = request.args.get('component')
+    filter_activities = params.get('filter') != 'false'
+    component_filter = params.get('component')
 
     test_set_id = app.config['DEFAULT_TEST_SET']
     test_set = TestSet(test_set_id)
