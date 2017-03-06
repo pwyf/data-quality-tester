@@ -71,13 +71,13 @@ indicators:
 
  - name: Budget
    tests:
-    - name: Budget
+    - name: Forward budget available
       expression: >
        if `activity-status/@code` is at least 2
        then `budget` should be available forward annually
        or `planned-disbursement` should be available forward annually
 
-    - name: Budget, by quarters
+    - name: Forward budget available by quarters
       expression: >
        if `activity-status/@code` is at least 2
        then `budget` should be available forward quarterly
