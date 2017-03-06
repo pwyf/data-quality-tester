@@ -66,3 +66,7 @@ body {
 .sub-header {
   padding-top: 20px;
 }
+
+#test-set-controls {
+  padding-bottom: 20px;
+}
