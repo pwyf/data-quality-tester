@@ -1,5 +1,10 @@
+components:
+ - name: Overview
+   indicators:
+    - Overview
+
 indicators:
- - name: Agriculture
+ - name: Overview
    tests:
     - name: Reporting org name should be present
       expression: >
@@ -58,7 +63,7 @@ indicators:
        `contact-info` should be present
 
 filter:
-  name: Agriculture sector code
+  name: Agricultural activities
   expression: >
    at least one `sector/@code` should be on the Agriculture codelist
    or at least one `transaction/sector/@code` should be on the Agriculture codelist
