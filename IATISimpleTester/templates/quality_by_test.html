@@ -29,6 +29,7 @@
   <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane fade in active" id="passing">
+      <ul>
       {% for result in passing_results %}
         <li>
           <h4><a href="#">{{ result['title'] }}</a> <code>{{ result['iati-identifier'] }}</code></h4>
@@ -37,6 +38,7 @@
           </p>
         </li>
       {% endfor %}
+      </ul>
     </div>
     <div role="tabpanel" class="tab-pane fade" id="failing">
       <ul>
@@ -51,6 +53,7 @@
       </ul>
     </div>
     <div role="tabpanel" class="tab-pane fade" id="not-relevant">
+      <ul>
       {% for result in not_relevant_results %}
         <li>
           <h4><a href="#">{{ result['title'] }}</a> <code>{{ result['iati-identifier'] }}</code></h4>
@@ -59,6 +62,7 @@
           </p>
         </li>
       {% endfor %}
+      </ul>
     </div>
   </div>
 
