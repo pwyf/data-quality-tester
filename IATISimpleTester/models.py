@@ -158,8 +158,8 @@ class Activity():
 
 class TestSet():
     def __init__(self, test_set_id):
-        default_test_set = app.config['TEST_SETS'][app.config['DEFAULT_TEST_SET']]
-        test_set = app.config['TEST_SETS'].get(test_set_id, default_test_set)
+        self.id = test_set_id if test_set_id in app.config['TEST_SETS'] else app.config['DEFAULT_TEST_SET']
+        test_set = app.config['TEST_SETS'][self.id]
         self.name = test_set['name']
         self.description = test_set['description']
         with open(test_set['filename']) as f:
