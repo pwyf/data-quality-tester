@@ -56,3 +56,13 @@ body {
   list-style: none;
   padding-bottom: 20px;
 }
+
+#pwyf-logo {
+  float: right;
+  padding-top: 20px;
+  width: 300px;
+}
+
+.sub-header {
+  padding-top: 20px;
+}
