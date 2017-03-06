@@ -17,15 +17,50 @@
   </div>
 </div>
 
-<p>The following {{ failing_results|count }} {{ failing_results|count|pluralize('activity fails', 'activities fail') }} this test:</p>
-<ul>
-{% for result in failing_results %}
-  <li>
-    <h4>{{ result['iati-identifier'] }}</h4>
-    <p>
-      {{ result['explanation']|safe }}
-    </p>
-  </li>
-{% endfor %}
-</ul>
+<div id="results-tabs">
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#passing" aria-controls="home" role="tab" data-toggle="tab">Passing ({{ total_passing }} {{ total_passing|pluralize('activity', 'activities') }})</a></li>
+    <li role="presentation"><a href="#failing" aria-controls="profile" role="tab" data-toggle="tab">Failing ({{ total_failing }} {{ total_failing|pluralize('activity', 'activities') }})</a></li>
+    <li role="presentation"><a href="#not-relevant" aria-controls="messages" role="tab" data-toggle="tab">Not relevant ({{ total_not_relevant }} {{ total_not_relevant|pluralize('activity', 'activities') }})</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane fade in active" id="passing">
+      {% for result in passing_results %}
+        <li>
+          <h4><a href="#">{{ result['title'] }}</a> <code>{{ result['iati-identifier'] }}</code></h4>
+          <p>
+            {{ result['explanation']|safe }}
+          </p>
+        </li>
+      {% endfor %}
+    </div>
+    <div role="tabpanel" class="tab-pane fade" id="failing">
+      <ul>
+      {% for result in failing_results %}
+        <li>
+          <h4><a href="#">{{ result['title'] }}</a> <code>{{ result['iati-identifier'] }}</code></h4>
+          <p>
+            {{ result['explanation']|safe }}
+          </p>
+        </li>
+      {% endfor %}
+      </ul>
+    </div>
+    <div role="tabpanel" class="tab-pane fade" id="not-relevant">
+      {% for result in not_relevant_results %}
+        <li>
+          <h4><a href="#">{{ result['title'] }}</a> <code>{{ result['iati-identifier'] }}</code></h4>
+          <p>
+            {{ result['explanation']|safe }}
+          </p>
+        </li>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
 {% endblock %}

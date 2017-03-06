@@ -108,9 +108,27 @@ def _package_quality_by_test(uuid, test):
     filter_ = test_set.filter if filter_activities else None
 
     results = Results(supplied_data, test_set, [test], filter_)
+
+    passing_results = results.for_test(params['test'], score=1)
+    total_passing = len(passing_results)
     failing_results = results.for_test(params['test'], score=0)
+    total_failing = len(failing_results)
+    not_relevant_results = results.for_test(params['test'], score=-1)
+    total_not_relevant = len(not_relevant_results)
+
+    per_page = app.config['PER_PAGE']
+    # page = int(params.get('page', 1))
+    # offset = (page - 1) * per_page
+    # pagination = Pagination(page, app.config['PER_PAGE'], len(failing_results))
+    # activities_results = activities_results[offset:offset + per_page]
+
     context = {
-        'failing_results': failing_results,
+        'passing_results': passing_results[:per_page],
+        'total_passing': total_passing,
+        'failing_results': failing_results[:per_page],
+        'total_failing': total_failing,
+        'not_relevant_results': not_relevant_results[:per_page],
+        'total_not_relevant': total_not_relevant,
         'test_set': test_set,
     }
 

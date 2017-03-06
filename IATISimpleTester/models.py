@@ -211,6 +211,7 @@ class Results():
 
     def for_test(self, test_name, score=None):
         results = [{
+            'title': x['title'],
             'iati-identifier': x['iati-identifier'],
             'hierarchy': x['hierarchy'],
             'score': x['results'][test_name][0],
