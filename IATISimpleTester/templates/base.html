@@ -34,10 +34,16 @@
       {% block body %}{% endblock %}
     </div>
 
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Publish What You Fund, Southbank House, Black Prince Road, London, SE1 7SJ<br>UK Company Registration Number 07676886 (England and Wales); Registered Charity Number 1158362 (England and Wales)</p>
+      </div>
+    </footer>
+
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     {% block extra_js %}{% endblock %}
   </body>

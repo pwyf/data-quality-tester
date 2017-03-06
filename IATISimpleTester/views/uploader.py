@@ -14,7 +14,7 @@ def upload():
         flash(str(e), 'danger')
         return redirect(url_for('home'))
 
-    return redirect(url_for('explore', uuid=supplied_data.id))
+    return redirect(url_for('package_overview', uuid=supplied_data.id))
 
 def _upload():
     if request.method == 'POST':

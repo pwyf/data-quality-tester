@@ -1,37 +1,47 @@
+from collections import OrderedDict
 from lxml import etree
 from flask import abort, flash, jsonify, redirect, render_template, request, url_for
 
 from IATISimpleTester import app, db
 from IATISimpleTester.lib import helpers
 from IATISimpleTester.lib.exceptions import FileGoneException, InvalidXMLException, ActivityNotFoundException
-from IATISimpleTester.models import SuppliedData, Results
+from IATISimpleTester.models import SuppliedData, Results, TestSet
 
 
-def package_quality(uuid):
+def package_overview(uuid):
     try:
-        response = _package_quality(uuid)
+        response = _package_overview(uuid)
     except (FileGoneException, InvalidXMLException) as e:
         flash(str(e), 'danger')
         return redirect(url_for('home'))
     context = response['data']
     context['params'] = response['params']
-    return render_template('quality.html', **context)
+    return render_template('overview.html', **context)
 
-def _package_quality(uuid):
+def _package_overview(uuid):
     params = {'uuid': str(uuid)}
-    data = SuppliedData.query.get_or_404(str(uuid))
+    supplied_data = SuppliedData.query.get_or_404(str(uuid))
+    filter_activities = request.args.get('filter') != 'false'
 
     test_set_id = app.config['DEFAULT_TEST_SET']
-    filtering = request.args.get('filter') != 'false'
+    test_set = TestSet(test_set_id)
 
-    tests, filter_ = helpers.load_tests_and_filter(test_set_id)
+    all_tests = test_set.all_tests
+    filter_ = test_set.filter if filter_activities else None
 
-    if not filtering:
-        filter_ = None
-
-    results = data.get_results(tests, filter_)
+    results = Results(supplied_data, all_tests, None, filter_)
+    percentages = results.percentages
+    components = OrderedDict()
+    for component in test_set.components.values():
+        items = [percentages[test] for test in component.tests if test in percentages]
+        if len(items) == 0:
+            continue
+        components[component.name] = sum(items) / len(items)
     context = {
         'results': results,
+        'components': components,
+        'name': supplied_data.name,
+        'test_set': test_set,
     }
 
     return {
@@ -39,6 +49,55 @@ def _package_quality(uuid):
         'data': context,
         'params': params,
     }
+
+def package_quality_by_component(uuid, component):
+    try:
+        response = _package_quality_by_component(uuid, component)
+    except (FileGoneException, InvalidXMLException) as e:
+        flash(str(e), 'danger')
+        return redirect(url_for('home'))
+    context = response['data']
+    context['params'] = response['params']
+    return render_template('quality_by_component.html', **context)
+
+def _package_quality_by_component(uuid, component_filter):
+    params = {'uuid': str(uuid), 'component': component_filter}
+    supplied_data = SuppliedData.query.get_or_404(str(uuid))
+    filter_activities = request.args.get('filter') != 'false'
+
+    test_set_id = app.config['DEFAULT_TEST_SET']
+    test_set = TestSet(test_set_id)
+
+    component = test_set.components.get(component_filter)
+    if not component:
+        return abort(404)
+    all_tests = test_set.all_tests
+    filter_ = test_set.filter if filter_activities else None
+
+    results = Results(supplied_data, all_tests, component, filter_)
+    context = {
+        'results': results,
+        'test_set': test_set,
+    }
+
+    return {
+        'success': True,
+        'data': context,
+        'params': params,
+    }
+
+def package_quality_by_test(uuid, test):
+    try:
+        response = _package_quality_by_test(uuid, test)
+    except (FileGoneException, InvalidXMLException) as e:
+        flash(str(e), 'danger')
+        return redirect(url_for('home'))
+    context = response['data']
+    context['params'] = response['params']
+    return render_template('quality_by_test.html', **context)
+
+def _package_quality_by_test(uuid, test):
+    pass
 
 def activity_quality(uuid, iati_identifier):
     try:
@@ -54,19 +113,24 @@ def _activity_quality(uuid, iati_identifier):
         'uuid': str(uuid),
         'iati_identifier': iati_identifier,
     }
-    data = SuppliedData.query.get_or_404(str(uuid))
+    supplied_data = SuppliedData.query.get_or_404(str(uuid))
+    filter_activities = request.args.get('filter') != 'false'
+    component_filter = request.args.get('component')
 
     test_set_id = app.config['DEFAULT_TEST_SET']
-    filtering = request.args.get('filter') != 'false'
+    test_set = TestSet(test_set_id)
 
-    tests, filter_ = helpers.load_tests_and_filter(test_set_id)
+    component = test_set.components.get(component_filter)
+    tests = component.tests if component else test_set.all_tests
+    filter_ = test_set.filter if filter_activities else None
 
-    activity = data.get_activity(iati_identifier)
-    results = data.get_results(tests, filter_)
+    activity = supplied_data.get_activity(iati_identifier)
+    results = activity.test(tests)
 
     context = {
         'results': results,
         'activity': str(activity),
+        'iati_identifier': iati_identifier,
     }
 
     return {
@@ -74,7 +138,3 @@ def _activity_quality(uuid, iati_identifier):
         'data': context,
         'params': params,
     }
-
-def explore(uuid):
-    data = SuppliedData.query.get_or_404(str(uuid))
-    return jsonify({'success': True})

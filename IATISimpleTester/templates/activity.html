@@ -3,21 +3,29 @@
 
 {% block body %}
 <div class="row">
-  <h4><a href="{{ url_for('package_quality', uuid=params['uuid']) }}">Go back</a></h4>
+  <h4>{{ iati_identifier }}</h4>
+  <p><a href="{{ url_for('package_overview', uuid=params['uuid']) }}">Back to overview</a></p>
 
-  {% for test_name, result_dict in results.percentages.items() %}
-  <div class="col-sm-6 quality-panels">
-      <div class="panel panel-primary">
-        <div class="panel-heading"><h3 class="panel-title"><a href="{{ url_for('package_quality', **dict(params, component=test_name)) }}">{{ test_name }}</a>
-        <a href="#"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3></div>
-        <div class="panel-body">
-          {{ totaliser(result_dict) }}
-        </div>
-      </div>
-  </div>
+  {% if results[1] != [] %}
+  <h4>The activity passes the following {{ length(results[1]) }} tests:</h4>
+  <ul>
+  {% for test_name, explain in results[1] %}
+    <li>{{ test_name }}</li>
   {% endfor %}
+  </ul>
+  {% endif %}
 
+  {% if results[0] != [] %}
+  <h4>The activity fails the following {{ length(results[0]) }} tests:</h4>
+  <ul>
+  {% for test_name, explain in results[0] %}
+    <li>{{ test_name }} – {{ explain }}</li>
+  {% endfor %}
+  </ul>
+  {% endif %}
+</div>
 
+<div class="row">
   <pre class="prettyprint">{{ activity }}</pre>
 </div>
 {% endblock %}

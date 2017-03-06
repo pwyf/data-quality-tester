@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% from 'partials/_totaliser.html' import totaliser %}
+
+{% block body %}
+
+<div class="row">
+  {% include 'partials/_filter_activities.html' %}
+</div>
+
+<div class="row">
+  <div class="panel panel-default">
+    <div class="panel-heading" data-toggle="collapse" data-target="#more-information-body">
+      <h3 class="panel-title">Overview</h3>
+    </div>
+
+    <div class="panel-body">
+      <p>
+        {{ name|safe }} has been tested against all activity-related
+        {{ test_set.name }} tests.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  {% if params['component'] %}
+  <div class="panel panel-primary">
+  <div class="panel-heading"><h3 class="panel-title">{{ params['component'] }}</h3></div>
+  <div class="panel-body">
+  {% endif %}
+
+  {% for test_name, component_dict in components.items() %}
+  <div class="col-sm-6 quality-panels">
+      <div class="panel panel-primary">
+        <div class="panel-heading"><h3 class="panel-title"><a href="{{ url_for('package_quality_by_component', **dict(params, component=test_name)) }}">{{ test_name }}</a>
+        <a href="#"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3></div>
+        <div class="panel-body">
+          {{ totaliser(component_dict) }}
+        </div>
+      </div>
+  </div>
+  {% endfor %}
+
+  {% if params['component'] %}
+  </div></div>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -3,7 +3,8 @@ body {
   padding-top: 50px;
 }
 
-#accordion .panel-heading {
+#accordion .panel-heading,
+#more-information .panel-heading {
     cursor: pointer;
 }
 
@@ -25,4 +26,28 @@ body {
 
 .filter-form {
   padding-bottom: 20px;
+}
+
+
+/* Sticky footer
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 80px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 80px;
+  background-color: #f5f5f5;
+}
+
+.footer .container .text-muted {
+  margin: 20px 0;
 }

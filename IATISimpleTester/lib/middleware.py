@@ -1,3 +1,4 @@
+import math as maths
 import random
 import string
 
@@ -19,6 +20,14 @@ def generate_csrf_token():
         random_string = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
         session['_csrf_token'] = random_string
     return session['_csrf_token']
+
+@app.template_filter('ceil')
+def ceil(val):
+    return maths.ceil(val)
+
+@app.template_global('length')
+def length(val):
+    return len(val)
 
 @app.errorhandler(404)
 def not_found(e):

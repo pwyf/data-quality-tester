@@ -42,7 +42,7 @@
         <div class="panel-body">
           <form action="{{ url_for('upload') }}" id="fetchURL" method="POST">
           <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-              <div class="form-group"><label class="control-label" for="id_source_url">Supply a URL</label><input class="form-control" id="id_source_url" maxlength="2000" name="source_url" placeholder="Supply a URL" required="required" title="" type="url" /></div>
+              <div class="form-group"><label class="control-label" for="id_source_url">Supply a URL (XML only)</label><input class="form-control" id="id_source_url" maxlength="2000" name="source_url" placeholder="Supply a URL (XML only)" required="required" title="" type="url" /></div>
               <div class="form-group">
                   <button type="submit" class="btn btn-primary">
                       Submit
@@ -90,7 +90,7 @@
 
           <p>If your data passes basic validation checks, the tool will then present a report on data quality, and information about the contents of your file.</p>
           <p>Data is stored for 7 days at a randomly generated URL. You can share this link with others to support discussion of data quality.</p>
-          <p>To preview how the Data Quality Tester works, try <a href="{{ url_for('upload', source_url='http://sage2iati.publishwhatyoufund.org/publish-what-you-fund/activity.xml') }}">loading some sample data.</a> </p>
+          <p>To preview how the Data Quality Tester works, try <a href="{{ url_for('upload', source_url=url_for('static', filename='sample/sample.xml', _external=True)) }}">loading some sample data</a>.</p>
         </div>
       </div>
     </div>
