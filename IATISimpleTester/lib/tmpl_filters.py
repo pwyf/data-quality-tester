@@ -1,3 +1,4 @@
+import math as maths
 from urllib import parse
 
 from flask import request, url_for
@@ -28,6 +29,10 @@ def pluralize(number, singular, plural=None):
             return plural
         else:
             return singular + 's'
+
+@app.template_filter('ceil')
+def ceil(val):
+    return maths.ceil(val)
 
 @app.template_filter('colorify')
 def colorify(number):
