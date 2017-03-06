@@ -28,9 +28,10 @@
 
   <!-- Tab panes -->
   <div class="tab-content">
-    <div role="tabpanel" class="tab-pane fade in active" id="passing">
+    {% for group_id, results in grouped_results.items() %}
+    <div role="tabpanel" class="tab-pane {% if group_id == 'passing' %}fade in active{% endif %}" id="{{ group_id }}">
       <ul>
-      {% for result in passing_results %}
+      {% for result in results %}
         <li>
           <h5><a href="{{ url_for('activity_quality', **dict(params, iati_identifier=result['iati-identifier'])) }}">{{ result['title'] }}</a> <code>{{ result['iati-identifier'] }}</code></h5>
           <p>
@@ -40,30 +41,7 @@
       {% endfor %}
       </ul>
     </div>
-    <div role="tabpanel" class="tab-pane fade" id="failing">
-      <ul>
-      {% for result in failing_results %}
-        <li>
-          <h4><a href="#">{{ result['title'] }}</a> <code>{{ result['iati-identifier'] }}</code></h4>
-          <p>
-            {{ result['explanation']|safe }}
-          </p>
-        </li>
-      {% endfor %}
-      </ul>
-    </div>
-    <div role="tabpanel" class="tab-pane fade" id="not-relevant">
-      <ul>
-      {% for result in not_relevant_results %}
-        <li>
-          <h4><a href="#">{{ result['title'] }}</a> <code>{{ result['iati-identifier'] }}</code></h4>
-          <p>
-            {{ result['explanation']|safe }}
-          </p>
-        </li>
-      {% endfor %}
-      </ul>
-    </div>
+    {% endfor %}
   </div>
 
 </div>
