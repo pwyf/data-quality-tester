@@ -2,16 +2,30 @@
 
 {% block body %}
 
-<h4>{{ params['test'] }}</h4>
+<div class="row">
+  <div class="panel panel-default">
+    <div class="panel-heading" data-toggle="collapse" data-target="#more-information-body">
+      <h3 class="panel-title">{{ params['test'] }}</h3>
+    </div>
 
-<pre><code>{{ test_set.get_test(params['test'])['expression'] }}</code></pre>
+    <div class="panel-body">
+      <p>
+        The following test is applied:
+      </p>
+      <blockquote>{{ pprint(test_set.get_test(params['test'])['expression'])|safe }}</blockquote>
+    </div>
+  </div>
+</div>
 
-{% for result in results_for_test %}
-  <h4>{{ result['iati-identifier'] }}</h4>
-  <p>
-    {% if result['score'] != 1 %}
-    {{result['explanation']}}
-    {% endif %}
-  </p>
+<p>The following {{ failing_results|count }} {{ failing_results|count|pluralize('activity fails', 'activities fail') }} this test:</p>
+<ul>
+{% for result in failing_results %}
+  <li>
+    <h4>{{ result['iati-identifier'] }}</h4>
+    <p>
+      {{ result['explanation']|safe }}
+    </p>
+  </li>
 {% endfor %}
+</ul>
 {% endblock %}

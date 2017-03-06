@@ -107,9 +107,9 @@ def _package_quality_by_test(uuid, test):
     filter_ = test_set.filter if filter_activities else None
 
     results = Results(supplied_data, test_set, [test], filter_)
-    results_for_test = results.for_test(params['test'])
+    failing_results = results.for_test(params['test'], score=0)
     context = {
-        'results_for_test': results_for_test,
+        'failing_results': failing_results,
         'test_set': test_set,
     }
 
