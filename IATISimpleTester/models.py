@@ -155,9 +155,11 @@ class Activity():
             grouped[out[0]].append((test_name, out[1]))
         return grouped
 
+
 class TestSet():
     def __init__(self, test_set_id):
-        test_set = app.config['TEST_SETS'][test_set_id]
+        default_test_set = app.config['TEST_SETS'][app.config['DEFAULT_TEST_SET']]
+        test_set = app.config['TEST_SETS'].get(test_set_id, default_test_set)
         self.name = test_set['name']
         self.description = test_set['description']
         with open(test_set['filename']) as f:
@@ -174,6 +176,9 @@ class TestSet():
     def all_tests(self):
         return [t for c in self.components.values() for i in c.indicators for t in i['tests']]
 
+    def get_test(self, test_name):
+        return {t['name']: t for t in self.all_tests}[test_name]
+
 
 class Component():
     def __str__(self):
@@ -189,14 +194,14 @@ class Component():
 
 
 class Results():
-    def __init__(self, supplied_data, tests, component=None, filter_=None):
+    def __init__(self, supplied_data, test_set, current_tests=None, filter_=None):
         self.supplied_data = supplied_data
-        self.tests = tests
+        self.tests = test_set.all_tests
         self.filter_ = filter_
         self.all, self.meta = self._test_and_cache(self.tests, self.filter_)
-        if component:
+        if current_tests:
             for x in self.all:
-                x['results'] = dict(filter(lambda y: y[0] in component.tests, x['results'].items()))
+                x['results'] = dict(filter(lambda y: y[0] in current_tests, x['results'].items()))
         # summary by test
         self.summary_by_test = Foxpath.summarize_results(self.all)
 

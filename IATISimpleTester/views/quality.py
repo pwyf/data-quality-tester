@@ -20,16 +20,16 @@ def package_overview(uuid):
 
 def _package_overview(uuid):
     params = {'uuid': str(uuid)}
+    params.update(request.args)
     supplied_data = SuppliedData.query.get_or_404(str(uuid))
     filter_activities = request.args.get('filter') != 'false'
-
-    test_set_id = app.config['DEFAULT_TEST_SET']
+    test_set_id = request.args.get('test_set')
     test_set = TestSet(test_set_id)
 
     all_tests = test_set.all_tests
     filter_ = test_set.filter if filter_activities else None
 
-    results = Results(supplied_data, all_tests, None, filter_)
+    results = Results(supplied_data, test_set, None, filter_)
     percentages = results.percentages
     components = OrderedDict()
     for component in test_set.components.values():
@@ -62,19 +62,17 @@ def package_quality_by_component(uuid, component):
 
 def _package_quality_by_component(uuid, component_filter):
     params = {'uuid': str(uuid), 'component': component_filter}
+    params.update(request.args)
     supplied_data = SuppliedData.query.get_or_404(str(uuid))
     filter_activities = request.args.get('filter') != 'false'
-
-    test_set_id = app.config['DEFAULT_TEST_SET']
-    test_set = TestSet(test_set_id)
+    test_set = TestSet(request.args.get('test_set'))
 
     component = test_set.components.get(component_filter)
     if not component:
         return abort(404)
-    all_tests = test_set.all_tests
     filter_ = test_set.filter if filter_activities else None
 
-    results = Results(supplied_data, all_tests, component, filter_)
+    results = Results(supplied_data, test_set, component.tests, filter_)
     context = {
         'results': results,
         'test_set': test_set,
