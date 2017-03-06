@@ -1,0 +1,13 @@
+<div class="row">
+  <div class="btn-group btn-group-sm pull-right" id="test-set-controls" role="group">
+  {% for test_set_id, test_set_name in test_set.all_test_sets %}
+    <a class="btn
+    {% if test_set_id == test_set.id %}
+    btn-primary
+    {% else %}
+    btn-default
+    {% endif %}
+    " href="{{ url_for('package_overview', uuid=params['uuid'], test_set=test_set_id) }}">{{ test_set_name }}</a>
+  {% endfor %}
+  </div>
+</div>
