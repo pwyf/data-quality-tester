@@ -1,4 +1,5 @@
 from collections import defaultdict
+import re
 
 from lxml import etree
 
@@ -15,3 +16,8 @@ def select_expression(expression_list, expression_name, default_expression_name=
 
 def slugify(inp):
     return inp.lower().replace(' ', '-')
+
+def pprint(explanation):
+    print(explanation)
+    explanation = explanation.strip().capitalize().replace('\n', '<br>') + '.'
+    return re.sub(r'`([^`]*)`', r'<code>\1</code>', explanation)

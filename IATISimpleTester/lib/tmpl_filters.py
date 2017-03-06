@@ -4,6 +4,7 @@ from urllib import parse
 from flask import request, url_for
 
 from IATISimpleTester import app
+from IATISimpleTester.lib import helpers
 
 
 @app.template_global('url_for_other_page')
@@ -29,6 +30,10 @@ def pluralize(number, singular, plural=None):
             return plural
         else:
             return singular + 's'
+
+@app.template_global('pprint')
+def pprint(explanation):
+    return helpers.pprint(explanation)
 
 @app.template_filter('ceil')
 def ceil(val):

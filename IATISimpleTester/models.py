@@ -210,7 +210,7 @@ class Results():
             'iati-identifier': x['iati-identifier'],
             'hierarchy': x['hierarchy'],
             'score': x['results'][test_name][0],
-            'explanation': x['results'][test_name][1],
+            'explanation': helpers.pprint(x['results'][test_name][1]),
         } for x in self.all]
 
     def _test_and_cache(self, tests, filter_):
