@@ -20,7 +20,8 @@ def package_overview(uuid):
 
 def _package_overview(uuid):
     params = {'uuid': str(uuid)}
-    params.update(request.args)
+    params.update(dict(request.args.items()))
+
     supplied_data = SuppliedData.query.get_or_404(str(uuid))
     filter_activities = request.args.get('filter') != 'false'
     test_set_id = request.args.get('test_set')
@@ -62,7 +63,7 @@ def package_quality_by_component(uuid, component):
 
 def _package_quality_by_component(uuid, component_filter):
     params = {'uuid': str(uuid), 'component': component_filter}
-    params.update(request.args)
+    params.update(dict(request.args.items()))
     supplied_data = SuppliedData.query.get_or_404(str(uuid))
     filter_activities = request.args.get('filter') != 'false'
     test_set = TestSet(request.args.get('test_set'))
@@ -99,7 +100,7 @@ def _package_quality_by_test(uuid, test):
         'uuid': str(uuid),
         'test': test,
     }
-    params.update(request.args)
+    params.update(dict(request.args.items()))
     supplied_data = SuppliedData.query.get_or_404(str(uuid))
     filter_activities = request.args.get('filter') != 'false'
     test_set = TestSet(request.args.get('test_set'))
