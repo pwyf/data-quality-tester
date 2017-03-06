@@ -265,27 +265,6 @@ class Results():
             j = json.load(f)
         return j
 
-    # page = int(request.args.get('page', 1))
-    # offset = (page - 1) * app.config['PER_PAGE']
-    # pagination = Pagination(page, app.config['PER_PAGE'], len(activities))
-    # activities_results = activities_results[offset:offset + app.config['PER_PAGE']]
-
-    # components = OrderedDict([(c['name'], c['indicators']) for c in test_data['components']])
-    # indicators = OrderedDict([(i['name'], [test['name'] for test in i['tests']]) for i in test_data['indicators']])
-    # perc_by_indicator = helpers.group_by(indicators, perc_by_test)
-
-    # component = request.args.get('component')
-    # if component:
-    #     params['component'] = component
-    #     context['results'] = OrderedDict([(k, v) for k, v in perc_by_indicator.items() if k in components[component]])
-    # else:
-    #     perc_by_component = helpers.group_by(components, perc_by_indicator)
-    #     context['results'] = perc_by_component
-
-    def get_fails(self):
-        for activity in self.all:
-            pass
-
     # percentages by test, sorted
     @property
     def percentages(self):
