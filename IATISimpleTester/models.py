@@ -173,6 +173,10 @@ class TestSet():
         self.filter = y['filter'] if 'filter' in y else None
 
     @property
+    def all_test_sets(self):
+        return [(x, y['name']) for x, y in app.config['TEST_SETS'].items()]
+
+    @property
     def all_tests(self):
         return [t for c in self.components.values() for i in c.indicators for t in i['tests']]
 
