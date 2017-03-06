@@ -9,27 +9,28 @@
 
 <div class="row">
   <div class="panel panel-primary">
-  <div class="panel-heading"><h3 class="panel-title">{{ params['component'] }} <a class="pull-right" href="{{ url_for('package_overview', uuid=params['uuid']) }}">Back to overview</a></h3></div>
-  <div class="panel-body">
+    <div class="panel-heading"><h3 class="panel-title">{{ params['component'] }} <a class="pull-right" href="{{ url_for('package_overview', uuid=params['uuid']) }}">Back to overview</a></h3></div>
+    <div class="panel-body">
 
-  {% for test_name, result_dict in results.percentages.items() %}
-  <div class="col-sm-6 quality-panels">
-      <div class="panel panel-primary">
-        <div class="panel-heading"><h3 class="panel-title"><a href="{{ url_for('package_quality_by_test', **dict(params, test=test_name)) }}">{{ test_name }}</a>
-        <a href="{{ url_for('package_quality_by_test', **dict(params, test=test_name)) }}"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3></div>
-        <div class="panel-body">
-          {{ totaliser(result_dict) }}
+      {% for test_name, result_dict in results.percentages.items() %}
+      <div class="col-sm-6 quality-panels">
+          <div class="panel panel-primary">
+            <div class="panel-heading"><h3 class="panel-title"><a href="{{ url_for('package_quality_by_test', **dict(params, test=test_name)) }}">{{ test_name }}</a>
+            <a href="{{ url_for('package_quality_by_test', **dict(params, test=test_name)) }}"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3></div>
+            <div class="panel-body">
+              {{ totaliser(result_dict) }}
 
-          {{ results.summary_by_test[test_name][1]|commify }}
-          out of
-          {{ (results.summary_by_test[test_name][0] + results.summary_by_test[test_name][1])|commify }}
-          relevant activities pass this test.
-        </div>
+              {{ results.summary_by_test[test_name][1]|commify }}
+              out of
+              {{ (results.summary_by_test[test_name][0] + results.summary_by_test[test_name][1])|commify }}
+              relevant activities pass this test.
+            </div>
+          </div>
       </div>
+      {% endfor %}
+    </div>
   </div>
-  {% endfor %}
 </div>
-
 <script>
   $(function() {
     $("#more-information").attr('class', 'panel-collapse collapse');
