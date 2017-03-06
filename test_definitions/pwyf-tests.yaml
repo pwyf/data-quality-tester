@@ -333,7 +333,7 @@ indicators:
 
  - name: Objectives
    tests:
-    - name: Objectives / Purpose of activity document
+    - name: Objectives of activity document
       expression: >
        if `activity-status/@code` is at least 2
        then `document-link/category[@code="A02"]` should be present
