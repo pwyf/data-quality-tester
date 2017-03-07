@@ -137,7 +137,7 @@ indicators:
       expression: |
        `title/text()|title/narrative/text()` should be present
 
-    - name: Title, more than 10 chars
+    - name: Title more than 10 characters
       expression: |
        `title/text()|title/narrative/text()` should have more than 10 characters
 
@@ -147,7 +147,7 @@ indicators:
       expression: |
        `description/text()|description/narrative/text()` should be present
 
-    - name: Description, more than 80 chars
+    - name: Description more than 80 characters
       expression: |
        `description/text()|description/narrative/text()` should have more than 80 characters
 
