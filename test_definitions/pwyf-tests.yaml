@@ -73,13 +73,13 @@ indicators:
    tests:
     - name: Forward budget available
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `budget` should be available forward annually
        or `planned-disbursement` should be available forward annually
 
     - name: Forward budget available by quarters
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `budget` should be available forward quarterly
        or `planned-disbursement` should be available forward quarterly
 
@@ -87,7 +87,7 @@ indicators:
    tests:
     - name: Budget document
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        and `default-aid-type/@code` is not A01
        and `transaction/aid-type/@code` is not A01
        then `document-link/category[@code="A05"]` should be present
@@ -96,7 +96,7 @@ indicators:
    tests:
     - name: Commitments
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `transaction/transaction-type[@code="C"]` should be present
        or `transaction/transaction-type[@code="2"]` should be present
 
@@ -104,7 +104,7 @@ indicators:
    tests:
     - name: Disbursements
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then
        `transaction/transaction-type[@code="D"] |
         transaction/transaction-type[@code="3"]`
@@ -118,7 +118,7 @@ indicators:
    tests:
     - name: Contract document
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        and `default-aid-type/@code` is not A01
        and `transaction/aid-type/@code` is not A01
        then `document-link/category[@code="A06"]` should be present
@@ -126,7 +126,7 @@ indicators:
 
     - name: Tenders document
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        and `default-aid-type/@code` is not A01
        and `transaction/aid-type/@code` is not A01
        then `document-link/category[@code="A10"]` should be present
@@ -147,30 +147,31 @@ indicators:
       expression: |
        `description/text()|description/narrative/text()` should be present
 
-    - name: Description, more than 40 chars
+    - name: Description, more than 80 chars
       expression: |
-       `description/text()|description/narrative/text()` should have more than 40 characters
+       `description/text()|description/narrative/text()` should have more than 80 characters
 
  - name: Planned dates
    tests:
-    - name: Activity date planned end date
+    - name: Planned end date
       expression: |
        `activity-date[@type="end-planned"]|activity-date[@type="3"]` should be present
 
-    - name: Activity date planned start date
+    - name: Planned start date
       expression: |
        `activity-date[@type="start-planned"]|activity-date[@type="1"]` should be present
 
  - name: Actual dates
    tests:
-    - name: Activity date actual end date
+    - name: Actual end date
       expression: |
-       if `activity-status/@code` is at least 3
+       if `activity-status/@code` is 3
+       or `activity-status/@code` is 4
        then `activity-date[@type="end-actual"]|activity-date[@type="4"]` should be present
 
-    - name: Activity date actual start date
+    - name: Actual start date
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `activity-date[@type="start-actual"]|activity-date[@type="2"]` should be present
 
  - name: Current status
@@ -210,13 +211,13 @@ indicators:
    tests:
     - name: Location (sub-national)
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        and `recipient-region/@code` is not 998
        then `location` should be present
 
     - name: Location (sub-national) coordinates or point
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        and `recipient-region/@code` is not 998
        then `location/coordinates` should be present
        or `location/point` should be present
@@ -238,7 +239,7 @@ indicators:
    tests:
     - name: Implementing organisation
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then
        `participating-org[@role="Implementing"] |
         participating-org[@role="4"]` should be present
@@ -247,13 +248,13 @@ indicators:
    tests:
     - name: Flow type
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `default-flow-type` should be present
        or `transaction/flow-type` should be present
 
     - name: Flow type uses standard codelist
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then at least one `default-flow-type/@code` should be on the FlowType codelist
        or at least one `transaction/flow-type/@code` should be on the FlowType codelist
 
@@ -261,13 +262,13 @@ indicators:
    tests:
     - name: Default aid type
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `default-aid-type` should be present
        or `transaction/aid-type` should be present
 
     - name: Aid type uses standard codelist
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then at least one `default-aid-type/@code` should be on the AidType codelist
        or at least one `transaction/aid-type/@code` should be on the AidType codelist
 
@@ -275,13 +276,13 @@ indicators:
    tests:
     - name: Default finance type
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `default-finance-type` should be present
        or `transaction/finance-type` should be present
 
     - name: Finance type uses standard codelist
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then at least one `default-finance-type/@code` should be on the FinanceType codelist
        or at least one `transaction/finance-type/@code` should be on the FinanceType codelist
 
@@ -289,13 +290,13 @@ indicators:
    tests:
     - name: Tied aid status
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `default-tied-status` should be present
        or `transaction/tied-status` should be present
 
     - name: Tied aid status uses standard codelist
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then at least one `default-tied-status/@code` should be on the TiedStatus codelist
        or at least one `transaction/tied-status/@code` should be on the TiedStatus codelist
 
@@ -303,19 +304,19 @@ indicators:
    tests:
     - name: Conditions data
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `conditions` should be present
 
     - name: Conditions document
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `document-link/category[@code="A04"]` should be present
 
  - name: Budget Identifier
    tests:
     - name: Budget identifier, administrative/functional classification
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        and `default-aid-type/@code` is not A01
        and `default-aid-type/@code` is not A02
        and `transaction/aid-type/@code` is not A01
@@ -324,7 +325,7 @@ indicators:
 
     - name: Budget identifier, economic classification
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        and `default-aid-type/@code` is not A01
        and `default-aid-type/@code` is not A02
        and `transaction/aid-type/@code` is not A01
@@ -335,7 +336,7 @@ indicators:
    tests:
     - name: Objectives of activity document
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `document-link/category[@code="A02"]` should be present
        or `description[@type="2"]` should be present
 
@@ -343,26 +344,27 @@ indicators:
    tests:
     - name: Pre- and post-project impact appraisal documents
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `document-link/category[@code="A01"]` should be present
 
  - name: Evaluations
    tests:
     - name: Project performance and evaluation document
       expression: |
-       if `activity-status/@code` is at least 3
+       if `activity-status/@code` is 3
+       or `activity-status/@code` is 4
        then `document-link/category[@code="A07"]` should be present
 
  - name: Results
    tests:
     - name: Results data
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `result` should be present
 
     - name: Results document
       expression: |
-       if `activity-status/@code` is at least 2
+       if `activity-status/@code` is one of (2, 3, 4)
        then `document-link/category[@code="A08"]` should be present
 
 filter:
