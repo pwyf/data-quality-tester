@@ -4,7 +4,7 @@ from flask import abort, flash, jsonify, redirect, render_template, request, url
 
 from IATISimpleTester import app, db
 from IATISimpleTester.lib import helpers
-from IATISimpleTester.lib.exceptions import FileGoneException, InvalidXMLException, ActivityNotFoundException
+from IATISimpleTester.lib.exceptions import FileGoneException, InvalidXMLException, ActivityNotFoundException, NoFilteredActivitiesException
 from IATISimpleTester.models import SuppliedData, Results, TestSet
 
 
@@ -14,6 +14,9 @@ def package_overview(uuid):
     except (FileGoneException, InvalidXMLException) as e:
         flash(str(e), 'danger')
         return redirect(url_for('home'))
+    except NoFilteredActivitiesException:
+        params['filter'] = 'false'
+        return redirect(url_for('package_overview', **params))
     context = response['data']
     context['params'] = response['params']
     return render_template('overview.html', **context)
@@ -31,6 +34,8 @@ def _package_overview(uuid):
     filter_ = test_set.filter if filter_activities else None
 
     results = Results(supplied_data, test_set, None, filter_)
+    if results.all == []:
+        raise NoFilteredActivitiesException
     percentages = results.percentages
     components = OrderedDict()
     for component in test_set.components.values():

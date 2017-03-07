@@ -203,6 +203,8 @@ class Results():
         self.test_set = test_set
         self.filter = filter_
         self.all, self.meta = self._test_and_cache(test_set.all_tests)
+        if self.all == []:
+            return
         if current_tests:
             for x in self.all:
                 x['results'] = dict(filter(lambda y: y[0] in current_tests, x['results'].items()))
