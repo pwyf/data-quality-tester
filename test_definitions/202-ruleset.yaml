@@ -56,15 +56,15 @@ indicators:
 
     - name: Planned activity dates
       expression: |
-       `activity-date[@type='1']/@iso-date`
+       `activity-date[@type='1']/@iso-date | activity-date[@type='start-planned']/@iso-date`
        should be chronologically before
-       `activity-date[@type='3']/@iso-date`
+       `activity-date[@type='3']/@iso-date | activity-date[@type='end-planned']/@iso-date`
 
     - name: Actual activity dates
       expression: |
-       `activity-date[@type='2']/@iso-date`
+       `activity-date[@type='2']/@iso-date | activity-date[@type='start-actual']/@iso-date`
        should be chronologically before
-       `activity-date[@type='4']/@iso-date`
+       `activity-date[@type='4']/@iso-date | activity-date[@type='end-actual']/@iso-date`
 
     - name: Budget period
       expression: |
@@ -76,12 +76,12 @@ indicators:
    tests:
     - name: Actual start dates past
       expression: |
-       `activity-date[@type='2']/@iso-date`
+       `activity-date[@type='2']/@iso-date | activity-date[@type='start-actual']/@iso-date`
        should be today, or in the past
 
     - name: Actual end dates past
       expression: |
-       `activity-date[@type='4']/@iso-date`
+       `activity-date[@type='4']/@iso-date | activity-date[@type='end-actual']/@iso-date`
        should be today, or in the past
 
     - name: Transaction dates past
@@ -98,8 +98,8 @@ indicators:
    tests:
     - name: Activity start date (planned or actual)
       expression: |
-       `activity-date[@type="1"]` should be present
-       or `activity-date[@type="2"]` should be present
+       `activity-date[@type="1"] | activity-date[@type="start-planned"]` should be present
+       or `activity-date[@type="2"] | activity-date[@type="start-actual"]` should be present
 
     - name: Sector (activity or transaction)
       expression: |
