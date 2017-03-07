@@ -11,6 +11,10 @@
 
     <div class="panel-body">
       <p>
+        <ul>
+        <li><strong>Reporting organisation:</strong> {{ results.meta['reporting_org'] }}</li>
+        <li><strong>Total activities:</strong> {{ results.meta.total_activities|commify }}</li>
+        </ul>
         {{ name|safe }} has been tested against
         {{ test_set.name }}.
       </p>
