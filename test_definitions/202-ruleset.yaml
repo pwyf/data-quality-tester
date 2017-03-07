@@ -104,10 +104,11 @@ indicators:
     - name: Sector (activity or transaction)
       expression: |
        `sector` should be present
-       but for every `transaction`, `sector` should not be present.
+       but for every `transaction`, `sector` *should not* be present.
+
        Alternatively,
-       `sector` should not be present
-       but for every `transaction`, `sector` should be present
+       for every `transaction`, `sector` should be present
+       but `sector` *should not* be present
 
     - name: Participating organisation reference (text or ref)
       expression: |
