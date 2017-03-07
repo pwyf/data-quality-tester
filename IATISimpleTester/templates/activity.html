@@ -6,7 +6,7 @@
   <h4>{{ iati_identifier }}</h4>
   <p><a href="{{ url_for('package_overview', uuid=params['uuid']) }}">Back to overview</a></p>
 
-  {% if results[1] != [] %}
+<!--   {% if results[1] != [] %}
   <h4>The activity passes the following {{ results[1]|count }} {{ results[1]|count|pluralize('test') }}:</h4>
   <ul>
   {% for test_name, explain in results[1] %}
@@ -22,7 +22,7 @@
     <li>{{ test_name }} – {{ explain }}</li>
   {% endfor %}
   </ul>
-  {% endif %}
+  {% endif %} -->
 </div>
 
 <div class="row">
