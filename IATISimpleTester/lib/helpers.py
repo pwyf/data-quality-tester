@@ -19,6 +19,7 @@ def slugify(inp):
 
 def pprint(explanation):
     explanation = explanation.strip()
+    explanation = re.sub(r'\*([^\*]+)\*', r'<strong>\1</strong>', explanation)
     if len(explanation) > 0:
         explanation = explanation[0].upper() + explanation[1:]
     explanation = explanation.replace('\n', '<br>') + '.'
