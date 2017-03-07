@@ -15,7 +15,10 @@ def package_overview(uuid):
         flash(str(e), 'danger')
         return redirect(url_for('home'))
     except NoFilteredActivitiesException:
-        params['filter'] = 'false'
+        params = {
+            'uuid': uuid,
+            'filter': 'false',
+        }
         return redirect(url_for('package_overview', **params))
     context = response['data']
     context['params'] = response['params']
