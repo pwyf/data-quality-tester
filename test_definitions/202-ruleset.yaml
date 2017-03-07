@@ -19,55 +19,55 @@ indicators:
  - name: Start dates chronologically before end dates
    tests:
     - name: Result indicator period
-      expression: >
+      expression: |
        `result/indicator/period/period-start/@iso-date`
        should be chronologically before
        `result/indicator/period/period-end/@iso-date`
 
     - name: Recipient organisation budget period
-      expression: >
+      expression: |
        `recipient-org-budget/period-start/@iso-date`
        should be chronologically before
        `recipient-org-budget/period-end/@iso-date`
 
     - name: Recipient region budget period
-      expression: >
+      expression: |
        `recipient-region-budget/period-start/@iso-date`
        should be chronologically before
        `recipient-region-budget/period-end/@iso-date`
 
     - name: Planned disbursement period
-      expression: >
+      expression: |
        `planned-disbursement/period-start/@iso-date`
        should be chronologically before
        `planned-disbursement/period-end/@iso-date`
 
     - name: Recipient country budget period
-      expression: >
+      expression: |
        `recipient-country-budget/period-start/@iso-date`
        should be chronologically before
        `recipient-country-budget/period-end/@iso-date`
 
     - name: Total expenditure period
-      expression: >
+      expression: |
        `total-expenditure/period-start/@iso-date`
        should be chronologically before
        `total-expenditure/period-end/@iso-date`
 
     - name: Planned activity dates
-      expression: >
+      expression: |
        `activity-date[@type='1']/@iso-date`
        should be chronologically before
        `activity-date[@type='3']/@iso-date`
 
     - name: Actual activity dates
-      expression: >
+      expression: |
        `activity-date[@type='2']/@iso-date`
        should be chronologically before
        `activity-date[@type='4']/@iso-date`
 
     - name: Budget period
-      expression: >
+      expression: |
        `budget/period-start/@iso-date`
        should be chronologically before
        `budget/period-end/@iso-date`
@@ -75,63 +75,63 @@ indicators:
  - name: Actual dates should be in the past
    tests:
     - name: Actual start dates past
-      expression: >
+      expression: |
        `activity-date[@type='2']/@iso-date`
        should be today, or in the past
 
     - name: Actual end dates past
-      expression: >
+      expression: |
        `activity-date[@type='4']/@iso-date`
        should be today, or in the past
 
     - name: Transaction dates past
-      expression: >
+      expression: |
        `transaction/transaction-date/@iso-date`
        should be today, or in the past
 
     - name: Value dates past
-      expression: >
+      expression: |
        `transaction/value-date/@iso-date`
        should be today, or in the past
 
  - name: Mandatory elements
    tests:
     - name: Activity start date (planned or actual)
-      expression: >
+      expression: |
        `activity-date[@type="1"]` should be present
        or `activity-date[@type="2"]` should be present
 
     - name: Sector (activity or transaction)
-      expression: >
+      expression: |
        `sector` should be present
-       and for every `transaction`, `sector` should not be present
-       or
+       but for every `transaction`, `sector` should not be present.
+       Alternatively,
        `sector` should not be present
-       and for every `transaction`, `sector` should be present
+       but for every `transaction`, `sector` should be present
 
     - name: Participating organisation reference (text or ref)
-      expression: >
+      expression: |
        `participating-org/@ref` should be present
        or `participating-org/narrative` should be present
 
  - name: Elements use a valid format
    tests:
     - name: IATI identifier (regex)
-      expression: >
+      expression: |
        `iati-identifier/text()` should match the regex `^[^\/\&\|\?]+$`
 
     - name: Reporting organisation reference (regex)
-      expression: >
+      expression: |
        `reporting-org/@ref` should match the regex `^[^\/\&\|\?]+$`
 
     - name: Participating organisation reference (regex)
-      expression: >
+      expression: |
        `participating-org/@ref` should match the regex `^[^\/\&\|\?]+$`
 
     - name: Provider organisation reference (regex)
-      expression: >
+      expression: |
        `transaction/provider-org/@ref` should match the regex `^[^\/\&\|\?]+$`
 
     - name: Receiver organisation reference (regex)
-      expression: >
+      expression: |
        `transaction/receiver-org/@ref` should match the regex `[^\/\&\|\?]+`
