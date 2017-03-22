@@ -314,15 +314,6 @@ indicators:
 
  - name: Budget Identifier
    tests:
-    - name: Budget identifier, administrative/functional classification
-      expression: |
-       if `activity-status/@code` is one of (2, 3, 4)
-       and `default-aid-type/@code` is not A01
-       and `default-aid-type/@code` is not A02
-       and `transaction/aid-type/@code` is not A01
-       and `transaction/aid-type/@code` is not A02
-       then at least one `country-budget-items[@vocabulary="1"]/ budget-item/@code` should be on the BudgetIdentifier codelist
-
     - name: Budget identifier, economic classification
       expression: |
        if `activity-status/@code` is one of (2, 3, 4)
