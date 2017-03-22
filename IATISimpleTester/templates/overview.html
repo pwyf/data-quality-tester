@@ -11,15 +11,15 @@
 
     <div class="panel-body">
       <p>
+        {{ name|safe }} has been tested against
+        {{ test_set.name }}.
         <ul>
         <li><strong>Reporting organisation:</strong> {{ results.meta['reporting_org'] }}</li>
         <li><strong>Total activities:</strong> {{ results.meta.total_activities|commify }}</li>
         {% if test_set.filter %}
-        <li><strong>{{ test_set.filter['name'] }}</strong> {{ results.meta.total_filtered_activities|commify }}</li>
+        <li><strong>{{ test_set.filter['name'] }}:</strong> {{ results.meta.total_filtered_activities|commify }}</li>
         {% endif %}
         </ul>
-        {{ name|safe }} has been tested against
-        {{ test_set.name }}.
       </p>
     </div>
   </div>
