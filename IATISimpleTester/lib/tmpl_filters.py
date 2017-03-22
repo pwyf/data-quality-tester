@@ -9,7 +9,9 @@ from IATISimpleTester.lib import helpers
 
 @app.template_global('url_for_other_page')
 def url_for_other_page(page):
-    args = {**request.args, **request.view_args}
+    args = request.args.copy()
+    args2 = request.view_args.copy()
+    args.update(args2)
     args['page'] = page
     return url_for(request.endpoint, **args)
 
