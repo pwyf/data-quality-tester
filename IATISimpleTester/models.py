@@ -231,7 +231,15 @@ class Results():
             results = self.load_cache(self.path_to_file())
         except FileNotFoundError:
             xml = self.supplied_data.parse()
-            meta['reporting_org'] = xml.xpath('//reporting-org/text() | //reporting-org/narrative/text()')[0]
+            reporting_org_strs = xml.xpath('//reporting-org/text() | //reporting-org/narrative/text()')
+            for reporting_org_str in reporting_org_strs:
+                reporting_org = reporting_org_str.strip()
+                if reporting_org != '':
+                    break
+            if reporting_org != '':
+                meta['reporting_org'] = reporting_org
+            else:
+                meta['reporting_org'] = None
             activities = xml.xpath('//iati-activity')
             meta['total_activities'] = len(activities)
             if self.filter:
