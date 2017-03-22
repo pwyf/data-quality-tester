@@ -6,9 +6,9 @@ from IATISimpleTester.views import api, pages, quality, uploader
 def home():
     return pages.home()
 
-@app.route('/about')
-def about():
-    return pages.about()
+# @app.route('/about')
+# def about():
+#     return pages.about()
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():

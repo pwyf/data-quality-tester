@@ -13,9 +13,6 @@
         <li
 {%- if request.url_rule.endpoint == 'home' %} class="active"{% endif -%}
         ><a href="{{ url_for('home') }}">Home</a></li>
-        <li
-{%- if request.url_rule.endpoint == 'about' %} class="active"{% endif -%}
-        ><a href="{{ url_for('about') }}">About</a></li>
       </ul>
     </div>
   </div>
