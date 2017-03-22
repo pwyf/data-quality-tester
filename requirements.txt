@@ -1,5 +1,5 @@
 lxml==3.7.2
--e git+https://github.com/pwyf/foxpath-tools#egg=foxpath
+foxpath
 pyyaml
 requests
 rfc6266==0.0.4
