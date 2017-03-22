@@ -33,7 +33,7 @@
       <ul>
       {% for result in results %}
         <li>
-          <h5><a href="{{ url_for('activity_quality', **dict(params, iati_identifier=result['iati-identifier'])) }}">{{ result['title'] }}</a> <code>{{ result['iati-identifier'] }}</code></h5>
+          <h5><a href="{{ url_for('activity_quality', **dict(params, iati_identifier=result['iati-identifier'])) }}">{{ result['title'] }}</a> <code>{{ result['iati-identifier'] }}</code> {% if result['hierarchy'] %}(Hierarchy {{ result['hierarchy'] }}){% endif %}</h5>
           <p>
             {{ result['explanation']|safe }}
           </p>
