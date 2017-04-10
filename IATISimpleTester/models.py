@@ -82,7 +82,14 @@ class SuppliedData(db.Model):
     def download(self, url):
         if not self.is_valid(url):
             raise BadUrlException('That source URL appears to be invalid. Please try again.')
-        r = requests.get(url, headers={'User-Agent': 'Publish What You Fund Simple Tester'}, stream=True)
+        request_kwargs = {
+            'headers': {'User-Agent': 'Publish What You Fund Simple Tester'},
+            'stream': True,
+        }
+        try:
+            r = requests.get(url, **request_kwargs)
+        except requests.exceptions.SSLError:
+            r = requests.get(url, verify=False, **request_kwargs)
         r.raise_for_status()
         content_type = r.headers.get('content-type', '').split(';')[0].lower()
         file_extension = None
