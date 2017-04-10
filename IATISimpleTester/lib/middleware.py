@@ -33,12 +33,17 @@ def server_error(e):
     return generic_error(e)
 
 def generic_error(e):
-    name = '{name} ({code})'.format(
-        name=e.name,
-        code=e.code
-    )
+    try:
+        err_code = e.code
+        error_str = '{name} ({code})'.format(
+            name=e.name,
+            code=err_code
+        )
+    except:
+        error_str = 'Unknown error'
+        err_code = 500
 
     if request.path.endswith('.json'):
-        return jsonify({'success': False, 'error': name}), e.code
+        return jsonify({'success': False, 'error': error_str}), err_code
 
-    return render_template('error.html', name=name), e.code
+    return render_template('error.html', name=error_str), err_code
