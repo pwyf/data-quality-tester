@@ -7,3 +7,5 @@ rfc6266==0.0.4
 Flask
 Flask-Migrate==2.0.3
 Flask-Script==2.0.5
+
+git+https://github.com/pwyf/bdd-tester.git#egg=bdd-tester
