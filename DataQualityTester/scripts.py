@@ -8,7 +8,7 @@ from flask_script import Command, Option
 import requests
 import yaml
 
-from IATISimpleTester.models import SuppliedData
+from DataQualityTester.models import SuppliedData
 
 
 class FlushDataCommand(Command):

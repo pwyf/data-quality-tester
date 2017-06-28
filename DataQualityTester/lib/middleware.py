@@ -3,7 +3,7 @@ import string
 
 from flask import abort, jsonify, render_template, request, session
 
-from IATISimpleTester import app
+from DataQualityTester import app
 
 
 @app.before_request

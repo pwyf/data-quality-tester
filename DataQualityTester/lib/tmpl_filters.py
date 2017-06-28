@@ -3,8 +3,8 @@ from urllib import parse
 
 from flask import request, url_for
 
-from IATISimpleTester import app
-from IATISimpleTester.lib import helpers
+from DataQualityTester import app
+from DataQualityTester.lib import helpers
 
 
 @app.template_global('url_for_other_page')

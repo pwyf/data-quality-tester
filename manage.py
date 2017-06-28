@@ -1,8 +1,8 @@
 from flask_script import Manager, Server
 from flask_migrate import Migrate, MigrateCommand
 
-from IATISimpleTester import app, db
-from IATISimpleTester.scripts import FlushDataCommand, RefreshCodelistsCommand
+from DataQualityTester import app, db
+from DataQualityTester.scripts import FlushDataCommand, RefreshCodelistsCommand
 
 
 migrate = Migrate(app, db)

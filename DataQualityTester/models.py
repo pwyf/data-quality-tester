@@ -14,9 +14,9 @@ import rfc6266  # (content-disposition header parser)
 from werkzeug.utils import secure_filename
 import yaml
 
-from IATISimpleTester import app, db
-from IATISimpleTester.lib import helpers
-from IATISimpleTester.lib.exceptions import BadUrlException, FileGoneException, InvalidXMLException, ActivityNotFoundException
+from DataQualityTester import app, db
+from DataQualityTester.lib import helpers
+from DataQualityTester.lib.exceptions import BadUrlException, FileGoneException, InvalidXMLException, ActivityNotFoundException
 
 
 class SuppliedData(db.Model):

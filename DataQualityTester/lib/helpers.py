@@ -3,7 +3,7 @@ import re
 
 from lxml import etree
 
-from IATISimpleTester import app
+from DataQualityTester import app
 
 
 # given an expression list and the name of an expression,

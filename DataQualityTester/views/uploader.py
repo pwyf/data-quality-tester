@@ -2,9 +2,9 @@ import os.path
 
 from flask import abort, flash, jsonify, redirect, request, url_for
 
-from IATISimpleTester import db
-from IATISimpleTester.lib.exceptions import BadUrlException, NoFormDataException
-from IATISimpleTester.models import SuppliedData
+from DataQualityTester import db
+from DataQualityTester.lib.exceptions import BadUrlException, NoFormDataException
+from DataQualityTester.models import SuppliedData
 
 
 def upload():

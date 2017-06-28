@@ -1,7 +1,7 @@
 from flask import abort, jsonify
 
-from IATISimpleTester.lib.exceptions import ActivityNotFoundException, BadUrlException, FileGoneException, InvalidXMLException, NoFormDataException
-from IATISimpleTester.views import quality, uploader
+from DataQualityTester.lib.exceptions import ActivityNotFoundException, BadUrlException, FileGoneException, InvalidXMLException, NoFormDataException
+from DataQualityTester.views import quality, uploader
 
 
 def package_quality_by_component(uuid, component):

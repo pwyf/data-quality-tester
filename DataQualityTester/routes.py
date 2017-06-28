@@ -1,5 +1,5 @@
-from IATISimpleTester import app
-from IATISimpleTester.views import api, pages, quality, uploader
+from DataQualityTester import app
+from DataQualityTester.views import api, pages, quality, uploader
 
 
 @app.route('/')

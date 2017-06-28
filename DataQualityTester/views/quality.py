@@ -2,10 +2,10 @@ from collections import OrderedDict
 from lxml import etree
 from flask import abort, flash, jsonify, redirect, render_template, request, url_for
 
-from IATISimpleTester import app, db
-from IATISimpleTester.lib import helpers
-from IATISimpleTester.lib.exceptions import FileGoneException, InvalidXMLException, ActivityNotFoundException, NoFilteredActivitiesException
-from IATISimpleTester.models import SuppliedData, Results, TestSet
+from DataQualityTester import app, db
+from DataQualityTester.lib import helpers
+from DataQualityTester.lib.exceptions import FileGoneException, InvalidXMLException, ActivityNotFoundException, NoFilteredActivitiesException
+from DataQualityTester.models import SuppliedData, Results, TestSet
 
 
 def package_overview(uuid):

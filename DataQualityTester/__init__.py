@@ -10,4 +10,4 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-from IATISimpleTester import routes, models, views, lib
+from DataQualityTester import routes, models, views, lib
