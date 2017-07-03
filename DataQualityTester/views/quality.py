@@ -15,6 +15,10 @@ def package_overview(uuid):
         flash(str(e), 'danger')
         return redirect(url_for('home'))
     except NoFilteredActivitiesException:
+        if request.args.get('filter') == 'false':
+            msg = 'No IATI activities found'
+            flash(msg, 'danger')
+            return redirect(url_for('home'))
         params = {
             'uuid': uuid,
             'filter': 'false',
