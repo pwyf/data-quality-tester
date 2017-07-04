@@ -28,5 +28,5 @@ class Config(object):
     DEFAULT_TEST_SET = 'pwyf'
     PER_PAGE = 20
 
-    with open('codelists.yaml') as f:
+    with open(join(CURRENT_PATH, 'codelists.yaml')) as f:
         CODELISTS = yaml.load(f)
