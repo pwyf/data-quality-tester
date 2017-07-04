@@ -9,7 +9,7 @@ class Config(object):
 
     REGISTRY_API_BASE_URL = 'https://iatiregistry.org/api/3/action'
     CACHE_TIMEOUT = 86400  # 24 hours
-    CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+    CURRENT_PATH = os.path.dirname(__file__)
     MEDIA_FOLDER = os.path.join(CURRENT_PATH, 'media')
     SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(os.path.join(CURRENT_PATH, 'db.sqlite3'))
     ALLOWED_EXTENSIONS = ('xml',)
