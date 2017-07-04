@@ -19,11 +19,6 @@ class Config(object):
             'description': 'These rules catch stuff that doesn’t really make sense, e.g. end dates before start dates.',
             'filename': os.path.join(CURRENT_PATH, 'test_definitions', '202-ruleset.yaml'),
         },
-        'openag': {
-            'name': 'Open Ag tests',
-            'description': 'These tests only run on agricultural activities. They search for the existence of bits of data that are crucial for agricultural data to begin to be useful.',
-            'filename': os.path.join(CURRENT_PATH, 'test_definitions', 'open-ag-tests.yaml'),
-        },
         'pwyf': {
             'name': 'Aid Transparency Index tests',
             'description': 'These tests only run on current data. They comprise the automated component of the Aid Transparency Index, which aims to rank donors by data quality.',
@@ -35,4 +30,3 @@ class Config(object):
 
     with open('codelists.yaml') as f:
         CODELISTS = yaml.load(f)
-    CODELISTS['Agriculture'] = ['23070', '31110', '31120', '31130', '31140', '31150', '31161', '31162', '31163', '31164', '31165', '31166', '31181', '31182', '31191', '31192', '31193', '31194', '31195', '31210', '31220', '31261', '31281', '31282', '31291', '31310', '31320', '31381', '31382', '31391', '72040', '12240', '43040', '52010',]
