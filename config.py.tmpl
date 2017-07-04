@@ -1,4 +1,4 @@
-import os.path
+from os.path import abspath, dirname, join
 
 import yaml
 
@@ -9,20 +9,20 @@ class Config(object):
 
     REGISTRY_API_BASE_URL = 'https://iatiregistry.org/api/3/action'
     CACHE_TIMEOUT = 86400  # 24 hours
-    CURRENT_PATH = os.path.dirname(__file__)
-    MEDIA_FOLDER = os.path.join(CURRENT_PATH, 'media')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(os.path.join(CURRENT_PATH, 'db.sqlite3'))
+    CURRENT_PATH = dirname(__file__)
+    MEDIA_FOLDER = join(CURRENT_PATH, 'media')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(join(CURRENT_PATH, 'db.sqlite3'))
     ALLOWED_EXTENSIONS = ('xml',)
     TEST_SETS = {
         'rulesets': {
             'name': 'IATI Standard Ruleset (Experimental)',
             'description': 'These rules catch stuff that doesn’t really make sense, e.g. end dates before start dates.',
-            'filename': os.path.join(CURRENT_PATH, 'test_definitions', '202-ruleset.yaml'),
+            'filename': join(CURRENT_PATH, 'test_definitions', '202-ruleset.yaml'),
         },
         'pwyf': {
             'name': 'Aid Transparency Index tests',
             'description': 'These tests only run on current data. They comprise the automated component of the Aid Transparency Index, which aims to rank donors by data quality.',
-            'filename': os.path.join(CURRENT_PATH, 'test_definitions', 'pwyf-tests.yaml'),
+            'filename': join(CURRENT_PATH, 'test_definitions', 'pwyf-tests.yaml'),
         },
     }
     DEFAULT_TEST_SET = 'pwyf'
