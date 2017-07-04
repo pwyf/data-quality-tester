@@ -15,7 +15,7 @@ class Config(object):
     ALLOWED_EXTENSIONS = ('xml',)
     TEST_SETS = {
         'rulesets': {
-            'name': 'IATI Standard Ruleset tests',
+            'name': 'IATI Standard Ruleset (Experimental)',
             'description': 'These rules catch stuff that doesn’t really make sense, e.g. end dates before start dates.',
             'filename': os.path.join(CURRENT_PATH, 'test_definitions', '202-ruleset.yaml'),
         },
@@ -25,7 +25,7 @@ class Config(object):
             'filename': os.path.join(CURRENT_PATH, 'test_definitions', 'open-ag-tests.yaml'),
         },
         'pwyf': {
-            'name': 'Publish What You Fund index tests',
+            'name': 'Aid Transparency Index tests',
             'description': 'These tests only run on current data. They comprise the automated component of the Aid Transparency Index, which aims to rank donors by data quality.',
             'filename': os.path.join(CURRENT_PATH, 'test_definitions', 'pwyf-tests.yaml'),
         },
