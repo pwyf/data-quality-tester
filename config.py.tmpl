@@ -17,17 +17,17 @@ class Config(object):
         'rulesets': {
             'name': 'IATI Standard Ruleset tests',
             'description': 'These rules catch stuff that doesn’t really make sense, e.g. end dates before start dates.',
-            'tests_file': os.path.join(CURRENT_PATH, 'test_definitions', '202-ruleset.yaml'),
+            'filename': os.path.join(CURRENT_PATH, 'test_definitions', '202-ruleset.yaml'),
         },
         'openag': {
             'name': 'Open Ag tests',
             'description': 'These tests only run on agricultural activities. They search for the existence of bits of data that are crucial for agricultural data to begin to be useful.',
-            'tests_file': os.path.join(CURRENT_PATH, 'test_definitions', 'open-ag-tests.yaml'),
+            'filename': os.path.join(CURRENT_PATH, 'test_definitions', 'open-ag-tests.yaml'),
         },
         'pwyf': {
             'name': 'Publish What You Fund index tests',
             'description': 'These tests only run on current data. They comprise the automated component of the Aid Transparency Index, which aims to rank donors by data quality.',
-            'tests_file': os.path.join(CURRENT_PATH, 'test_definitions', 'pwyf-tests.yaml'),
+            'filename': os.path.join(CURRENT_PATH, 'test_definitions', 'pwyf-tests.yaml'),
         },
     }
     DEFAULT_TEST_SET = 'pwyf'
