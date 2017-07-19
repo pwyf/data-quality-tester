@@ -39,5 +39,7 @@ pre { white-space: pre-wrap; }
 {% block extra_js %}
 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=false&amp;skin=sons-of-obsidian"></script>
 <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
-<script src="{{ url_for('static', filename='js/activity.js') }}"></script>
+{% assets "js_activity" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
 {% endblock %}
