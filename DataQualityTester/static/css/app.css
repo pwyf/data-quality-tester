@@ -107,3 +107,17 @@ body {
   text-align: center;
   font-size: 10vh;
 }
+
+li.pwyf-logo {
+    padding: 0;
+}
+li.pwyf-logo a, li.pwyf-logo a:hover {
+    background: #ffffff !important;
+    color: #ffffff;
+    height: 100%;
+    padding: 2px;
+}
+li.pwyf-logo a img, li.pwyf-logo a:hover img {
+    height: 45px;
+    padding: 3px;
+}
