@@ -91,3 +91,19 @@ body {
   transform:rotate(45deg);
   z-index: 999;
 }
+
+#loading {
+  display: none;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  padding-top: 100px;
+  z-index: 99;
+  background-color: #000;
+  opacity: 0.5;
+  color: #fff;
+  text-align: center;
+  font-size: 10vh;
+}
