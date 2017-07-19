@@ -1,6 +1,6 @@
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
-  padding-top: 50px;
+  padding-top: 60px;
 }
 
 #accordion .panel-heading,
@@ -63,10 +63,6 @@ body {
   width: 300px;
 }
 
-.sub-header {
-  padding-top: 20px;
-}
-
 #test-set-controls {
   padding-bottom: 20px;
 }
@@ -106,4 +102,18 @@ body {
   color: #fff;
   text-align: center;
   font-size: 10vh;
+}
+
+li.pwyf-logo {
+    padding: 0;
+}
+li.pwyf-logo a, li.pwyf-logo a:hover {
+    background: #ffffff !important;
+    color: #ffffff;
+    height: 100%;
+    padding: 2px;
+}
+li.pwyf-logo a img, li.pwyf-logo a:hover img {
+    height: 45px;
+    padding: 3px;
 }
