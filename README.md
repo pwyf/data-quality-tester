@@ -1,5 +1,8 @@
 # Data Quality Tester
 
+Test your IATI data against the Publish What You Fund Aid Transparency
+Index tests.
+
 ## Installation
 
 1. Clone the repository:
@@ -22,13 +25,13 @@
     pip install -r requirements.txt
     ```
 
-4. Copy (and edit, if you wish) config.py.tmpl:
+4. Copy (and edit, if you wish) `config.py.tmpl`:
 
     ```
     cp config.py.tmpl config.py
     ```
 
-5. Setup the database:
+5. Set up the database:
 
     ```
     python manage.py db upgrade
