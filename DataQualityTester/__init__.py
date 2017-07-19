@@ -12,7 +12,6 @@ app.secret_key = app.config['SECRET_KEY']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 assets = FlaskAssets(app)
-
 assets.register('js_base', Bundle(
     join('js', 'jquery-1.12.4.js'),
     join('js', 'bootstrap-3.3.7.js'),
@@ -31,7 +30,6 @@ assets.register('css_base', Bundle(
     filters='cssmin',
     output=join('gen', 'css.%(version)s.min.css'))
 )
-
 
 db = SQLAlchemy(app)
 
