@@ -178,6 +178,8 @@ class TestSet():
             components.append((c['name'], Component(c['name'], indicators)))
         self.components = OrderedDict(components)
         self.filter = y['filter'] if 'filter' in y else None
+        # bdd-tester
+        self.filepath = test_set['filepath']
 
     @property
     def all_test_sets(self):

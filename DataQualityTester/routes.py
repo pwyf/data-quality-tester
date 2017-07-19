@@ -1,5 +1,5 @@
 from DataQualityTester import app
-from DataQualityTester.views import api, pages, quality, uploader
+from DataQualityTester.views import api, bdd_tester, pages, quality, uploader
 
 
 @app.route('/')
@@ -42,3 +42,7 @@ def package_quality_by_test(uuid, test):
 @app.route('/activity/<uuid:uuid>/<path:iati_identifier>')
 def activity_quality(uuid, iati_identifier):
     return quality.activity_quality(uuid, iati_identifier)
+
+@app.route('/feature/<component>/<indicator>.json')
+def test_feature(component, indicator):
+    return bdd_tester.test_feature(component, indicator)
