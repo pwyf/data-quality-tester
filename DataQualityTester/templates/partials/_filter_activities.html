@@ -1,5 +1,8 @@
 {% if test_set.filter %}
-<div class="col-lg-offset-7 col-lg-5">
+<div class="col-lg-2">
+  <a href="{{ url_for('home') }}" class="btn btn-default">Test another file</a>
+</div>
+<div class="col-lg-offset-5 col-lg-5">
   <form method="get" class="filter-form">
     {% for k, v in params.items() %}
       {% if k not in ['uuid', 'filter', 'component'] %}
