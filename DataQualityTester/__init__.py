@@ -2,6 +2,7 @@ from os.path import join
 
 from flask import Flask
 from flask_assets import Environment as FlaskAssets, Bundle
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -32,5 +33,6 @@ assets.register('css_base', Bundle(
 )
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 from DataQualityTester import routes, models, views, lib

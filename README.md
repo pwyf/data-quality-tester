@@ -31,14 +31,20 @@ Index tests.
     cp config.py.tmpl config.py
     ```
 
-5. Set up the database:
+5. Set the FLASK_APP environment variable:
 
     ```
-    python manage.py db upgrade
+    export FLASK_APP=DataQualityTester/__init__.py
     ```
 
-6. Run:
+6. Set up the database:
 
     ```
-    python manage.py runserver
+    flask db upgrade
+    ```
+
+7. Run:
+
+    ```
+    flask run
     ```
