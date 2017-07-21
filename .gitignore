@@ -1,3 +1,14 @@
+# uploads directory
+/media/
+
+# npm
+node_modules/
+
+/config.py
+
+# sqlite3 databases
+*.sqlite3
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -8,17 +19,18 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-env/
 build/
 develop-eggs/
 dist/
 downloads/
 eggs/
 .eggs/
+lib/
 lib64/
 parts/
 sdist/
 var/
+wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -41,7 +53,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*,cover
+*.cover
 .hypothesis/
 
 # Translations
@@ -65,7 +77,7 @@ docs/_build/
 # PyBuilder
 target/
 
-# IPython Notebook
+# Jupyter Notebook
 .ipynb_checkpoints
 
 # pyenv
@@ -74,29 +86,26 @@ target/
 # celery beat schedule file
 celerybeat-schedule
 
-# dotenv
-.env
+# SageMath parsed files
+*.sage.py
 
-# virtualenv
-.venv/
+# Environments
+.ve
+.env
+.venv
+env/
 venv/
 ENV/
-.ve/
-
 
 # Spyder project settings
 .spyderproject
+.spyproject
 
 # Rope project settings
 .ropeproject
 
-# npm
-node_modules/
+# mkdocs documentation
+/site
 
-/config.py
-
-# sqlite3 databases
-*.sqlite3
-
-# uploads directory
-/media/
+# mypy
+.mypy_cache/
