@@ -10,7 +10,6 @@ app = Flask(__name__)
 
 app.config.from_object('config.Config')
 app.secret_key = app.config['SECRET_KEY']
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 assets = FlaskAssets(app)
 assets.register('js_base', Bundle(

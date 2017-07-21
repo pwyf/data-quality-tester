@@ -11,6 +11,7 @@ class Config(object):
     CURRENT_PATH = dirname(__file__)
     MEDIA_FOLDER = join(CURRENT_PATH, 'media')
     SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(join(CURRENT_PATH, 'db.sqlite3'))
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     ALLOWED_EXTENSIONS = ('xml',)
     TEST_SETS = {
         'rulesets': {
