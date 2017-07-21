@@ -31,11 +31,13 @@ Index tests.
     cp config.py.tmpl config.py
     ```
 
-5. Set the FLASK_APP environment variable:
+5. Set the `FLASK_APP` environment variable:
 
     ```
     export FLASK_APP=DataQualityTester/__init__.py
     ```
+
+    (You can append it to `.ve/bin/activate`)
 
 6. Set up the database:
 
@@ -46,5 +48,5 @@ Index tests.
 7. Run:
 
     ```
-    flask run
+    flask run --with-threads
     ```
