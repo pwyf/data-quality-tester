@@ -43,6 +43,15 @@ def package_quality_by_test(uuid, test):
 def activity_quality(uuid, iati_identifier):
     return quality.activity_quality(uuid, iati_identifier)
 
-@app.route('/feature/<component>/<indicator>.json')
-def test_feature(component, indicator):
-    return bdd_tester.test_feature(component, indicator)
+
+
+
+
+
+@app.route('/test/<uuid:uuid>')
+def test_feature(uuid):
+    return bdd_tester.test_features(uuid)
+
+@app.route('/result/<uuid:task_id>')
+def test_results(task_id):
+    return bdd_tester.test_results(task_id)

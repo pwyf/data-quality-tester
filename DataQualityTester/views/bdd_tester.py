@@ -1,26 +1,37 @@
 import json
 from os.path import exists, join
 
-from flask import abort, jsonify, request
+from flask import abort, jsonify, request, url_for
 from bdd_tester import bdd_tester
 
+from DataQualityTester.tasks import test_file
 from DataQualityTester.models import SuppliedData, TestSet
 
 
-def test_feature(component, indicator):
-    uuid = request.args.get('uuid', '')
-    supplied_data = SuppliedData.query.get_or_404(uuid)
+def test_features(uuid):
+    supplied_data = SuppliedData.query.get_or_404(str(uuid))
 
     test_set_id = request.args.get('test_set')
     test_set = TestSet(test_set_id)
 
-    feature_path = join(test_set.filepath, component, indicator + '.feature')
-    if not exists(feature_path):
-        print(feature_path)
-        return abort(404)
-
     output_path = supplied_data.upload_dir()
 
-    results = bdd_tester(supplied_data.path_to_file(), [feature_path], output_path=output_path)
+    task = test_file.delay(supplied_data.path_to_file(), test_set.filepath, output_path=output_path)
 
-    return jsonify(results)
+    result_url = url_for('test_results', task_id=task.id, _external=True)
+    return jsonify({'url': result_url}), 202, {'Location': result_url}
+
+def test_results(task_id):
+    task = test_file.AsyncResult(str(task_id))
+    if task.state == 'PENDING':
+        return jsonify({
+            'status': task.state,
+            'results': {},
+            'progress': 0,
+        })
+    else:
+        return jsonify({
+            'status': task.state,
+            'results': task.info.get('results'),
+            'progress': task.info.get('progress'),
+        })

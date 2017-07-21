@@ -6,6 +6,9 @@ node_modules/
 
 /config.py
 
+# redis
+*.rdb
+
 # sqlite3 databases
 *.sqlite3
 

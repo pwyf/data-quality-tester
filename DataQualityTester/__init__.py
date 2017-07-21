@@ -1,5 +1,6 @@
 from os.path import join
 
+from celery import Celery
 from flask import Flask
 from flask_assets import Environment as FlaskAssets, Bundle
 from flask_migrate import Migrate
@@ -10,6 +11,9 @@ app = Flask(__name__)
 
 app.config.from_object('config.Config')
 app.secret_key = app.config['SECRET_KEY']
+
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
 
 assets = FlaskAssets(app)
 assets.register('js_base', Bundle(

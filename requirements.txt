@@ -3,6 +3,9 @@ foxpath
 pyyaml
 requests
 
+celery==4.0.2
+redis==2.10.5
+
 Flask==0.12.2
 Flask-Assets==0.12
 Flask-Migrate==2.0.3
