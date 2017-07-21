@@ -2,7 +2,6 @@ lxml==3.7.2
 foxpath
 pyyaml
 requests
-rfc6266==0.0.4
 
 Flask==0.12.2
 Flask-Assets==0.12

@@ -10,7 +10,6 @@ import uuid
 from foxpath import Foxpath
 from lxml import etree
 import requests
-import rfc6266  # (content-disposition header parser)
 from werkzeug.utils import secure_filename
 import yaml
 
@@ -95,11 +94,6 @@ class SuppliedData(db.Model):
         file_extension = None
         if content_type in ('text/xml', 'application/xml',):
             file_extension = 'xml'
-
-        if not file_extension:
-            possible_extension = rfc6266.parse_requests_response(r).filename_unsafe.split('.')[-1]
-            if possible_extension == 'xml':
-                file_extension = possible_extension
 
         filename = r.url.split('/')[-1].split('?')[0][:100]
         if filename == '':
