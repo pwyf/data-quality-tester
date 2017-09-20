@@ -13,7 +13,7 @@ def test_file(self, path_to_file, feature_path, output_path):
     overall_results = {}
     for idx, feature in enumerate(features):
         results = bdd_tester(filepath=path_to_file, features=[feature], output_path=output_path)
-        overall_results = {**overall_results, **results}
+        overall_results.update(results)
         self.update_state(state='RUNNING', meta={'progress': 100 * idx / total, 'results': overall_results})
 
     return {'progress': 100, 'results': overall_results}
