@@ -13,17 +13,20 @@ from DataQualityTester.models import SuppliedData
 @click.option('-a', '--all', 'flush_all', is_flag=True)
 def flush_data(flush_all):
     '''
-    Delete files that are older than 7 days (or all files, using the --all switch)
+    Delete files that are older than 7 days
+    (or all files, using the --all switch)
     '''
     if flush_all:
         old_data = SuppliedData.query.all()
     else:
-        old_data = SuppliedData.query.filter(SuppliedData.created <= datetime.utcnow() - timedelta(days=7))
+        old_data = SuppliedData.query.filter(
+            SuppliedData.created <= datetime.utcnow() - timedelta(days=7))
     for supplied_data in old_data:
         try:
             shutil.rmtree(supplied_data.upload_dir())
         except FileNotFoundError:
             continue
+
 
 @app.cli.command()
 def refresh_codelists():
@@ -42,8 +45,10 @@ def refresh_codelists():
             'codelist_version': 'clv3',
         },
     )
-    all_codelists_tmpl = 'http://iatistandard.org/{iati_version}/codelists/downloads/{codelist_version}/codelists.json'
-    codelist_tmpl = 'http://iatistandard.org/{iati_version}/codelists/downloads/{codelist_version}/json/en/{codelist_name}.json'
+    all_codelists_tmpl = 'http://iatistandard.org/{iati_version}/' + \
+        'codelists/downloads/{codelist_version}/codelists.json'
+    codelist_tmpl = 'http://iatistandard.org/{iati_version}/' + \
+        'codelists/downloads/{codelist_version}/json/en/{codelist_name}.json'
     codelists_path = join(app.config.get('CURRENT_PATH'), 'steps', 'codelists')
     for version in versions:
         codelist_path = join(codelists_path, version['iati_version'][0])
@@ -51,7 +56,8 @@ def refresh_codelists():
         print('fetching {}'.format(all_codelists_url))
         codelist_names = requests.get(all_codelists_url).json()
         for codelist_name in codelist_names:
-            codelist_url = codelist_tmpl.format(codelist_name=codelist_name, **version)
+            codelist_url = codelist_tmpl.format(codelist_name=codelist_name,
+                                                **version)
             print('fetching {}'.format(codelist_url))
             r = requests.get(codelist_url)
             with open(join(codelist_path, codelist_name + '.json'), 'w') as f:

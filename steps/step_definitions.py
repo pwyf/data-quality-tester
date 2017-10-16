@@ -4,31 +4,35 @@ import logging
 from os.path import dirname, join
 import re
 
+from behave import given, then
 from bdd_tester.exceptions import StepException
 
 
 @given('file is an organisation file')
-def step_impl(context):
+def given_org_file(context):
     if context.filetype != 'org':
         raise StepException(context, 'Not an organisation file')
 
+
 # NB the original PWYF test also checked non-empty
 @then('`{xpath_expression}` should be present')
-def step_impl(context, xpath_expression):
+def then_is_present(context, xpath_expression):
     vals = context.xml.xpath(xpath_expression)
     if len(vals) == 0:
         msg = '`{}` not found'.format(xpath_expression)
         raise StepException(context, msg)
+
 
 @then('every `{xpath_expression}` should be on the {codelist} codelist')
-def step_impl(context, xpath_expression, codelist):
+def then_every_on_codelist(context, xpath_expression, codelist):
     vals = context.xml.xpath(xpath_expression)
 
     if len(vals) == 0:
         msg = '`{}` not found'.format(xpath_expression)
         raise StepException(context, msg)
 
-    codelist_path = join(dirname(__file__), 'codelists', '2', codelist + '.json')
+    codelist_path = join(dirname(__file__), 'codelists', '2',
+                         codelist + '.json')
     with open(codelist_path) as f:
         j = json.load(f)
     codes = [x['code'] for x in j['data']]
@@ -52,8 +56,9 @@ def step_impl(context, xpath_expression, codelist):
 
     assert(True)
 
+
 @then('at least one `{xpath_expression}` should be on the {codelist} codelist')
-def step_impl(context, xpath_expression, codelist):
+def then_at_least_one_on_codelist(context, xpath_expression, codelist):
     vals = context.xml.xpath(xpath_expression)
 
     if len(vals) == 0:
@@ -77,8 +82,9 @@ def step_impl(context, xpath_expression, codelist):
     )
     raise StepException(context, msg)
 
+
 @given('the activity is current')
-def step_impl(context):
+def given_activity_is_current(context):
     try:
         context.execute_steps('given `activity-status/@code` is 2')
         return
@@ -129,8 +135,9 @@ def step_impl(context):
     msg = 'Activity is not current'
     raise StepException(context, msg)
 
+
 @then('`{xpath_expression}` should have at least {reqd_chars:d} characters')
-def step_impl(context, xpath_expression, reqd_chars):
+def then_at_least_x_chars(context, xpath_expression, reqd_chars):
     vals = context.xml.xpath(xpath_expression)
     if len(vals) == 0:
         msg = '`{}` not found'.format(xpath_expression)
@@ -147,17 +154,20 @@ def step_impl(context, xpath_expression, reqd_chars):
         )
         raise StepException(context, msg)
 
+
 @given('`{xpath_expression}` is one of {consts}')
-def step_impl(context, xpath_expression, consts):
+def given_is_one_of_consts(context, xpath_expression, consts):
     consts_list = re.split(r', | or ', consts)
     vals = context.xml.xpath(xpath_expression)
     if len(vals) == 0:
-        # explain = '{vals_explain} should be one of {const_explain}. However, the activity doesn\'t contain that element'
+        # explain = '{vals_explain} should be one of {const_explain}. ' + \
+        #           'However, the activity doesn\'t contain that element'
         assert(True)
         return
     for val in vals:
         if val in consts_list:
-            # explain = '{vals_explain} is one of {const_explain} (it\'s {val})'
+            # explain = '{vals_explain} is one of {const_explain} ' + \
+            #           '(it\'s {val})'
             assert(True)
             return
     msg = '`{}` is not one of {} (it\'s {})'.format(
@@ -167,36 +177,44 @@ def step_impl(context, xpath_expression, consts):
     )
     raise StepException(context, msg)
 
+
 def mkdate(date_str):
     try:
         return datetime.strptime(date_str, '%Y-%m-%d').date()
     except ValueError:
         return None
 
+
 @given('`{xpath_expression}` is at least {months_ahead:d} months ahead')
-def step_impl(context, xpath_expression, months_ahead):
+def given_at_least_x_months_ahead(context, xpath_expression, months_ahead):
     dates = context.xml.xpath(xpath_expression)
 
     if len(dates) == 0:
-        msg = '`{}` is not present, so assuming it is not at least {} months ahead'.format(
-            xpath_expression,
-            months_ahead,
-        )
+        msg = '`{0}` is not present, so assuming it is not at ' + \
+              'least {1} months ahead'.format(
+                  xpath_expression,
+                  months_ahead,
+              )
         raise StepException(context, msg)
 
-    valid_dates = list(filter(lambda x: x, [mkdate(date_str) for date_str in dates]))
+    valid_dates = list(filter(
+        lambda x: x, [mkdate(date_str) for date_str in dates]))
     if not valid_dates:
-        # explain = '{date} does not use format YYYY-MM-DD, so assuming it is not at least {months} months ahead'
+        # explain = '{date} does not use format YYYY-MM-DD, so ' \
+        #           'assuming it is not at least {months} months ahead'
         # explain = explain.format(date=dates[0], months=months)
-        msg = '`{}` does not use format YYYY-MM-DD, so assuming it is not at least {} months ahead'.format(
-            dates[0],
-            months_ahead,
-        )
+        msg = '`{}` does not use format YYYY-MM-DD, so assuming it ' + \
+              'is not at least {} months ahead'.format(
+                  dates[0],
+                  months_ahead,
+              )
         raise StepException(context, msg)
-
-    prefix = '' if len(valid_dates) == 1 or max(valid_dates) == min(valid_dates) else 'the latest '
 
     max_date = max(valid_dates)
+    prefix = ''
+    if len(valid_dates) > 1 and max_date != min(valid_dates):
+        prefix = 'the latest '
+
     year_diff = max_date.year - context.today.year
     month_diff = 12 * year_diff + max_date.month - context.today.month
     if month_diff == months_ahead:
@@ -211,23 +229,32 @@ def step_impl(context, xpath_expression, months_ahead):
         )
         raise StepException(context, msg)
 
+
 @given('`{xpath_expression}` is less than {months_ago:d} months ago')
-def step_impl(context, xpath_expression, months_ago):
+def given_is_less_than_x_months_ago(context, xpath_expression, months_ago):
     dates = context.xml.xpath(xpath_expression)
 
     if len(dates) == 0:
-        msg = '{xpath_expression} is not present, so assuming it is not less than {months_ago} months ago'
-        msg = msg.format(xpath_expression=xpath_expression, months_ago=months_ago)
+        msg = '{xpath_expression} is not present, so assuming it is ' + \
+              'not less than {months_ago} months ago'
+        msg = msg.format(xpath_expression=xpath_expression,
+                         months_ago=months_ago)
         raise StepException(context, msg)
 
-    valid_dates = list(filter(lambda x: x, [mkdate(date_str) for date_str in dates]))
+    valid_dates = list(filter(
+        lambda x: x, [mkdate(date_str) for date_str in dates]))
     if not valid_dates:
-        msg = '{xpath_expression} ({date}) does not use format YYYY-MM-DD, so assuming it is not less than {months_ago} months ago'
-        msg = msg.format(xpath_expression=xpath_expression, date=dates[0], months_ago=months_ago)
+        msg = '{xpath_expression} ({date}) does not use format ' + \
+              'YYYY-MM-DD, so assuming it is not less than {months_ago} ' + \
+              'months ago'
+        msg = msg.format(xpath_expression=xpath_expression,
+                         date=dates[0], months_ago=months_ago)
         raise StepException(context, msg)
 
     max_date = max(valid_dates)
-    prefix = '' if len(valid_dates) == 1 or max_date == min(valid_dates) else 'The most recent '
+    prefix = ''
+    if len(valid_dates) > 1 and max_date != min(valid_dates):
+        prefix = 'the most recent '
 
     current_date = context.today
     if max_date > current_date:
@@ -245,12 +272,15 @@ def step_impl(context, xpath_expression, months_ago):
         assert(True)
         return
 
-    msg = '{prefix}{xpath_expression} ({max_date}) is not less than {months_ago} months ago'
-    msg = msg.format(prefix=prefix, xpath_expression=xpath_expression, max_date=max_date, months_ago=months_ago)
+    msg = '{prefix}{xpath_expression} ({max_date}) is not less than ' + \
+          '{months_ago} months ago'
+    msg = msg.format(prefix=prefix, xpath_expression=xpath_expression,
+                     max_date=max_date, months_ago=months_ago)
     raise StepException(context, msg)
 
+
 @given('`{xpath_expression}` is not {const}')
-def step_impl(context, xpath_expression, const):
+def given_is_not_const(context, xpath_expression, const):
     vals = context.xml.xpath(xpath_expression)
     for val in vals:
         if val == const:
@@ -261,8 +291,9 @@ def step_impl(context, xpath_expression, const):
             raise StepException(context, msg)
     assert(True)
 
+
 @given('`{xpath_expression}` is {const}')
-def step_impl(context, xpath_expression, const):
+def given_is_const(context, xpath_expression, const):
     vals = context.xml.xpath(xpath_expression)
     for val in vals:
         if val == const:
@@ -275,12 +306,14 @@ def step_impl(context, xpath_expression, const):
     )
     raise StepException(context, msg)
 
+
 @then('`{xpath_expression}` should be available forward {period}')
-def step_impl(context, xpath_expression, period):
+def then_is_available_forward(context, xpath_expression, period):
     vals = context.xml.xpath(xpath_expression)
 
     def max_date(dates, default):
-        dates = list(filter(lambda x: x is not None, [mkdate(d) for d in dates]))
+        dates = list(filter(
+            lambda x: x is not None, [mkdate(d) for d in dates]))
         if dates == []:
             return default
         return max(dates)
@@ -296,7 +329,8 @@ def step_impl(context, xpath_expression, period):
 
     def check_after(element, today):
         dates = element.xpath('period-start/@iso-date|period-end/@iso-date')
-        dates = list(filter(lambda x: x is not None, [mkdate(d) for d in dates]))
+        dates = list(filter(
+            lambda x: x is not None, [mkdate(d) for d in dates]))
         return any([date >= today for date in dates])
 
     def max_budget_length(element, max_budget_length):
@@ -330,6 +364,7 @@ def step_impl(context, xpath_expression, period):
     msg = 'Failed'
     raise StepException(context, msg)
 
+
 def either_or(context, tmpl, xpath_expressions):
     exceptions = []
     for xpath_expression in xpath_expressions:
@@ -346,24 +381,29 @@ def either_or(context, tmpl, xpath_expressions):
     msg = ' and '.join([msg for msg in exceptions])
     raise StepException(context, msg)
 
+
 @given('either `{xpath_expression1}` or `{xpath_expression2}` {statement}')
-def step_impl(context, xpath_expression1, xpath_expression2, statement):
+def given_either_or(context, xpath_expression1, xpath_expression2, statement):
     xpath_expressions = [xpath_expression1, xpath_expression2]
     tmpl = 'given `{{expression}}` {statement}'.format(
         statement=statement,
     )
     either_or(context, tmpl, xpath_expressions)
 
+
 @then('either `{xpath_expression1}` or `{xpath_expression2}` {statement}')
-def step_impl(context, xpath_expression1, xpath_expression2, statement):
+def then_either_or(context, xpath_expression1, xpath_expression2, statement):
     xpath_expressions = [xpath_expression1, xpath_expression2]
     tmpl = 'then `{{expression}}` {statement}'.format(
         statement=statement,
     )
     either_or(context, tmpl, xpath_expressions)
 
-@then('either {modifier} `{xpath_expression1}` or `{xpath_expression2}` {statement}')
-def step_impl(context, modifier, xpath_expression1, xpath_expression2, statement):
+
+@then('either {modifier} `{xpath_expression1}` or ' +
+      '`{xpath_expression2}` {statement}')
+def then_either_mod_or(context, modifier, xpath_expression1,
+                       xpath_expression2, statement):
     xpath_expressions = [xpath_expression1, xpath_expression2]
     tmpl = 'then {modifier} `{{expression}}` {statement}'.format(
         modifier=modifier,

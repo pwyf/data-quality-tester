@@ -1,10 +1,10 @@
 from collections import OrderedDict
-from lxml import etree
-from flask import abort, flash, jsonify, redirect, render_template, request, url_for
+from flask import abort, flash, redirect, render_template, request, url_for
 
-from DataQualityTester import app, db
-from DataQualityTester.lib import helpers
-from DataQualityTester.lib.exceptions import FileGoneException, InvalidXMLException, ActivityNotFoundException, NoFilteredActivitiesException
+from DataQualityTester import app
+from DataQualityTester.lib.exceptions import FileGoneException, \
+    InvalidXMLException, ActivityNotFoundException, \
+    NoFilteredActivitiesException
 from DataQualityTester.models import SuppliedData, Results, TestSet
 
 
@@ -28,6 +28,7 @@ def package_overview(uuid):
     context['params'] = response['params']
     return render_template('overview.html', **context)
 
+
 def _package_overview(uuid):
     params = {'uuid': str(uuid)}
     params.update(dict(request.args.items()))
@@ -37,7 +38,6 @@ def _package_overview(uuid):
     test_set_id = params.get('test_set')
     test_set = TestSet(test_set_id)
 
-    all_tests = test_set.all_tests
     filter_ = test_set.filter if filter_activities else None
 
     results = Results(supplied_data, test_set, None, filter_)
@@ -46,7 +46,8 @@ def _package_overview(uuid):
     percentages = results.percentages
     components = OrderedDict()
     for component in test_set.components.values():
-        items = [percentages[test] for test in component.tests if test in percentages]
+        items = [percentages[test] for test in component.tests
+                 if test in percentages]
         if len(items) == 0:
             continue
         components[component.name] = sum(items) / len(items)
@@ -63,6 +64,7 @@ def _package_overview(uuid):
         'params': params,
     }
 
+
 def package_quality_by_component(uuid, component):
     try:
         response = _package_quality_by_component(uuid, component)
@@ -72,6 +74,7 @@ def package_quality_by_component(uuid, component):
     context = response['data']
     context['params'] = response['params']
     return render_template('quality_by_component.html', **context)
+
 
 def _package_quality_by_component(uuid, component_filter):
     params = {'uuid': str(uuid), 'component': component_filter}
@@ -97,6 +100,7 @@ def _package_quality_by_component(uuid, component_filter):
         'params': params,
     }
 
+
 def package_quality_by_test(uuid, test):
     try:
         response = _package_quality_by_test(uuid, test)
@@ -106,6 +110,7 @@ def package_quality_by_test(uuid, test):
     context = response['data']
     context['params'] = response['params']
     return render_template('quality_by_test.html', **context)
+
 
 def _package_quality_by_test(uuid, test):
     params = {
@@ -136,7 +141,8 @@ def _package_quality_by_test(uuid, test):
 
     # page = int(params.get('page', 1))
     # offset = (page - 1) * per_page
-    # pagination = Pagination(page, app.config['PER_PAGE'], len(failing_results))
+    # pagination = Pagination(
+    #     page, app.config['PER_PAGE'], len(failing_results))
     # activities_results = activities_results[offset:offset + per_page]
 
     context = {
@@ -153,6 +159,7 @@ def _package_quality_by_test(uuid, test):
         'params': params,
     }
 
+
 def activity_quality(uuid, iati_identifier):
     try:
         response = _activity_quality(uuid, iati_identifier)
@@ -162,13 +169,13 @@ def activity_quality(uuid, iati_identifier):
     context['params'] = response['params']
     return render_template('activity.html', **context)
 
+
 def _activity_quality(uuid, iati_identifier):
     params = {
         'uuid': str(uuid),
         'iati_identifier': iati_identifier,
     }
     supplied_data = SuppliedData.query.get_or_404(str(uuid))
-    filter_activities = params.get('filter') != 'false'
     component_filter = params.get('component')
 
     test_set_id = app.config['DEFAULT_TEST_SET']
@@ -176,7 +183,6 @@ def _activity_quality(uuid, iati_identifier):
 
     component = test_set.components.get(component_filter)
     tests = component.tests if component else test_set.all_tests
-    filter_ = test_set.filter if filter_activities else None
 
     activity = supplied_data.get_activity(iati_identifier)
     results = activity.test(tests)

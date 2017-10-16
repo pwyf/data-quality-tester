@@ -10,47 +10,52 @@ def home():
 # def about():
 #     return pages.about()
 
+
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     return uploader.upload()
+
 
 # api
 @app.route('/package/<uuid:uuid>.json')
 def api_package_quality(uuid):
     return api.package_quality(uuid)
 
+
 @app.route('/package/component/<component>/<uuid:uuid>.json')
 def api_package_quality_by_component(uuid, component):
     return api.package_quality_by_component(uuid, component)
+
 
 @app.route('/upload.json', methods=['GET', 'POST'])
 def api_upload():
     return api.upload()
 
+
 @app.route('/package/<uuid:uuid>')
 def package_overview(uuid):
     return quality.package_overview(uuid)
+
 
 @app.route('/package/component/<component>/<uuid:uuid>')
 def package_quality_by_component(uuid, component):
     return quality.package_quality_by_component(uuid, component)
 
+
 @app.route('/package/test/<test>/<uuid:uuid>')
 def package_quality_by_test(uuid, test):
     return quality.package_quality_by_test(uuid, test)
+
 
 @app.route('/activity/<uuid:uuid>/<path:iati_identifier>')
 def activity_quality(uuid, iati_identifier):
     return quality.activity_quality(uuid, iati_identifier)
 
 
-
-
-
-
 @app.route('/test/<uuid:uuid>')
 def test_feature(uuid):
     return bdd_tester.test_features(uuid)
+
 
 @app.route('/result/<uuid:task_id>')
 def test_results(task_id):

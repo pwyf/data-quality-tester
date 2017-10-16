@@ -1,11 +1,13 @@
 import json
 from os.path import join
 
+from behave import step
+
 from bdd_tester.exceptions import StepException
 
 
 @step('at least one `{xpath_expression}` is on the {codelist} codelist')
-def step_impl(context, xpath_expression, codelist):
+def step_at_least_one_on_codelist(context, xpath_expression, codelist):
     vals = context.xml.xpath(xpath_expression)
 
     if len(vals) == 0:

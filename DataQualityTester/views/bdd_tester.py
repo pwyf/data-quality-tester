@@ -1,8 +1,4 @@
-import json
-from os.path import exists, join
-
-from flask import abort, jsonify, request, url_for
-from bdd_tester import bdd_tester
+from flask import jsonify, request, url_for
 
 from DataQualityTester.tasks import test_file
 from DataQualityTester.models import SuppliedData, TestSet
@@ -16,10 +12,13 @@ def test_features(uuid):
 
     output_path = supplied_data.upload_dir()
 
-    task = test_file.delay(supplied_data.path_to_file(), test_set.filepath, output_path=output_path)
+    task = test_file.delay(supplied_data.path_to_file(),
+                           test_set.filepath,
+                           output_path=output_path)
 
     result_url = url_for('test_results', task_id=task.id, _external=True)
     return jsonify({'url': result_url}), 202, {'Location': result_url}
+
 
 def test_results(task_id):
     task = test_file.AsyncResult(str(task_id))

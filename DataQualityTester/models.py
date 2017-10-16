@@ -15,7 +15,9 @@ import yaml
 
 from DataQualityTester import app, db
 from DataQualityTester.lib import helpers
-from DataQualityTester.lib.exceptions import BadUrlException, FileGoneException, InvalidXMLException, ActivityNotFoundException
+from DataQualityTester.lib.exceptions import (
+    BadUrlException, FileGoneException,
+    InvalidXMLException, ActivityNotFoundException)
 
 
 class SuppliedData(db.Model):
@@ -23,7 +25,6 @@ class SuppliedData(db.Model):
         upload_form = 'File upload'
         url_form = 'Downloaded from URL'
         text_form = 'Pasted into textarea'
-
 
     id = db.Column(db.String(40), primary_key=True)
     source_url = db.Column(db.String(2000))
@@ -33,10 +34,11 @@ class SuppliedData(db.Model):
 
     def allowed_file_extension(self, filename):
         return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+            filename.rsplit('.', 1)[1].lower() \
+            in app.config['ALLOWED_EXTENSIONS']
 
     def generate_uuid(self):
-       return str(uuid.uuid4())
+        return str(uuid.uuid4())
 
     def parse(self):
         try:
@@ -44,33 +46,38 @@ class SuppliedData(db.Model):
         except OSError:
             raise FileGoneException('Sorry – The file no longer exists.')
         except etree.XMLSyntaxError:
-            raise InvalidXMLException('The file does not appear to be a valid XML file.')
+            raise InvalidXMLException(
+                'The file does not appear to be a valid XML file.')
         return doc
 
     @property
     def name(self):
         if self.form_name == self.FormName.url_form:
-            return 'The <a href="{url}">linked IATI data</a>'.format(url=self.source_url)
+            return 'The <a href="{url}">linked IATI data</a>'.format(
+                url=self.source_url)
         if self.form_name == self.FormName.upload_form:
             return 'The uploaded IATI data'
         return 'The pasted IATI data'
-
 
     def get_activities(self):
         return self.parse().xpath('//iati-activity')
 
     def get_activity(self, iati_identifier):
         doc = self.parse()
-        activities = doc.xpath('//iati-activity/iati-identifier[text()="{}"]/..'.format(iati_identifier))
+        activities = doc.xpath(
+            '//iati-activity/iati-identifier[text()="{}"]/..'.format(
+                iati_identifier))
         if len(activities) != 1:
-            raise ActivityNotFoundException('The requested activity couldn\'t be found in that file.')
+            raise ActivityNotFoundException(
+                'The requested activity couldn\'t be found in that file.')
         return Activity(activities[0])
 
     def is_valid(self, url):
         qualifying = ('scheme', 'netloc',)
         token = urlparse(url)
-        return all([getattr(token, qualifying_attr)
-            for qualifying_attr in qualifying])
+        return all([
+            getattr(token, qualifying_attr) for qualifying_attr in qualifying
+        ])
 
     def upload_dir(self):
         return join(app.config['MEDIA_FOLDER'], self.id)
@@ -80,7 +87,8 @@ class SuppliedData(db.Model):
 
     def download(self, url):
         if not self.is_valid(url):
-            raise BadUrlException('That source URL appears to be invalid. Please try again.')
+            raise BadUrlException(
+                'That source URL appears to be invalid. Please try again.')
         request_kwargs = {
             'headers': {'User-Agent': 'Publish What You Fund Simple Tester'},
             'stream': True,
@@ -115,9 +123,9 @@ class SuppliedData(db.Model):
         if form_name == 'url_form':
             filename = self.download(source_url)
         elif form_name == 'upload_form':
-            if file.filename != '' and self.allowed_file_extension(file.filename):
+            filename = file.filename
+            if filename != '' and self.allowed_file_extension(filename):
                 # save the file
-                filename = file.filename
                 filename = secure_filename(filename)
                 makedirs(self.upload_dir(), exist_ok=True)
                 filepath = join(self.upload_dir(), filename)
@@ -141,12 +149,19 @@ class Activity():
         self.el = el
 
     def __str__(self):
-        return etree.tostring(self.el, pretty_print=True).strip().decode('utf-8')
+        return etree.tostring(
+            self.el,
+            pretty_print=True
+        ).strip().decode('utf-8')
 
     def test(self, tests):
         foxpath = Foxpath()
         foxtests = foxpath.load_tests(tests, app.config['CODELISTS'])
-        results = foxpath.test_activity(self.el, foxtests, explain=True)['results']
+        results = foxpath.test_activity(
+            self.el,
+            foxtests,
+            explain=True
+        )['results']
         grouped = {
             0: [],
             1: [],
@@ -159,7 +174,10 @@ class Activity():
 
 class TestSet():
     def __init__(self, test_set_id):
-        self.id = test_set_id if test_set_id in app.config['TEST_SETS'] else app.config['DEFAULT_TEST_SET']
+        if test_set_id in app.config['TEST_SETS']:
+            self.id = test_set_id
+        else:
+            self.id = app.config['DEFAULT_TEST_SET']
         test_set = app.config['TEST_SETS'][self.id]
         self.name = test_set['name']
         self.description = test_set['description']
@@ -168,7 +186,8 @@ class TestSet():
         all_indicators = {x['name']: x for x in y['indicators']}
         components = []
         for c in y['components']:
-            indicators = [all_indicators[i] for i in c['indicators'] if i in all_indicators]
+            indicators = [all_indicators[i] for i in c['indicators']
+                          if i in all_indicators]
             components.append((c['name'], Component(c['name'], indicators)))
         self.components = OrderedDict(components)
         self.filter = y['filter'] if 'filter' in y else None
@@ -181,7 +200,9 @@ class TestSet():
 
     @property
     def all_tests(self):
-        return [t for c in self.components.values() for i in c.indicators for t in i['tests']]
+        return [t for c in self.components.values()
+                for i in c.indicators
+                for t in i['tests']]
 
     def get_test(self, test_name):
         return {t['name']: t for t in self.all_tests}[test_name]
@@ -201,7 +222,8 @@ class Component():
 
 
 class Results():
-    def __init__(self, supplied_data, test_set, current_tests=None, filter_=None):
+    def __init__(self, supplied_data, test_set,
+                 current_tests=None, filter_=None):
         self.supplied_data = supplied_data
         self.test_set = test_set
         self.filter = filter_
@@ -210,7 +232,8 @@ class Results():
             return
         if current_tests:
             for x in self.all:
-                x['results'] = dict(filter(lambda y: y[0] in current_tests, x['results'].items()))
+                x['results'] = dict(filter(
+                    lambda y: y[0] in current_tests, x['results'].items()))
         # summary by test
         self.summary_by_test = Foxpath.summarize_results(self.all)
 
@@ -234,7 +257,8 @@ class Results():
             results = self.load_cache(self.path_to_file())
         except FileNotFoundError:
             xml = self.supplied_data.parse()
-            reporting_org_strs = xml.xpath('//reporting-org/text() | //reporting-org/narrative/text()')
+            reporting_org_strs = xml.xpath(
+                '//reporting-org/text() | //reporting-org/narrative/text()')
             for reporting_org_str in reporting_org_strs:
                 reporting_org = reporting_org_str.strip()
                 if reporting_org != '':
@@ -248,13 +272,19 @@ class Results():
             if self.filter:
                 activities = Results.filter_activities(activities, self.filter)
                 meta['total_filtered_activities'] = len(activities)
-                self.save_cache(meta, join(self.supplied_data.upload_dir(), 'meta.json'))
-            results = foxpath.test_activities(activities, foxtests, explain=True)
+                self.save_cache(
+                    meta,
+                    join(self.supplied_data.upload_dir(), 'meta.json'))
+            results = foxpath.test_activities(
+                activities,
+                foxtests,
+                explain=True)
             self.save_cache(results, self.path_to_file())
 
         if 'total_filtered_activities' not in meta:
             try:
-                meta = self.load_cache(join(self.supplied_data.upload_dir(), 'meta.json'))
+                meta = self.load_cache(
+                    join(self.supplied_data.upload_dir(), 'meta.json'))
             except FileNotFoundError:
                 pass
 
@@ -275,7 +305,9 @@ class Results():
 
     def path_to_file(self):
         filtering = 'filtered' if self.filter is not None else 'all'
-        filename = 'results-{test_set_id}-{filtering}.json'.format(test_set_id=self.test_set.id, filtering=filtering)
+        filename = 'results-{test_set_id}-{filtering}.json'.format(
+            test_set_id=self.test_set.id,
+            filtering=filtering)
         return join(self.supplied_data.upload_dir(), filename)
 
     def save_cache(self, results, filepath):
@@ -290,5 +322,8 @@ class Results():
     # percentages by test, sorted
     @property
     def percentages(self):
-        percs = [(k, v[1] / (v[1] + v[0])) for k, v in self.summary_by_test.items() if v[1] + v[0] > 0]
+        percs = [
+            (k, v[1] / (v[1] + v[0]))
+            for k, v in self.summary_by_test.items()
+            if v[1] + v[0] > 0]
         return OrderedDict(sorted(percs, key=lambda x: x[1], reverse=True))

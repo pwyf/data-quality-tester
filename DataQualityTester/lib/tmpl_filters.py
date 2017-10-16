@@ -15,13 +15,16 @@ def url_for_other_page(page):
     args['page'] = page
     return url_for(request.endpoint, **args)
 
+
 @app.template_global('quote')
 def quote(value):
     return parse.quote(value, safe='')
 
+
 @app.template_filter('commify')
 def commify(value):
     return '{value:,}'.format(value=value)
+
 
 @app.template_filter('pluralize')
 def pluralize(number, singular, plural=None):
@@ -33,13 +36,16 @@ def pluralize(number, singular, plural=None):
         else:
             return singular + 's'
 
+
 @app.template_global('pprint')
 def pprint(explanation):
     return helpers.pprint(explanation)
 
+
 @app.template_filter('ceil')
 def ceil(val):
     return maths.ceil(val)
+
 
 @app.template_filter('colorify')
 def colorify(number):
@@ -69,6 +75,8 @@ def colorify(number):
     for colour, perc in colours[1:]:
         if number <= perc:
             dist = (number - prev_perc) / (perc - prev_perc)
-            return 'rgb({}, {}, {})'.format(*(int(dist * (colour[d] - prev_colour[d]) + prev_colour[d]) for d in range(3)))
+            rgb = (int(dist * (colour[d] - prev_colour[d]) + prev_colour[d])
+                   for d in range(3))
+            return 'rgb({}, {}, {})'.format(*rgb)
         prev_colour = colour
         prev_perc = perc

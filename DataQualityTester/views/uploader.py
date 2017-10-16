@@ -1,9 +1,8 @@
-import os.path
-
-from flask import abort, flash, jsonify, redirect, request, url_for
+from flask import flash, redirect, request, url_for
 
 from DataQualityTester import db
-from DataQualityTester.lib.exceptions import BadUrlException, NoFormDataException
+from DataQualityTester.lib.exceptions import BadUrlException, \
+    NoFormDataException
 from DataQualityTester.models import SuppliedData
 
 
@@ -15,6 +14,7 @@ def upload():
         return redirect(url_for('home'))
 
     return redirect(url_for('package_overview', uuid=supplied_data.id))
+
 
 def _upload():
     if request.method == 'POST':
@@ -36,9 +36,11 @@ def _upload():
     if not form_name:
         # no form data submitted.
         # Do something sensible here
-        raise NoFormDataException('The form didn\'t submit properly. Please try again.')
+        raise NoFormDataException(
+            'The form didn\'t submit properly. Please try again.')
 
-    supplied_data = SuppliedData(source_url, original_file, raw_text, form_name)
+    supplied_data = SuppliedData(source_url, original_file,
+                                 raw_text, form_name)
     db.session.add(supplied_data)
     db.session.commit()
 

@@ -12,20 +12,28 @@ class Config(object):
     CACHE_TIMEOUT = 86400  # 24 hours
     CURRENT_PATH = dirname(__file__)
     MEDIA_FOLDER = join(CURRENT_PATH, 'media')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(join(CURRENT_PATH, 'db.sqlite3'))
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(
+        join(CURRENT_PATH, 'db.sqlite3'))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     ALLOWED_EXTENSIONS = ('xml',)
     TEST_SETS = {
         'rulesets': {
             'name': 'IATI Standard Ruleset (Experimental)',
-            'description': 'These rules catch stuff that doesn’t really make sense, e.g. end dates before start dates.',
-            'filename': join(CURRENT_PATH, 'test_definitions', '202-ruleset.yaml'),
-            'filepath': join(CURRENT_PATH, 'test_definitions', 'iati_standard_ruleset'),
+            'description': 'These rules catch stuff that doesn’t really ' +
+                           'make sense, e.g. end dates before start dates.',
+            'filename': join(CURRENT_PATH, 'test_definitions',
+                             '202-ruleset.yaml'),
+            'filepath': join(CURRENT_PATH, 'test_definitions',
+                             'iati_standard_ruleset'),
         },
         'pwyf': {
             'name': 'Aid Transparency Index tests',
-            'description': 'These tests only run on current data. They comprise the automated component of the Aid Transparency Index, which aims to rank donors by data quality.',
-            'filename': join(CURRENT_PATH, 'test_definitions', 'pwyf-tests.yaml'),
+            'description': 'These tests only run on current data. They ' +
+                           'comprise the automated component of the Aid ' +
+                           'Transparency Index, which aims to rank donors ' +
+                           'by data quality.',
+            'filename': join(CURRENT_PATH, 'test_definitions',
+                             'pwyf-tests.yaml'),
             'filepath': join(CURRENT_PATH, 'test_definitions', 'index_2017'),
         },
     }
