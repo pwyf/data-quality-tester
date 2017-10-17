@@ -52,8 +52,6 @@ def then_every_on_codelist(context, xpath_expression, codelist):
         )
         raise StepException(context, msg)
 
-    logging.info(vals)
-
     assert(True)
 
 
