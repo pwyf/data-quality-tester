@@ -45,7 +45,21 @@ Index tests.
     flask db upgrade
     ```
 
-7. Run:
+## Running
+
+1. Start Redis:
+
+    ```
+    redis-server
+    ```
+
+2. Start a celery worker:
+
+    ```
+    celery worker --app DataQualityTester.celery
+    ```
+
+3. Start the webserver:
 
     ```
     flask run --with-threads
