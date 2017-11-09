@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="row">
+  <div class="col-lg-2">
+    <a href="{{ url_for('home') }}" class="btn btn-default">Test another file</a>
+  </div>
+  <div class="col-lg-offset-5 col-lg-5"></div>
+</div>
+
+<div class="row">
+{% for component, component_title in components %}
+  <div class="col-sm-6 quality-panel" id="{{ component }}" data-url="{{ url_for('lookup_results', task_id=task_ids[component]) }}">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title"><a href="{{ url_for('package_quality_by_component', component=component, uuid=uuid) }}">{{ component_title }}</a>
+        <a href="#"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3>
+      </div>
+      <div class="nanobar"></div>
+      <div class="panel-body">
+        <div class="progress" style="visibility: collapse;">
+          <div class="progress-bar progress-bar-striped" style="width: {{ pass }}%; background-color: {{ colour }}">
+            <span class="sr-only">{{ int_pass }}% Pass</span>
+            {{ int_pass }}%
+          </div>
+          <div class="progress-bar" style="width: {{ fail }}%; background-color: #222">
+            <span class="sr-only">{{ int_fail }}% Fail</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+
+<script id="panel-tmpl" type="text/x-handlebars-template">
+{% raw %}
+  <div class="progress">
+    <div class="progress-bar progress-bar-striped" style="width: {{ pass }}%; background-color: {{ colour }}">
+      <span class="sr-only">{{ int_pass }}% Pass</span>
+      {{ int_pass }}%
+    </div>
+    <div class="progress-bar" style="width: {{ fail }}%; background-color: #222">
+      <span class="sr-only">{{ int_fail }}% Fail</span>
+    </div>
+  </div>
+{% endraw %}
+</script>
+
+<script type="text/javascript">
+$(function() {
+  var tmpl = Handlebars.compile($('#panel-tmpl').html());
+
+  $('.quality-panel').each(function(k, el) {
+    $el = $(el);
+    var nanobar = new Nanobar({
+      target: $el.find('.nanobar')[0]
+    });
+    update_progress($el, nanobar);
+  });
+
+  function update_progress($el, nanobar) {
+    var result_url = $el.data('url');
+    $.getJSON(result_url, function(data) {
+      nanobar.go(data.progress);
+      if (data.status == 'SUCCESS') {
+        if (data.score === null) {
+
+        } else {
+          var ctx = {
+            pass: data.score,
+            int_pass: parseInt(data.score),
+            fail: 100 - data.score,
+            int_fail: parseInt(100 - data.score),
+            colour: data.colour
+          };
+          $el.find('.panel-body').html(tmpl(ctx));
+        }
+      } else {
+        // rerun in 2 seconds
+        setTimeout(function() {
+          update_progress($el, nanobar);
+        }, 2000);
+      }
+    });
+  }
+});
+</script>
+
+{% endblock %}

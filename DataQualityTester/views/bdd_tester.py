@@ -1,10 +1,12 @@
-from flask import jsonify, request, url_for
+from os.path import join
 
-from DataQualityTester.tasks import test_file
+from flask import jsonify, request, render_template
+
+from DataQualityTester.tasks import test_file_task
 from DataQualityTester.models import SuppliedData, TestSet
 
 
-def test_features(uuid):
+def package_overview(uuid):
     supplied_data = SuppliedData.query.get_or_404(str(uuid))
 
     test_set_id = request.args.get('test_set')
@@ -12,25 +14,33 @@ def test_features(uuid):
 
     output_path = supplied_data.upload_dir()
 
-    task = test_file.delay(supplied_data.path_to_file(),
-                           test_set.filepath,
-                           output_path=output_path)
+    task_ids = []
+    for component, component_name in test_set.components:
+        task = test_file_task.delay(supplied_data.path_to_file(),
+                                    join(test_set.filepath, component),
+                                    component_name,
+                                    output_path=output_path)
+        task_ids.append((component, task.id))
 
-    result_url = url_for('test_results', task_id=task.id, _external=True)
-    return jsonify({'url': result_url}), 202, {'Location': result_url}
+    context = {
+        'components': test_set.components,
+        'task_ids': dict(task_ids),
+        'uuid': uuid,
+    }
+    return render_template('bdd_overview.html', **context)
 
 
-def test_results(task_id):
-    task = test_file.AsyncResult(str(task_id))
+def lookup_results(task_id):
+    task = test_file_task.AsyncResult(str(task_id))
     if task.state == 'PENDING':
         return jsonify({
             'status': task.state,
-            'results': {},
+            'data': {},
             'progress': 0,
         })
     else:
-        return jsonify({
-            'status': task.state,
-            'results': task.info.get('results'),
-            'progress': task.info.get('progress'),
-        })
+        output = {
+            'status': task.state
+        }
+        output.update(task.info)
+        return jsonify(output)
