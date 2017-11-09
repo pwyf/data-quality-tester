@@ -1,5 +1,5 @@
   <div class="col-lg-6">
-    <form method="get" class="filter-form">
+    <form method="get">
       {% for k, v in params.items() %}
         {% if k not in ['uuid', 'filter'] %}
         <input type="hidden" name="{{ k }}" value="{{ v }}" />

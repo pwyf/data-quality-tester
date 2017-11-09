@@ -3,7 +3,7 @@
   <a href="{{ url_for('home') }}" class="btn btn-default">Test another file</a>
 </div>
 <div class="col-lg-offset-5 col-lg-5">
-  <form method="get" class="filter-form">
+  <form method="get">
     {% for k, v in params.items() %}
       {% if k not in ['uuid', 'filter', 'component'] %}
       <input type="hidden" name="{{ k }}" value="{{ v }}" />

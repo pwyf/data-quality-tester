@@ -9,7 +9,7 @@
   <div class="col-lg-offset-5 col-lg-5"></div>
 </div>
 
-<div class="row">
+<div class="row quality-panels-list">
 {% for component, component_title in components %}
   <div class="col-sm-6 quality-panel" id="{{ component }}" data-url="{{ url_for('lookup_results', task_id=task_ids[component]) }}">
     <div class="panel panel-primary">
