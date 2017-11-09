@@ -17,15 +17,6 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     ALLOWED_EXTENSIONS = ('xml',)
     TEST_SETS = {
-        'rulesets': {
-            'name': 'IATI Standard Ruleset (Experimental)',
-            'description': 'These rules catch stuff that doesn’t really ' +
-                           'make sense, e.g. end dates before start dates.',
-            'filename': join(CURRENT_PATH, 'test_definitions',
-                             '202-ruleset.yaml'),
-            'filepath': join(CURRENT_PATH, 'test_definitions',
-                             'iati_standard_ruleset'),
-        },
         'pwyf': {
             'name': 'Aid Transparency Index tests',
             'description': 'These tests only run on current data. They ' +
