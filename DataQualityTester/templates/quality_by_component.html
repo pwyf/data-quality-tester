@@ -13,7 +13,7 @@
     <div class="panel-body">
 
       {% for test_name, result_dict in results.percentages.items() %}
-      <div class="col-sm-6 quality-panels">
+      <div class="col-sm-6 quality-panel">
           <div class="panel panel-primary">
             <div class="panel-heading"><h3 class="panel-title"><a href="{{ url_for('package_quality_by_test', **dict(params, test=test_name)) }}">{{ test_name }}</a>
             <a href="{{ url_for('package_quality_by_test', **dict(params, test=test_name)) }}"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3></div>
