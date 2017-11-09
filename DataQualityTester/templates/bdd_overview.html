@@ -11,7 +11,7 @@
 
 <div class="row quality-panels-list">
 {% for component, component_title in components %}
-  <div class="col-sm-6 quality-panel" id="{{ component }}" data-url="{{ url_for('lookup_results', task_id=task_ids[component]) }}">
+  <div class="col-sm-6 quality-panel" id="{{ component }}" data-url="{{ url_for('task_status', task_id=task_ids[component]) }}">
     <div class="panel panel-primary">
       <div class="panel-heading">
         <h3 class="panel-title"><a href="{{ url_for('package_quality_by_component', component=component, uuid=uuid) }}">{{ component_title }}</a>
@@ -69,11 +69,11 @@ $(function() {
   function update_progress($el, nanobar) {
     var result_url = $el.data('url');
     $.getJSON(result_url, function(data) {
-      nanobar.go(data.progress);
-      if (data.status == 'SUCCESS') {
-        if (data.score === null) {
-
-        } else {
+      if (data.status !== 'PENDING') {
+        nanobar.go(data.progress);
+      }
+      if (data.status === 'SUCCESS') {
+        if (data.score !== null) {
           var ctx = {
             pass: data.score,
             int_pass: parseInt(data.score),

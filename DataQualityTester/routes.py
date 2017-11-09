@@ -57,6 +57,6 @@ def package_overview(uuid):
     return bdd_tester.package_overview(uuid)
 
 
-@app.route('/result/<uuid:task_id>')
-def lookup_results(task_id):
-    return bdd_tester.lookup_results(task_id)
+@app.route('/task/<uuid:task_id>')
+def task_status(task_id):
+    return bdd_tester.task_status(task_id)

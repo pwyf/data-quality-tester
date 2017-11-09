@@ -30,17 +30,13 @@ def package_overview(uuid):
     return render_template('bdd_overview.html', **context)
 
 
-def lookup_results(task_id):
+def task_status(task_id):
     task = test_file_task.AsyncResult(str(task_id))
+    output = {
+        'status': task.state,
+    }
     if task.state == 'PENDING':
-        return jsonify({
-            'status': task.state,
-            'data': {},
-            'progress': 0,
-        })
+        return jsonify(output)
     else:
-        output = {
-            'status': task.state
-        }
         output.update(task.info)
         return jsonify(output)
