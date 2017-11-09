@@ -23,9 +23,14 @@ class Config(object):
                            'comprise the automated component of the Aid ' +
                            'Transparency Index, which aims to rank donors ' +
                            'by data quality.',
-            'filename': join(CURRENT_PATH, 'test_definitions',
-                             'pwyf-tests.yaml'),
             'filepath': join(CURRENT_PATH, 'test_definitions', 'index_2017'),
+            'components': (
+                ('org_planning', 'Organisational planning and commitments'),
+                ('finance', 'Finance and budgets'),
+                ('project_attributes', 'Project attributes'),
+                ('joining_up', 'Joining-up development data'),
+                ('performance', 'Performance'),
+            ),
         },
     }
     DEFAULT_TEST_SET = 'pwyf'

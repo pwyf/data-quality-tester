@@ -181,17 +181,7 @@ class TestSet():
         test_set = app.config['TEST_SETS'][self.id]
         self.name = test_set['name']
         self.description = test_set['description']
-        with open(test_set['filename']) as f:
-            y = yaml.load(f)
-        all_indicators = {x['name']: x for x in y['indicators']}
-        components = []
-        for c in y['components']:
-            indicators = [all_indicators[i] for i in c['indicators']
-                          if i in all_indicators]
-            components.append((c['name'], Component(c['name'], indicators)))
-        self.components = OrderedDict(components)
-        self.filter = y['filter'] if 'filter' in y else None
-        # bdd-tester
+        self.components = test_set['components']
         self.filepath = test_set['filepath']
 
     @property
