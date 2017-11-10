@@ -16,6 +16,11 @@ def upload():
     return uploader.upload()
 
 
+@app.route('/load-sample')
+def load_sample():
+    return uploader.load_sample()
+
+
 # api
 @app.route('/package/<uuid:uuid>.json')
 def api_package_quality(uuid):

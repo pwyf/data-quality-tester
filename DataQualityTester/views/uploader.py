@@ -1,4 +1,5 @@
 from flask import flash, jsonify, redirect, request, url_for
+from werkzeug.datastructures import FileStorage
 
 from DataQualityTester import db
 from DataQualityTester.lib.exceptions import BadUrlException, \
@@ -20,6 +21,16 @@ def upload():
         return jsonify({'task_url': task_url, 'next_url': next_url})
 
     return redirect(next_url)
+
+
+def load_sample():
+    filename = 'sample.xml'
+    with open(filename, 'rb') as fh:
+        original_file = FileStorage(fh)
+        supplied_data = SuppliedData(None, original_file, None, 'upload_form')
+    db.session.add(supplied_data)
+    db.session.commit()
+    return redirect(url_for('package_overview', uuid=supplied_data.id))
 
 
 def _upload():
