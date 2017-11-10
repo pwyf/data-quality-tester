@@ -1,10 +1,13 @@
 from glob import glob
 from os.path import join
+from os import makedirs
 
-from lxml import etree
-
-from DataQualityTester import celery
 from bdd_tester import bdd_tester
+from lxml import etree
+import requests
+from werkzeug.utils import secure_filename
+
+from DataQualityTester import celery, db, models
 
 
 def _colorify(number):
@@ -81,4 +84,52 @@ def test_file_task(self, path_to_file, feature_path, pretty_name, output_path):
         'data': results,
         'score': score,
         'colour': colour,
+    }
+
+
+@celery.task(bind=True)
+def download_task(self, sd_uuid):
+    supplied_data = models.SuppliedData.query.get_or_404(str(sd_uuid))
+    url = supplied_data.source_url
+    request_kwargs = {
+        'headers': {'User-Agent': 'Publish What You Fund Simple Tester'},
+        'stream': True,
+    }
+    try:
+        resp = requests.get(url, **request_kwargs)
+    except requests.exceptions.SSLError:
+        resp = requests.get(url, verify=False, **request_kwargs)
+    resp.raise_for_status()
+
+    filename = resp.url.split('/')[-1].split('?')[0][:100]
+    if filename == '':
+        filename = 'file.xml'
+    elif not filename.endswith('.xml'):
+        filename += '.xml'
+    filename = secure_filename(filename)
+    makedirs(supplied_data.upload_dir(), exist_ok=True)
+
+    filepath = join(supplied_data.upload_dir(), filename)
+    total_length = resp.headers.get('content-length')
+    if total_length:
+        total_length = int(total_length)
+    with open(filepath, 'wb') as f:
+        dl = 0
+        for block in resp.iter_content(1024):
+            dl += len(block)
+            f.write(block)
+            if total_length:
+                self.update_state(
+                    state='RUNNING',
+                    meta={
+                        'progress': 100 * dl / total_length,
+                    }
+                )
+
+    supplied_data.original_file = join(supplied_data.id, filename)
+    supplied_data.downloaded = True
+    db.session.add(supplied_data)
+    db.session.commit()
+    return {
+        'progress': 100
     }

@@ -1,4 +1,4 @@
-from flask import flash, redirect, request, url_for
+from flask import flash, jsonify, redirect, request, url_for
 
 from DataQualityTester import db
 from DataQualityTester.lib.exceptions import BadUrlException, \
@@ -13,7 +13,13 @@ def upload():
         flash(str(e), 'danger')
         return redirect(url_for('home'))
 
-    return redirect(url_for('package_overview', uuid=supplied_data.id))
+    next_url = url_for('package_overview', uuid=supplied_data.id)
+
+    if request.is_xhr:
+        task_url = url_for('task_status', task_id=supplied_data.task_id)
+        return jsonify({'task_url': task_url, 'next_url': next_url})
+
+    return redirect(next_url)
 
 
 def _upload():

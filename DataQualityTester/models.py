@@ -9,11 +9,10 @@ import uuid
 
 from foxpath import Foxpath
 from lxml import etree
-import requests
 from werkzeug.utils import secure_filename
-import yaml
 
 from DataQualityTester import app, db
+from DataQualityTester.tasks import download_task
 from DataQualityTester.lib import helpers
 from DataQualityTester.lib.exceptions import (
     BadUrlException, FileGoneException,
@@ -29,6 +28,10 @@ class SuppliedData(db.Model):
     id = db.Column(db.String(40), primary_key=True)
     source_url = db.Column(db.String(2000))
     original_file = db.Column(db.String(100))
+
+    downloaded = db.Column(db.Boolean(True))
+    task_id = db.Column(db.String(100))
+
     form_name = db.Column(db.Enum(FormName))
     created = db.Column(db.DateTime)
 
@@ -85,43 +88,20 @@ class SuppliedData(db.Model):
     def path_to_file(self):
         return join(app.config['MEDIA_FOLDER'], self.original_file)
 
-    def download(self, url):
-        if not self.is_valid(url):
-            raise BadUrlException(
-                'That source URL appears to be invalid. Please try again.')
-        request_kwargs = {
-            'headers': {'User-Agent': 'Publish What You Fund Simple Tester'},
-            'stream': True,
-        }
-        try:
-            r = requests.get(url, **request_kwargs)
-        except requests.exceptions.SSLError:
-            r = requests.get(url, verify=False, **request_kwargs)
-        r.raise_for_status()
-        content_type = r.headers.get('content-type', '').split(';')[0].lower()
-        file_extension = None
-        if content_type in ('text/xml', 'application/xml',):
-            file_extension = 'xml'
-
-        filename = r.url.split('/')[-1].split('?')[0][:100]
-        if filename == '':
-            filename = 'file'
-        if file_extension:
-            if not filename.endswith(file_extension):
-                filename = filename + '.' + file_extension
-        filename = secure_filename(filename)
-        makedirs(self.upload_dir(), exist_ok=True)
-        filepath = join(self.upload_dir(), filename)
-        with open(filepath, 'wb') as f:
-            for block in r.iter_content(1024):
-                f.write(block)
-        return filename
+    def start_download(self):
+        task = download_task.delay(self.id)
+        return task.id
 
     def __init__(self, source_url, file, raw_text, form_name):
         self.id = self.generate_uuid()
 
         if form_name == 'url_form':
-            filename = self.download(source_url)
+            if not self.is_valid(source_url):
+                raise BadUrlException('That source URL appears to be ' +
+                                      'invalid. Please try again.')
+            self.downloaded = False
+            filename = None
+            self.task_id = self.start_download()
         elif form_name == 'upload_form':
             filename = file.filename
             if filename != '' and self.allowed_file_extension(filename):
@@ -138,7 +118,8 @@ class SuppliedData(db.Model):
                 f.write(raw_text)
 
         self.source_url = source_url
-        self.original_file = join(self.id, filename)
+        if filename:
+            self.original_file = join(self.id, filename)
         self.form_name = form_name
 
         self.created = datetime.utcnow()

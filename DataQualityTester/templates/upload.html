@@ -107,19 +107,45 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
+
 <script>
   $(function() {
     $("#collapseTwo").attr('class', 'panel-collapse collapse');
     $("#collapseThree").attr('class', 'panel-collapse collapse');
 
-    $('form').submit(function() {
+    $('form').submit(function(e) {
       $('#loading').css({"display": "block"});
       $('#accordion').hide();
+
+      var $this = $(this);
+      if ($('input[name="source_url"]').val() !== '') {
+        var action = $this.prop('action');
+        e.preventDefault();
+        $.post(action, $this.serialize(), function(resp) {
+          var task_url = resp.task_url;
+          var next_url = resp.next_url;
+          var nanobar = new Nanobar();
+          update_progress(task_url, next_url, nanobar);
+        });
+      }
     });
 
-    $(window).unload(function() {
-      $('#loading').css({"display": "none"});
-    })
+    function update_progress(task_url, next_url, nanobar) {
+      $.getJSON(task_url, function(data) {
+        if (data.status !== 'PENDING') {
+          nanobar.go(data.progress);
+        }
+        if (data.status === 'SUCCESS') {
+          $(location).attr('href', next_url);
+        } else {
+          // rerun in 2 seconds
+          setTimeout(function() {
+            update_progress(task_url, next_url, nanobar);
+          }, 2000);
+        }
+      });
+    }
   });
 </script>
 {% endblock %}
