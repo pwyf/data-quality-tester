@@ -1,4 +1,4 @@
-Feature: Commitments
+Feature: Commitment
 
   Scenario Outline: Commitment is present
     Given the activity is current

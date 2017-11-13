@@ -14,6 +14,16 @@ def given_org_file(context):
         raise StepException(context, 'Not an organisation file')
 
 
+@given('this test involves both organisation and activity files')
+def given_mixed_content(context):
+    raise StepException(context, 'Not possible to test')
+
+
+@then('skip it')
+def then_skip_it(context):
+    pass
+
+
 # NB the original PWYF test also checked non-empty
 @then('`{xpath_expression}` should be present')
 def then_is_present(context, xpath_expression):
@@ -174,6 +184,25 @@ def given_is_one_of_consts(context, xpath_expression, consts):
         val,
     )
     raise StepException(context, msg)
+
+
+@given('`{xpath_expression}` is not one of {consts}')
+def given_is_not_one_of_consts(context, xpath_expression, consts):
+    consts_list = re.split(r', | or ', consts)
+    vals = context.xml.xpath(xpath_expression)
+    if len(vals) == 0:
+        assert(True)
+        return
+    for val in vals:
+        if val in consts_list:
+            msg = '`{}` is one of {} (it\'s {})'.format(
+                xpath_expression,
+                consts,
+                val,
+            )
+            raise StepException(context, msg)
+    assert(True)
+    return
 
 
 def mkdate(date_str):
@@ -363,6 +392,54 @@ def then_is_available_forward(context, xpath_expression, period):
     raise StepException(context, msg)
 
 
+@then('`{xpath_expression}` should be available {years:d} year forward')
+@then('`{xpath_expression}` should be available {years:d} years forward')
+def then_is_available_x_years_forward(context, xpath_expression, years):
+    budgets = context.xml.xpath(xpath_expression)
+    # TODO
+    raise StepException(context, '')
+
+
+@then('`{xpath_expression1}` should start with either ' +
+      '`{xpath_expression2}` or `{xpath_expression3}`')
+def then_should_start_with_either(context, xpath_expression1,
+                                  xpath_expression2, xpath_expression3):
+    vals = context.xml.xpath(xpath_expression1)
+    prefix1 = context.xml.xpath(xpath_expression2)
+    prefix2 = context.xml.xpath(xpath_expression3)
+
+    if len(vals) == 0:
+        msg = '`{}` not found'.format(xpath_expression1)
+        raise StepException(context, msg)
+
+    target = vals[0]
+
+    if len(prefix1) > 0 and len(prefix1[0]) > 0:
+        prefix1 = prefix1[0]
+        if target.startswith('{}-'.format(prefix1)):
+            assert(True)
+            return
+        else:
+            msg = '`{}` doesn\'t start with {}'.format(
+                xpath_expression1,
+                prefix1
+            )
+    elif len(prefix2) and len(prefix2[0]) > 0:
+        prefix2 = prefix2[0]
+        if target.startswith('{}-'.format(prefix2)):
+            assert(True)
+            return
+        else:
+            msg = '`{}` doesn\'t start with {}'.format(
+                xpath_expression1,
+                prefix2
+            )
+    else:
+        msg = '`{}` or `{}` not found'.format(
+            xpath_expression2, xpath_expression3)
+    raise StepException(context, msg)
+
+
 def either_or(context, tmpl, xpath_expressions):
     exceptions = []
     for xpath_expression in xpath_expressions:
@@ -398,13 +475,12 @@ def then_either_or(context, xpath_expression1, xpath_expression2, statement):
     either_or(context, tmpl, xpath_expressions)
 
 
-@then('either {modifier} `{xpath_expression1}` or ' +
+@then('either every `{xpath_expression1}` or ' +
       '`{xpath_expression2}` {statement}')
-def then_either_mod_or(context, modifier, xpath_expression1,
-                       xpath_expression2, statement):
+def then_either_every_or(context, xpath_expression1,
+                         xpath_expression2, statement):
     xpath_expressions = [xpath_expression1, xpath_expression2]
-    tmpl = 'then {modifier} `{{expression}}` {statement}'.format(
-        modifier=modifier,
+    tmpl = 'then every `{{expression}}` {statement}'.format(
         statement=statement,
     )
     either_or(context, tmpl, xpath_expressions)
