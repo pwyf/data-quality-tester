@@ -1,5 +1,6 @@
 from glob import glob
-from os.path import join
+import json
+from os.path import exists, join
 from os import makedirs
 
 from bdd_tester import bdd_tester
@@ -44,42 +45,56 @@ def _compute_score(results):
 
 
 @celery.task(bind=True)
-def test_file_task(self, path_to_file, feature_path, pretty_name, output_path):
-    xml = etree.parse(path_to_file)
-
-    features = glob(join(feature_path, '*.feature'))
-    feature_count = len(features)
-
-    results = {}
-    score = None
-    for idx, feature in enumerate(features):
-        result = bdd_tester(
-            etree=xml,
-            features=[feature],
-            output_path=output_path
-        )
-        if not result:
-            continue
-        results.update(result)
+def test_file_task(self, path_to_file, feature_path, component_name,
+                   output_path):
+    results_path = '{}.json'.format(join(output_path, component_name))
+    if exists(results_path):
+        with open(results_path) as f:
+            results = json.load(f)
         score = _compute_score(results)
         if score is not None:
             colour = _colorify(score)
         else:
             colour = '#222'
-        self.update_state(
-            state='RUNNING',
-            meta={
-                'name': pretty_name,
-                'progress': 100 * idx / feature_count,
-                'data': results,
-                'score': score,
-                'colour': colour,
-            }
-        )
+    else:
+        # TODO: handle parse error
+        xml = etree.parse(path_to_file)
 
-    # TODO: cache the result!
+        features = glob(join(feature_path, '*.feature'))
+        feature_count = len(features)
+
+        results = {}
+        score = None
+        for idx, feature in enumerate(features):
+            result = bdd_tester(
+                etree=xml,
+                features=[feature],
+                output_path=output_path
+            )
+            if not result:
+                continue
+            results.update(result)
+            score = _compute_score(results)
+            if score is not None:
+                colour = _colorify(score)
+            else:
+                colour = '#222'
+            self.update_state(
+                state='RUNNING',
+                meta={
+                    'name': component_name,
+                    'progress': 100. * (idx + 1) / feature_count,
+                    'data': results,
+                    'score': score,
+                    'colour': colour,
+                }
+            )
+        # cache the result
+        with open(results_path, 'w') as f:
+            json.dump(results, f)
+
     return {
-        'name': pretty_name,
+        'name': component_name,
         'progress': 100,
         'data': results,
         'score': score,

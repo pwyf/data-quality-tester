@@ -18,7 +18,7 @@ def package_overview(uuid):
     for component, component_name in test_set.components:
         task = test_file_task.delay(supplied_data.path_to_file(),
                                     join(test_set.filepath, component),
-                                    component_name,
+                                    component,
                                     output_path=output_path)
         task_ids.append((component, task.id))
 
