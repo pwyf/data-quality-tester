@@ -42,9 +42,9 @@ def api_upload():
 #     return quality.package_overview(uuid)
 
 
-@app.route('/package/component/<component>/<uuid:uuid>')
-def package_quality_by_component(uuid, component):
-    return quality.package_quality_by_component(uuid, component)
+# @app.route('/package/component/<component>/<uuid:uuid>')
+# def package_quality_by_component(uuid, component):
+#     return quality.package_quality_by_component(uuid, component)
 
 
 @app.route('/package/test/<test>/<uuid:uuid>')
@@ -60,6 +60,11 @@ def activity_quality(uuid, iati_identifier):
 @app.route('/package/<uuid:uuid>')
 def package_overview(uuid):
     return bdd_tester.package_overview(uuid)
+
+
+@app.route('/package/component/<component>/<uuid:uuid>')
+def package_quality_by_component(uuid, component):
+    return bdd_tester.package_quality_by_component(uuid, component)
 
 
 @app.route('/task/<uuid:task_id>')
