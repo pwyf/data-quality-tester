@@ -11,11 +11,10 @@
 
 <div class="row quality-panels-list">
 {% for component, component_title in components %}
-  <div class="col-sm-6 quality-panel" id="{{ component }}" data-url="{{ url_for('task_status', task_id=task_ids[component]) }}">
+  <div class="col-sm-6 quality-panel" id="{{ component }}" data-status-url="{{ url_for('task_status', task_id=task_ids[component]) }}" data-more-url="{{ url_for('package_quality_by_component', component=component, uuid=uuid) }}">
     <div class="panel panel-primary">
       <div class="panel-heading">
-        <h3 class="panel-title"><a href="{{ url_for('package_quality_by_component', component=component, uuid=uuid) }}">{{ component_title }}</a>
-        <a href="#"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3>
+        <h3 class="panel-title">{{ component_title }}</h3>
       </div>
       <div class="nanobar"></div>
       <div class="panel-body">
@@ -28,6 +27,7 @@
             <span class="sr-only">{{ int_fail }}% Fail</span>
           </div>
         </div>
+        <a class="btn btn-default pull-right" disabled="disabled" href="#">More…</a>
       </div>
     </div>
   </div>
@@ -51,6 +51,7 @@
       <span class="sr-only">{{ int_fail }}% Fail</span>
     </div>
   </div>
+  <a class="btn btn-default pull-right" href="{{ more_url }}">More…</a>
 {% endraw %}
 </script>
 
@@ -67,8 +68,8 @@ $(function() {
   });
 
   function update_progress($el, nanobar) {
-    var result_url = $el.data('url');
-    $.getJSON(result_url, function(data) {
+    var status_url = $el.data('status-url');
+    $.getJSON(status_url, function(data) {
       if (data.status !== 'PENDING') {
         nanobar.go(data.progress);
       }
@@ -79,7 +80,9 @@ $(function() {
             int_pass: parseInt(data.score),
             fail: 100 - data.score,
             int_fail: parseInt(100 - data.score),
-            colour: data.colour
+            colour: data.colour,
+            component: data.name,
+            more_url: $el.data('more-url')
           };
           $el.find('.panel-body').html(tmpl(ctx));
         }
