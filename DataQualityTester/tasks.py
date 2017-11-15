@@ -45,9 +45,9 @@ def _compute_score(results):
 
 
 @celery.task(bind=True)
-def test_file_task(self, path_to_file, feature_path, component_name,
+def test_file_task(self, path_to_file, feature_path, component_id,
                    output_path):
-    results_path = '{}.json'.format(join(output_path, component_name))
+    results_path = '{}.json'.format(join(output_path, component_id))
     if exists(results_path):
         with open(results_path) as f:
             results = json.load(f)
@@ -82,7 +82,7 @@ def test_file_task(self, path_to_file, feature_path, component_name,
             self.update_state(
                 state='RUNNING',
                 meta={
-                    'name': component_name,
+                    'name': component_id,
                     'progress': 100. * (idx + 1) / feature_count,
                     'data': results,
                     'score': score,
@@ -94,7 +94,7 @@ def test_file_task(self, path_to_file, feature_path, component_name,
             json.dump(results, f)
 
     return {
-        'name': component_name,
+        'name': component_id,
         'progress': 100,
         'data': results,
         'score': score,
