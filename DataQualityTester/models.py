@@ -162,34 +162,22 @@ class TestSet():
         test_set = app.config['TEST_SETS'][self.id]
         self.name = test_set['name']
         self.description = test_set['description']
-        self.components = test_set['components']
         self.filepath = test_set['filepath']
+        cs = test_set['components']
+        self.components = [Component(*c, self.filepath) for c in cs]
 
-    @property
-    def all_test_sets(self):
-        return [(x, y['name']) for x, y in app.config['TEST_SETS'].items()]
-
-    @property
-    def all_tests(self):
-        return [t for c in self.components.values()
-                for i in c.indicators
-                for t in i['tests']]
-
-    def get_test(self, test_name):
-        return {t['name']: t for t in self.all_tests}[test_name]
+    def get_component(self, component_id):
+        return {c.id: c for c in self.components}.get(component_id)
 
 
 class Component():
-    def __str__(self):
-        return self.name
+    def __repr__(self):
+        return '<Component: {}>'.format(self.name)
 
-    def __init__(self, name, indicators):
+    def __init__(self, id_, name, filepath):
+        self.id = id_
         self.name = name
-        self.indicators = indicators
-
-    @property
-    def tests(self):
-        return [t['name'] for i in self.indicators for t in i['tests']]
+        self.filepath = join(filepath, id_)
 
 
 class Results():

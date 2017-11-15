@@ -15,12 +15,12 @@ def package_overview(uuid):
     output_path = supplied_data.upload_dir()
 
     task_ids = []
-    for component, component_name in test_set.components:
+    for component in test_set.components:
         task = test_file_task.delay(supplied_data.path_to_file(),
-                                    join(test_set.filepath, component),
-                                    component,
+                                    component.filepath,
+                                    component.id,
                                     output_path=output_path)
-        task_ids.append((component, task.id))
+        task_ids.append((component.id, task.id))
 
     context = {
         'components': test_set.components,
