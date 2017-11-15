@@ -12,6 +12,8 @@ from DataQualityTester import celery, db, models
 
 
 def _colorify(number):
+    if number is None:
+        return '#222'
     # Methodology colours:
     colours = (
         ((180, 96, 122), 0),
