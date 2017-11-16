@@ -22,20 +22,20 @@ def load_sample():
     return uploader.load_sample()
 
 
-# api
-@app.route('/package/<uuid:uuid>.json')
-def api_package_quality(uuid):
-    return api.package_quality(uuid)
+# # api
+# @app.route('/package/<uuid:uuid>.json')
+# def api_package_quality(uuid):
+#     return api.package_quality(uuid)
 
 
-@app.route('/package/component/<component>/<uuid:uuid>.json')
-def api_package_quality_by_component(uuid, component):
-    return api.package_quality_by_component(uuid, component)
+# @app.route('/package/component/<component>/<uuid:uuid>.json')
+# def api_package_quality_by_component(uuid, component):
+#     return api.package_quality_by_component(uuid, component)
 
 
-@app.route('/upload.json', methods=['GET', 'POST'])
-def api_upload():
-    return api.upload()
+# @app.route('/upload.json', methods=['GET', 'POST'])
+# def api_upload():
+#     return api.upload()
 
 
 @app.route('/package/test/<test>/<uuid:uuid>')
