@@ -53,7 +53,7 @@ def package_overview(uuid):
     return bdd_tester.package_overview(uuid)
 
 
-@app.route('/package/component/<component>/<uuid:uuid>')
+@app.route('/package/<uuid:uuid>/<component>')
 def package_quality_by_component(uuid, component):
     return bdd_tester.package_quality_by_component(uuid, component)
 

@@ -23,6 +23,12 @@
                   <span class="sr-only">{{ 100 - result_dict|percent|int }}% Fail</span>
                 </div>
               </div>
+
+              {{ result_dict['passed']|commify }}
+              out of
+              {{ (result_dict['passed'] + result_dict['failed'])|commify }}
+              relevant activities pass this test.
+
               <a class="btn btn-default pull-right" href="{{ url_for('package_quality_by_component', component=component.id, uuid=uuid) }}">More…</a>
               {% else %}
               <div class="progress" style="visibility: collapse;"></div>
