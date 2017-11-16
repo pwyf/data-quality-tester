@@ -29,7 +29,7 @@
               {{ (result_dict['passed'] + result_dict['failed'])|commify }}
               relevant activities pass this test.
 
-              <a class="btn btn-default pull-right" href="{{ url_for('package_quality_by_component', component=component.id, uuid=uuid) }}">More…</a>
+              <a class="btn btn-default pull-right" href="{{ url_for('package_quality_by_test', uuid=uuid, component_id=component.id, test_name=test_name) }}">More…</a>
               {% else %}
               <div class="progress" style="visibility: collapse;"></div>
               <a class="btn btn-default pull-right" disabled="disabled" href="#">More…</a>

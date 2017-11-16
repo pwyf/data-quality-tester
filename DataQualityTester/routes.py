@@ -38,9 +38,9 @@ def load_sample():
 #     return api.upload()
 
 
-@app.route('/package/test/<test>/<uuid:uuid>')
-def package_quality_by_test(uuid, test):
-    return quality.package_quality_by_test(uuid, test)
+# @app.route('/package/test/<test>/<uuid:uuid>')
+# def package_quality_by_test(uuid, test):
+#     return quality.package_quality_by_test(uuid, test)
 
 
 @app.route('/activity/<uuid:uuid>/<path:iati_identifier>')
@@ -56,6 +56,11 @@ def package_overview(uuid):
 @app.route('/package/<uuid:uuid>/<component_id>')
 def package_quality_by_component(uuid, component_id):
     return bdd_tester.package_quality_by_component(uuid, component_id)
+
+
+@app.route('/package/<uuid:uuid>/<component_id>/<test_name>')
+def package_quality_by_test(uuid, component_id, test_name):
+    return bdd_tester.package_quality_by_test(uuid, component_id, test_name)
 
 
 @app.route('/task/<uuid:task_id>')

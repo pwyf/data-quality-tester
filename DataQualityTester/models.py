@@ -2,8 +2,9 @@ from collections import OrderedDict
 from datetime import datetime
 from enum import Enum
 import json
-from os import makedirs
+from os import listdir, makedirs
 from os.path import join
+import re
 from urllib.parse import urlparse
 import uuid
 
@@ -178,6 +179,45 @@ class Component():
         self.id = id_
         self.name = name
         self.filepath = join(filepath, id_)
+
+    def get_test(self, test_name):
+        test_prefix = r'Scenario(?: Outline)?\:'
+        test_expression_re = re.compile(
+            r'{prefix} {name}(.*?)(?:{prefix}|$)'.format(
+                prefix=test_prefix,
+                name=re.escape(test_name),
+            ), re.DOTALL)
+        for feature in listdir(self.filepath):
+            if not feature.endswith('.feature'):
+                continue
+            filepath = join(self.filepath, feature)
+            with open(filepath) as f:
+                feature_text = f.read()
+            match = test_expression_re.search(feature_text)
+            if match:
+                test_expression = match.group(1).strip()
+                line_num = len(feature_text[:match.start()].split('\n'))
+                break
+        return Test(test_name, test_expression, filepath, line_num)
+
+
+class Test():
+    def __init__(self, name, expression, filepath, line_num):
+        self.id = self._slugify(name)
+        self.name = name
+        self.expression = expression
+        self.filepath = filepath
+        self.line_num = line_num
+
+    def _slugify(self, inp):
+        out = inp.lower().strip().replace(' ', '_')
+        out = ''.join(c for c in out if c.isalnum() or c == '_')
+        return out
+
+    @property
+    def rendered(self):
+        output = self.expression.replace('\n', '<br>')
+        return re.sub(r'`([^`]*)`', r'<code>\1</code>', output)
 
 
 class Results():

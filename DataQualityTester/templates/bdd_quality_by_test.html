@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="row">
+  <div class="panel panel-primary">
+    <div class="panel-heading" data-toggle="collapse" data-target="#more-information-body">
+      <h3 class="panel-title">{{ test.name }} <a class="pull-right" href="{{ url_for('package_overview', uuid=uuid) }}">Back to overview</a></h3>
+    </div>
+
+    <div class="panel-body">
+      <p>
+        The following test is applied:
+      </p>
+      <blockquote>{{ test.rendered|safe }}</blockquote>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -54,6 +54,23 @@ def package_quality_by_component(uuid, component_id):
     return render_template('bdd_quality_by_component.html', **context)
 
 
+def package_quality_by_test(uuid, component_id, test_name):
+    supplied_data = SuppliedData.query.get_or_404(str(uuid))
+    output_path = supplied_data.upload_dir()
+
+    test_set_id = request.args.get('test_set')
+    test_set = TestSet(test_set_id)
+    component = test_set.get_component(component_id)
+    test = component.get_test(test_name)
+
+    context = {
+        'component': component,
+        'test': test,
+        'uuid': uuid,
+    }
+    return render_template('bdd_quality_by_test.html', **context)
+
+
 def task_status(task_id):
     task = test_file_task.AsyncResult(str(task_id))
     output = {
