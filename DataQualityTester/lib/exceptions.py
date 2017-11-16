@@ -16,7 +16,3 @@ class InvalidXMLException(Exception):
 
 class ActivityNotFoundException(Exception):
     pass
-
-
-class NoFilteredActivitiesException(Exception):
-    pass

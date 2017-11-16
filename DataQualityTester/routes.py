@@ -6,6 +6,7 @@ from DataQualityTester.views import api, bdd_tester, pages, quality, uploader
 def home():
     return pages.home()
 
+
 # @app.route('/about')
 # def about():
 #     return pages.about()
@@ -35,16 +36,6 @@ def api_package_quality_by_component(uuid, component):
 @app.route('/upload.json', methods=['GET', 'POST'])
 def api_upload():
     return api.upload()
-
-
-# @app.route('/package/<uuid:uuid>')
-# def package_overview(uuid):
-#     return quality.package_overview(uuid)
-
-
-# @app.route('/package/component/<component>/<uuid:uuid>')
-# def package_quality_by_component(uuid, component):
-#     return quality.package_quality_by_component(uuid, component)
 
 
 @app.route('/package/test/<test>/<uuid:uuid>')
