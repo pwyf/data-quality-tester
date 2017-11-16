@@ -99,9 +99,9 @@ def given_activity_is_current(context):
     except AssertionError as e:
         pass
 
-    end_planned = 'activity-date[@type="3"]/@iso-date |' \
-                  'activity-date[@type="3"]/text() |' \
-                  'activity-date[@type="end-planned"]/@iso-date |' \
+    end_planned = 'activity-date[@type="3"]/@iso-date |' + \
+                  'activity-date[@type="3"]/text() |' + \
+                  'activity-date[@type="end-planned"]/@iso-date |' + \
                   'activity-date[@type="end-planned"]/text()'
     try:
         inp = 'given `{}` is less than 12 months ago'.format(end_planned)
@@ -111,9 +111,9 @@ def given_activity_is_current(context):
     except AssertionError as e:
         pass
 
-    end_planned = 'activity-date[@type="4"]/@iso-date |' \
-                  'activity-date[@type="4"]/text() |' \
-                  'activity-date[@type="end-actual"]/@iso-date |' \
+    end_planned = 'activity-date[@type="4"]/@iso-date |' + \
+                  'activity-date[@type="4"]/text() |' + \
+                  'activity-date[@type="end-actual"]/@iso-date |' + \
                   'activity-date[@type="end-actual"]/text()'
     try:
         inp = 'given `{}` is less than 12 months ago'.format(end_planned)
@@ -123,11 +123,11 @@ def given_activity_is_current(context):
     except AssertionError as e:
         pass
 
-    xpath_expr = 'transaction[transaction-type/@code="C"] |' \
-                 'transaction[transaction-type/@code="D"] |' \
-                 'transaction[transaction-type/@code="E"] |' \
-                 'transaction[transaction-type/@code="2"] |' \
-                 'transaction[transaction-type/@code="3"] |' \
+    xpath_expr = 'transaction[transaction-type/@code="C"] |' + \
+                 'transaction[transaction-type/@code="D"] |' + \
+                 'transaction[transaction-type/@code="E"] |' + \
+                 'transaction[transaction-type/@code="2"] |' + \
+                 'transaction[transaction-type/@code="3"] |' + \
                  'transaction[transaction-type/@code="4"]'
     transactions = context.xml.xpath(xpath_expr)
     for transaction in transactions:
