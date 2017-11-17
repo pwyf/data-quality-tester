@@ -5,6 +5,9 @@ import yaml
 
 class Config(object):
     SECRET_KEY = 'super top secret key'
+    DEBUG = True
+
+    ASSETS_AUTO_BUILD = False
 
     REGISTRY_API_BASE_URL = 'https://iatiregistry.org/api/3/action'
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
