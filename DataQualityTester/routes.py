@@ -40,7 +40,7 @@ def load_sample():
 
 @app.route('/activity/<uuid:uuid>/<path:iati_identifier>')
 def activity_quality(uuid, iati_identifier):
-    return quality.activity_quality(uuid, iati_identifier)
+    return bdd_tester.activity_quality(uuid, iati_identifier)
 
 
 @app.route('/package/<uuid:uuid>')

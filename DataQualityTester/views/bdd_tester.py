@@ -1,8 +1,10 @@
 import json
 from os.path import exists, join
 
-from flask import jsonify, redirect, request, render_template, url_for
+from flask import abort, jsonify, redirect, request, \
+                  render_template, url_for
 
+from DataQualityTester.lib.exceptions import ActivityNotFoundException
 from DataQualityTester.tasks import test_file_task
 from DataQualityTester.models import SuppliedData, TestSet
 
@@ -74,6 +76,21 @@ def package_quality_by_test(uuid, component_id, test_name):
         'results': results,
     }
     return render_template('bdd_quality_by_test.html', **context)
+
+
+def activity_quality(uuid, iati_identifier):
+    supplied_data = SuppliedData.query.get_or_404(str(uuid))
+    try:
+        activity = supplied_data.get_activity(iati_identifier)
+    except ActivityNotFoundException:
+        return abort(404)
+
+    context = {
+        'uuid': uuid,
+        'activity': str(activity),
+        'iati_identifier': iati_identifier,
+    }
+    return render_template('bdd_activity.html', **context)
 
 
 def task_status(task_id):
