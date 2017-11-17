@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block body %}
+{% include 'partials/_test_another_file.html' %}
+
 <div class="row quality-panels-list">
   <div class="panel panel-primary">
     <div class="panel-heading"><h3 class="panel-title">{{ component.name }} <a class="pull-right" href="{{ url_for('package_overview', uuid=uuid) }}">Back to overview</a></h3></div>
