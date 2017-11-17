@@ -453,7 +453,7 @@ def either_or(context, tmpl, xpath_expressions):
             msg = str(e).split('StepException: ')[1]
             exceptions.append(msg)
 
-    msg = ' and '.join([msg for msg in exceptions])
+    msg = ' and '.join(exceptions)
     raise StepException(context, msg)
 
 
