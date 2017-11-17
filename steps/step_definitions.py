@@ -450,7 +450,7 @@ def either_or(context, tmpl, xpath_expressions):
             assert(True)
             return
         except AssertionError as e:
-            msg = str(e).split('StepException: ')[1]
+            msg = str(e).split('StepException: ')[1].strip()
             exceptions.append(msg)
 
     msg = ' and '.join(exceptions)
