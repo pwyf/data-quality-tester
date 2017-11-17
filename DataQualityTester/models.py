@@ -216,8 +216,7 @@ class Test():
 
     @property
     def rendered(self):
-        output = self.expression.replace('\n', '<br>')
-        return re.sub(r'`([^`]*)`', r'<code>\1</code>', output)
+        return helpers.pprint(self.expression)
 
 
 class Results():
