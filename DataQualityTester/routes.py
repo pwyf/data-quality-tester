@@ -38,11 +38,6 @@ def load_sample():
 #     return api.upload()
 
 
-# @app.route('/package/test/<test>/<uuid:uuid>')
-# def package_quality_by_test(uuid, test):
-#     return quality.package_quality_by_test(uuid, test)
-
-
 @app.route('/activity/<uuid:uuid>/<path:iati_identifier>')
 def activity_quality(uuid, iati_identifier):
     return quality.activity_quality(uuid, iati_identifier)
