@@ -63,10 +63,15 @@ def package_quality_by_test(uuid, component_id, test_name):
     component = test_set.get_component(component_id)
     test = component.get_test(test_name)
 
+    results_file = join(output_path, '{}.json'.format(test.id))
+    with open(results_file) as f:
+        results = json.load(f)
+
     context = {
         'component': component,
         'test': test,
         'uuid': uuid,
+        'results': results,
     }
     return render_template('bdd_quality_by_test.html', **context)
 
