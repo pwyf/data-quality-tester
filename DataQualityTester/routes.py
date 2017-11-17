@@ -1,5 +1,5 @@
 from DataQualityTester import app
-from DataQualityTester.views import api, bdd_tester, pages, uploader
+from DataQualityTester.views import api, quality, pages, uploader
 
 
 @app.route('/')
@@ -40,24 +40,24 @@ def load_sample():
 
 @app.route('/activity/<uuid:uuid>/<path:iati_identifier>')
 def activity_quality(uuid, iati_identifier):
-    return bdd_tester.activity_quality(uuid, iati_identifier)
+    return quality.activity_quality(uuid, iati_identifier)
 
 
 @app.route('/package/<uuid:uuid>')
 def package_overview(uuid):
-    return bdd_tester.package_overview(uuid)
+    return quality.package_overview(uuid)
 
 
 @app.route('/package/<uuid:uuid>/<component_id>')
 def package_quality_by_component(uuid, component_id):
-    return bdd_tester.package_quality_by_component(uuid, component_id)
+    return quality.package_quality_by_component(uuid, component_id)
 
 
 @app.route('/package/<uuid:uuid>/<component_id>/<test_name>')
 def package_quality_by_test(uuid, component_id, test_name):
-    return bdd_tester.package_quality_by_test(uuid, component_id, test_name)
+    return quality.package_quality_by_test(uuid, component_id, test_name)
 
 
 @app.route('/task/<uuid:task_id>')
 def task_status(task_id):
-    return bdd_tester.task_status(task_id)
+    return quality.task_status(task_id)
