@@ -8,7 +8,6 @@ import re
 from urllib.parse import urlparse
 import uuid
 
-from foxpath import Foxpath
 from lxml import etree
 from werkzeug.utils import secure_filename
 
@@ -126,32 +125,32 @@ class SuppliedData(db.Model):
         self.created = datetime.utcnow()
 
 
-class Activity():
-    def __init__(self, el):
-        self.el = el
+# class Activity():
+#     def __init__(self, el):
+#         self.el = el
 
-    def __str__(self):
-        return etree.tostring(
-            self.el,
-            pretty_print=True
-        ).strip().decode('utf-8')
+#     def __str__(self):
+#         return etree.tostring(
+#             self.el,
+#             pretty_print=True
+#         ).strip().decode('utf-8')
 
-    def test(self, tests):
-        foxpath = Foxpath()
-        foxtests = foxpath.load_tests(tests, app.config['CODELISTS'])
-        results = foxpath.test_activity(
-            self.el,
-            foxtests,
-            explain=True
-        )['results']
-        grouped = {
-            0: [],
-            1: [],
-            -1: [],
-        }
-        for test_name, out in results.items():
-            grouped[out[0]].append((test_name, out[1]))
-        return grouped
+#     def test(self, tests):
+#         foxpath = Foxpath()
+#         foxtests = foxpath.load_tests(tests, app.config['CODELISTS'])
+#         results = foxpath.test_activity(
+#             self.el,
+#             foxtests,
+#             explain=True
+#         )['results']
+#         grouped = {
+#             0: [],
+#             1: [],
+#             -1: [],
+#         }
+#         for test_name, out in results.items():
+#             grouped[out[0]].append((test_name, out[1]))
+#         return grouped
 
 
 class TestSet():
@@ -219,109 +218,109 @@ class Test():
         return helpers.pprint(self.expression)
 
 
-class Results():
-    def __init__(self, supplied_data, test_set,
-                 current_tests=None, filter_=None):
-        self.supplied_data = supplied_data
-        self.test_set = test_set
-        self.filter = filter_
-        self.all, self.meta = self._test_and_cache(test_set.all_tests)
-        if self.all == []:
-            return
-        if current_tests:
-            for x in self.all:
-                x['results'] = dict(filter(
-                    lambda y: y[0] in current_tests, x['results'].items()))
-        # summary by test
-        self.summary_by_test = Foxpath.summarize_results(self.all)
+# class Results():
+#     def __init__(self, supplied_data, test_set,
+#                  current_tests=None, filter_=None):
+#         self.supplied_data = supplied_data
+#         self.test_set = test_set
+#         self.filter = filter_
+#         self.all, self.meta = self._test_and_cache(test_set.all_tests)
+#         if self.all == []:
+#             return
+#         if current_tests:
+#             for x in self.all:
+#                 x['results'] = dict(filter(
+#                     lambda y: y[0] in current_tests, x['results'].items()))
+#         # summary by test
+#         self.summary_by_test = Foxpath.summarize_results(self.all)
 
-    def for_test(self, test_name, score=None):
-        results = [{
-            'title': x['title'],
-            'iati-identifier': x['iati-identifier'],
-            'hierarchy': x['hierarchy'],
-            'score': x['results'][test_name][0],
-            'explanation': helpers.pprint(x['results'][test_name][1]),
-        } for x in self.all]
-        if score is not None:
-            results = list(filter(lambda x: x['score'] == score, results))
-        return results
+#     def for_test(self, test_name, score=None):
+#         results = [{
+#             'title': x['title'],
+#             'iati-identifier': x['iati-identifier'],
+#             'hierarchy': x['hierarchy'],
+#             'score': x['results'][test_name][0],
+#             'explanation': helpers.pprint(x['results'][test_name][1]),
+#         } for x in self.all]
+#         if score is not None:
+#             results = list(filter(lambda x: x['score'] == score, results))
+#         return results
 
-    def _test_and_cache(self, tests):
-        meta = {}
-        foxpath = Foxpath()
-        foxtests = foxpath.load_tests(tests, app.config['CODELISTS'])
-        try:
-            results = self.load_cache(self.path_to_file())
-        except FileNotFoundError:
-            xml = self.supplied_data.parse()
-            reporting_org_strs = xml.xpath(
-                '//reporting-org/text() | //reporting-org/narrative/text()')
-            for reporting_org_str in reporting_org_strs:
-                reporting_org = reporting_org_str.strip()
-                if reporting_org != '':
-                    break
-            if reporting_org != '':
-                meta['reporting_org'] = reporting_org
-            else:
-                meta['reporting_org'] = None
-            activities = xml.xpath('//iati-activity')
-            meta['total_activities'] = len(activities)
-            if self.filter:
-                activities = Results.filter_activities(activities, self.filter)
-                meta['total_filtered_activities'] = len(activities)
-                self.save_cache(
-                    meta,
-                    join(self.supplied_data.upload_dir(), 'meta.json'))
-            results = foxpath.test_activities(
-                activities,
-                foxtests,
-                explain=True)
-            self.save_cache(results, self.path_to_file())
+#     def _test_and_cache(self, tests):
+#         meta = {}
+#         foxpath = Foxpath()
+#         foxtests = foxpath.load_tests(tests, app.config['CODELISTS'])
+#         try:
+#             results = self.load_cache(self.path_to_file())
+#         except FileNotFoundError:
+#             xml = self.supplied_data.parse()
+#             reporting_org_strs = xml.xpath(
+#                 '//reporting-org/text() | //reporting-org/narrative/text()')
+#             for reporting_org_str in reporting_org_strs:
+#                 reporting_org = reporting_org_str.strip()
+#                 if reporting_org != '':
+#                     break
+#             if reporting_org != '':
+#                 meta['reporting_org'] = reporting_org
+#             else:
+#                 meta['reporting_org'] = None
+#             activities = xml.xpath('//iati-activity')
+#             meta['total_activities'] = len(activities)
+#             if self.filter:
+#                 activities = Results.filter_activities(activities, self.filter)
+#                 meta['total_filtered_activities'] = len(activities)
+#                 self.save_cache(
+#                     meta,
+#                     join(self.supplied_data.upload_dir(), 'meta.json'))
+#             results = foxpath.test_activities(
+#                 activities,
+#                 foxtests,
+#                 explain=True)
+#             self.save_cache(results, self.path_to_file())
 
-        if 'total_filtered_activities' not in meta:
-            try:
-                meta = self.load_cache(
-                    join(self.supplied_data.upload_dir(), 'meta.json'))
-            except FileNotFoundError:
-                pass
+#         if 'total_filtered_activities' not in meta:
+#             try:
+#                 meta = self.load_cache(
+#                     join(self.supplied_data.upload_dir(), 'meta.json'))
+#             except FileNotFoundError:
+#                 pass
 
-        return results, meta
+#         return results, meta
 
-    @staticmethod
-    def filter_activities(activities, filter_):
-        foxpath = Foxpath()
-        foxtests = foxpath.load_tests([filter_], app.config['CODELISTS'])
-        activities_results = foxpath.test_activities(activities, foxtests)
+#     @staticmethod
+#     def filter_activities(activities, filter_):
+#         foxpath = Foxpath()
+#         foxtests = foxpath.load_tests([filter_], app.config['CODELISTS'])
+#         activities_results = foxpath.test_activities(activities, foxtests)
 
-        filtered_activities = []
-        for idx, activity in enumerate(activities):
-            if activities_results[idx]['results'][filter_['name']] == 1:
-                filtered_activities.append(activity)
+#         filtered_activities = []
+#         for idx, activity in enumerate(activities):
+#             if activities_results[idx]['results'][filter_['name']] == 1:
+#                 filtered_activities.append(activity)
 
-        return filtered_activities
+#         return filtered_activities
 
-    def path_to_file(self):
-        filtering = 'filtered' if self.filter is not None else 'all'
-        filename = 'results-{test_set_id}-{filtering}.json'.format(
-            test_set_id=self.test_set.id,
-            filtering=filtering)
-        return join(self.supplied_data.upload_dir(), filename)
+#     def path_to_file(self):
+#         filtering = 'filtered' if self.filter is not None else 'all'
+#         filename = 'results-{test_set_id}-{filtering}.json'.format(
+#             test_set_id=self.test_set.id,
+#             filtering=filtering)
+#         return join(self.supplied_data.upload_dir(), filename)
 
-    def save_cache(self, results, filepath):
-        with open(filepath, 'w') as f:
-            json.dump(results, f)
+#     def save_cache(self, results, filepath):
+#         with open(filepath, 'w') as f:
+#             json.dump(results, f)
 
-    def load_cache(self, filepath):
-        with open(filepath) as f:
-            j = json.load(f)
-        return j
+#     def load_cache(self, filepath):
+#         with open(filepath) as f:
+#             j = json.load(f)
+#         return j
 
-    # percentages by test, sorted
-    @property
-    def percentages(self):
-        percs = [
-            (k, v[1] / (v[1] + v[0]))
-            for k, v in self.summary_by_test.items()
-            if v[1] + v[0] > 0]
-        return OrderedDict(sorted(percs, key=lambda x: x[1], reverse=True))
+#     # percentages by test, sorted
+#     @property
+#     def percentages(self):
+#         percs = [
+#             (k, v[1] / (v[1] + v[0]))
+#             for k, v in self.summary_by_test.items()
+#             if v[1] + v[0] > 0]
+#         return OrderedDict(sorted(percs, key=lambda x: x[1], reverse=True))

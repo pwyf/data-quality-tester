@@ -1,5 +1,4 @@
 lxml==3.7.2
-foxpath
 pyyaml
 requests
 
