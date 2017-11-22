@@ -164,7 +164,7 @@ class TestSet():
         self.description = test_set['description']
         self.filepath = test_set['filepath']
         cs = test_set['components']
-        self.components = [Component(*c, self.filepath) for c in cs]
+        self.components = [Component(*c, filepath=self.filepath) for c in cs]
 
     def get_component(self, component_id):
         return {c.id: c for c in self.components}.get(component_id)
