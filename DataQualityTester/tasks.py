@@ -8,7 +8,7 @@ from lxml import etree
 import requests
 from werkzeug.utils import secure_filename
 
-from DataQualityTester import celery, db, models
+from DataQualityTester import celery, db
 
 
 def _colorify(number):
@@ -106,6 +106,7 @@ def test_file_task(self, path_to_file, feature_path, component_id,
 
 @celery.task(bind=True)
 def download_task(self, sd_uuid):
+    from DataQualityTester import models
     supplied_data = models.SuppliedData.query.get_or_404(str(sd_uuid))
     url = supplied_data.source_url
     request_kwargs = {
