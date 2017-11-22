@@ -1,5 +1,6 @@
 import json
 from os.path import exists, join
+from urllib.parse import quote_plus, unquote_plus
 
 from flask import abort, jsonify, redirect, request, \
                   render_template, url_for
@@ -52,6 +53,7 @@ def package_quality_by_component(uuid, component_id):
         'component': component,
         'results': results,
         'uuid': uuid,
+        'quote_plus': quote_plus,
     }
     return render_template('bdd_quality_by_component.html', **context)
 
@@ -63,7 +65,7 @@ def package_quality_by_test(uuid, component_id, test_name):
     test_set_id = request.args.get('test_set')
     test_set = TestSet(test_set_id)
     component = test_set.get_component(component_id)
-    test = component.get_test(test_name)
+    test = component.get_test(unquote_plus(test_name))
 
     results_file = join(output_path, '{}.json'.format(test.id))
     with open(results_file) as f:
