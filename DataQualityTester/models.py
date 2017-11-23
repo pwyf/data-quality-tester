@@ -123,32 +123,15 @@ class SuppliedData(db.Model):
         self.created = datetime.utcnow()
 
 
-# class Activity():
-#     def __init__(self, el):
-#         self.el = el
+class Activity():
+    def __init__(self, el):
+        self.el = el
 
-#     def __str__(self):
-#         return etree.tostring(
-#             self.el,
-#             pretty_print=True
-#         ).strip().decode('utf-8')
-
-#     def test(self, tests):
-#         foxpath = Foxpath()
-#         foxtests = foxpath.load_tests(tests, app.config['CODELISTS'])
-#         results = foxpath.test_activity(
-#             self.el,
-#             foxtests,
-#             explain=True
-#         )['results']
-#         grouped = {
-#             0: [],
-#             1: [],
-#             -1: [],
-#         }
-#         for test_name, out in results.items():
-#             grouped[out[0]].append((test_name, out[1]))
-#         return grouped
+    def __str__(self):
+        return etree.tostring(
+            self.el,
+            pretty_print=True
+        ).strip().decode('utf-8')
 
 
 class TestSet():
