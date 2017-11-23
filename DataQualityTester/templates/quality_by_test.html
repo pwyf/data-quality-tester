@@ -1,50 +1,32 @@
 {% extends "base.html" %}
 
 {% block body %}
+{% include 'partials/_test_another_file.html' %}
 
-<div class="row">
+<div class="row quality-panels-list">
   <div class="panel panel-primary">
     <div class="panel-heading" data-toggle="collapse" data-target="#more-information-body">
-      <h3 class="panel-title">{{ params['test'] }} <a class="pull-right" href="{{ url_for('package_overview', uuid=params['uuid']) }}">Back to overview</a></h3>
+      <h3 class="panel-title">{{ test.name }} <a class="pull-right" href="{{ url_for('package_overview', uuid=uuid) }}">Back to overview</a></h3>
     </div>
 
     <div class="panel-body">
       <p>
         The following test is applied:
       </p>
-      <blockquote>{{ pprint(test_set.get_test(params['test'])['expression'])|safe }}</blockquote>
+      <blockquote>{{ test.rendered|safe }}</blockquote>
     </div>
   </div>
 </div>
 
-<div id="results-tabs">
-
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#failing" aria-controls="profile" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Failing ({{ total_failing }} {{ total_failing|pluralize('activity', 'activities') }})</a></li>
-    <li role="presentation"><a href="#passing" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Passing ({{ total_passing }} {{ total_passing|pluralize('activity', 'activities') }})</a></li>
-    <li role="presentation"><a href="#not-relevant" aria-controls="messages" role="tab" data-toggle="tab">Not relevant ({{ total_not_relevant }} {{ total_not_relevant|pluralize('activity', 'activities') }})</a></li>
-  </ul>
-
-  <!-- Tab panes -->
-  <div class="tab-content">
-    {% for group_id, results in grouped_results.items() %}
-    <div role="tabpanel" class="tab-pane {% if group_id == 'failing' %}fade in active{% endif %}" id="{{ group_id }}">
-      <ul>
-      {% for result in results %}
-        <li>
-          <h5><a href="{{ url_for('activity_quality', **dict(params, iati_identifier=result['iati-identifier'])) }}">{{ result['title'] }}</a> <code>{{ result['iati-identifier'] }}</code> {% if result['hierarchy'] %}(Hierarchy {{ result['hierarchy'] }}){% endif %}</h5>
-          <p>
-            {{ result['explanation']|safe }}
-          </p>
-        </li>
-      {% endfor %}
-      </ul>
-    </div>
-    {% endfor %}
-  </div>
-
+<div class="row" id="results-tabs">
+{% for result in results %}
+  <li>
+    <h5><a href="{{ url_for('activity_quality', uuid=uuid, iati_identifier=result['id']) }}">{{ result['errors'] }}</a> <code>{{ result['id'] }}</code></h5>
+    <p>
+      {{ result['errors'] }}
+    </p>
+  </li>
+{% endfor %}
 </div>
 
-{% include 'partials/_test_set_selector.html' %}
 {% endblock %}

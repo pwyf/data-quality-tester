@@ -31,7 +31,7 @@ def package_overview(uuid):
         'task_ids': dict(task_ids),
         'uuid': uuid,
     }
-    return render_template('bdd_overview.html', **context)
+    return render_template('overview.html', **context)
 
 
 def package_quality_by_component(uuid, component_id):
@@ -55,7 +55,7 @@ def package_quality_by_component(uuid, component_id):
         'uuid': uuid,
         'quote_plus': quote_plus,
     }
-    return render_template('bdd_quality_by_component.html', **context)
+    return render_template('quality_by_component.html', **context)
 
 
 def package_quality_by_test(uuid, component_id, test_name):
@@ -77,7 +77,7 @@ def package_quality_by_test(uuid, component_id, test_name):
         'uuid': uuid,
         'results': results,
     }
-    return render_template('bdd_quality_by_test.html', **context)
+    return render_template('quality_by_test.html', **context)
 
 
 def activity_quality(uuid, iati_identifier):
@@ -92,7 +92,7 @@ def activity_quality(uuid, iati_identifier):
         'activity': str(activity),
         'iati_identifier': iati_identifier,
     }
-    return render_template('bdd_activity.html', **context)
+    return render_template('activity.html', **context)
 
 
 def task_status(task_id):

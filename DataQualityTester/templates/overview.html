@@ -1,52 +1,86 @@
 {% extends "base.html" %}
-{% from 'partials/_totaliser.html' import totaliser %}
 
 {% block body %}
-
-<div class="row">
-  <div class="panel panel-default">
-    <div class="panel-heading" data-toggle="collapse" data-target="#more-information-body">
-      <h3 class="panel-title">Overview</h3>
-    </div>
-
-    <div class="panel-body">
-      <p>
-        {{ name|safe }} has been tested against
-        {{ test_set.name }}.
-        <ul>
-        <li><strong>Reporting organisation:</strong>
-        {% if results.meta['reporting_org'] %}
-          {{ results.meta['reporting_org'] }}
-        {% else %}
-          <em>[Not provided]</em>
-        {% endif %}</li>
-        <li><strong>Total activities:</strong> {{ results.meta.total_activities|commify }}</li>
-        {% if test_set.filter %}
-        <li><strong>{{ test_set.filter['name'] }}:</strong> {{ results.meta.total_filtered_activities|commify }}</li>
-        {% endif %}
-        </ul>
-      </p>
-    </div>
-  </div>
-</div>
-
-<div class="row">
-  {% include 'partials/_filter_activities.html' %}
-</div>
+{% include 'partials/_test_another_file.html' %}
 
 <div class="row quality-panels-list">
-  {% for test_name, component_dict in components.items() %}
-  <div class="col-sm-6 quality-panel">
-      <div class="panel panel-primary">
-        <div class="panel-heading"><h3 class="panel-title"><a href="{{ url_for('package_quality_by_component', **dict(params, component=test_name)) }}">{{ test_name }}</a>
-        <a href="#"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></h3></div>
-        <div class="panel-body">
-          {{ totaliser(component_dict) }}
-        </div>
+{% for component in components %}
+  <div class="col-sm-6 quality-panel" id="{{ component.id }}" data-status-url="{{ url_for('task_status', task_id=task_ids[component.id]) }}" data-more-url="{{ url_for('package_quality_by_component', uuid=uuid, component_id=component.id) }}">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ component.name }}</h3>
       </div>
+      <div class="nanobar"></div>
+      <div class="panel-body">
+        <div class="progress" style="visibility: collapse;"></div>
+        <a class="btn btn-default pull-right" disabled="disabled" href="#">More…</a>
+      </div>
+    </div>
   </div>
-  {% endfor %}
+{% endfor %}
 </div>
+{% endblock %}
 
-{% include 'partials/_test_set_selector.html' %}
+{% block extra_js %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+
+<script id="panel-tmpl" type="text/x-handlebars-template">
+{% raw %}
+  <div class="progress">
+    <div class="progress-bar progress-bar-striped" style="width: {{ pass }}%; background-color: {{ colour }}">
+      <span class="sr-only">{{ int_pass }}% Pass</span>
+      {{ int_pass }}%
+    </div>
+    <div class="progress-bar" style="width: {{ fail }}%; background-color: #222">
+      <span class="sr-only">{{ int_fail }}% Fail</span>
+    </div>
+  </div>
+  <a class="btn btn-default pull-right" href="{{ more_url }}">More…</a>
+{% endraw %}
+</script>
+
+<script type="text/javascript">
+$(function() {
+  var tmpl = Handlebars.compile($('#panel-tmpl').html());
+
+  $('.quality-panel').each(function(k, el) {
+    $el = $(el);
+    var nanobar = new Nanobar({
+      target: $el.find('.nanobar')[0]
+    });
+    update_progress($el, nanobar);
+  });
+
+  function update_progress($el, nanobar) {
+    var status_url = $el.data('status-url');
+    $.getJSON(status_url, function(data) {
+      if (data.status !== 'PENDING') {
+        nanobar.go(data.progress);
+      }
+      if (data.status === 'SUCCESS') {
+        if (data.score !== null) {
+          var ctx = {
+            pass: data.score,
+            int_pass: parseInt(data.score),
+            fail: 100 - data.score,
+            int_fail: parseInt(100 - data.score),
+            colour: data.colour,
+            component: data.name,
+            more_url: $el.data('more-url')
+          };
+          $el.find('.panel-body').html(tmpl(ctx));
+        }
+      } else {
+        // rerun in 2 seconds
+        setTimeout(function() {
+          update_progress($el, nanobar);
+        }, 2000);
+      }
+    });
+  }
+});
+</script>
+
 {% endblock %}
