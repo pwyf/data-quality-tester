@@ -66,5 +66,5 @@ Index tests.
 3. Start the webserver:
 
     ```shell
-    flask run --with-threads
+    flask run
     ```
