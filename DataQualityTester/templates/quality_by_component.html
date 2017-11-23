@@ -33,6 +33,9 @@
 
               <a class="btn btn-default pull-right" href="{{ url_for('package_quality_by_test', uuid=uuid, component_id=component.id, test_name=quote_plus(test_name)) }}">More…</a>
               {% else %}
+              <div class="pull-left">
+                No relevant data found.
+              </div>
               <div class="progress" style="visibility: collapse;"></div>
               <a class="btn btn-default pull-right" disabled="disabled" href="#">More…</a>
               {% endif %}

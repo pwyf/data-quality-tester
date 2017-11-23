@@ -12,6 +12,12 @@
       </div>
       <div class="nanobar"></div>
       <div class="panel-body">
+        <div class="loading">
+          <div class="loading-content">
+            <i class="fa fa-circle-o-notch fa-spin fa-fw"></i>
+          </div>
+        </div>
+
         <div class="progress" style="visibility: collapse;"></div>
         <a class="btn btn-default pull-right" disabled="disabled" href="#">More…</a>
       </div>
@@ -70,7 +76,14 @@ $(function() {
             component: data.name,
             more_url: $el.data('more-url')
           };
-          $el.find('.panel-body').html(tmpl(ctx));
+          $el.find('.panel-body .loading').fadeOut(function() {
+            $el.find('.panel-body').html(tmpl(ctx));
+          });
+        } else {
+          $el.find('.panel-body .loading').fadeOut(function() {
+            $el.find('.panel-body').prepend('<div class="pull-left">' +
+              'No relevant data found.</div>');
+          });
         }
       } else {
         // rerun in 2 seconds

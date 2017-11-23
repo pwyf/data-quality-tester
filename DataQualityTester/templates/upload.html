@@ -2,9 +2,11 @@
 
 {% block body %}
 <div class="row">
-  <div id="loading">
-    <h1>Loading...</h1>
-    <i class="fa fa-circle-o-notch fa-spin fa-fw"></i>
+  <div class="loading hide">
+    <div class="loading-content">
+      <h1>Loading...</h1>
+      <i class="fa fa-circle-o-notch fa-spin fa-fw"></i>
+    </div>
   </div>
 
   <div class="jumbotron">
@@ -115,7 +117,7 @@
     $("#collapseThree").attr('class', 'panel-collapse collapse');
 
     $('form').submit(function(e) {
-      $('#loading').css({"display": "block"});
+      $('.loading').removeClass('hide');
       $('#accordion').hide();
 
       var $this = $(this);

@@ -88,20 +88,35 @@ body {
   z-index: 999;
 }
 
-#loading {
-  display: none;
+.panel-body {
+  position: relative;
+}
+
+.loading {
+  display: block;
   position: absolute;
-  top: 0px;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-  padding-top: 100px;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 9999;
   background-color: #000;
   opacity: 0.5;
+}
+
+.loading-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   color: #fff;
   text-align: center;
   font-size: 10vh;
+
+  -webkit-transform: translateX(-50%) translateY(-50%);
+     -moz-transform: translateX(-50%) translateY(-50%);
+      -ms-transform: translateX(-50%) translateY(-50%);
+       -o-transform: translateX(-50%) translateY(-50%);
+          transform: translateX(-50%) translateY(-50%);
 }
 
 li.pwyf-logo {
