@@ -1,3 +1,4 @@
+import csv
 import json
 from os.path import exists, join
 from urllib.parse import quote_plus, unquote_plus
@@ -67,9 +68,10 @@ def package_quality_by_test(uuid, component_id, test_name):
     component = test_set.get_component(component_id)
     test = component.get_test(unquote_plus(test_name))
 
-    results_file = join(output_path, '{}.json'.format(test.id))
+    results_file = join(output_path, '{}.csv'.format(test.id))
     with open(results_file) as f:
-        results = json.load(f)
+        reader = csv.DictReader(f)
+        results = [x for x in reader]
 
     context = {
         'component': component,
