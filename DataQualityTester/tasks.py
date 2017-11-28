@@ -116,7 +116,7 @@ def download_task(self, sd_uuid):
     supplied_data = models.SuppliedData.query.get_or_404(str(sd_uuid))
     url = supplied_data.source_url
     request_kwargs = {
-        'headers': {'User-Agent': 'Publish What You Fund Simple Tester'},
+        'headers': {'User-Agent': 'Publish What You Fund Data Quality Tester'},
         'stream': True,
     }
     try:
