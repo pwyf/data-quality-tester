@@ -84,7 +84,7 @@ def test_file_task(self, path_to_file, feature_path, component_id,
         for idx, feature in enumerate(features):
             result = bdd_tester(
                 join('steps', 'step_definitions.py'),
-                feature_path,
+                features,
                 etree=xml,
                 output_path=output_path,
                 codelists=codelists,
