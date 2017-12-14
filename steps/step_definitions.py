@@ -1,51 +1,52 @@
 from datetime import datetime
-import json
-import logging
-from os.path import dirname, join
 import re
 
-from behave import given, then
-from bdd_tester.exceptions import StepException
+from bdd_tester.utils import given, then
 
 
-@given('file is an organisation file')
-def given_org_file(context):
-    if context.filetype != 'org':
-        raise StepException(context, 'Not an organisation file')
+class StepException(Exception):
+    pass
 
 
-@given('this test involves both organisation and activity files')
-def given_mixed_content(context):
-    raise StepException(context, 'Not possible to test')
+@given(r'file is an organisation file')
+def given_org_file(xml, **kwargs):
+    if xml.tag != 'iati-organisation':
+        raise StepException('Not an organisation file')
 
 
-@then('skip it')
-def then_skip_it(context):
+@given(r'this test involves both organisation and activity files')
+def given_mixed_content(xml, **kwargs):
+    raise StepException('Not possible to test')
+
+
+@given(r'an activity')
+def an_activity(xml, **kwargs):
+    pass
+
+
+@then(r'skip it')
+def then_skip_it(xml, **kwargs):
     pass
 
 
 # NB the original PWYF test also checked non-empty
-@then('`{xpath_expression}` should be present')
-def then_is_present(context, xpath_expression):
-    vals = context.xml.xpath(xpath_expression)
+@then(r'`([^`]+)` should be present')
+def then_is_present(xml, xpath_expression, **kwargs):
+    vals = xml.xpath(xpath_expression)
     if len(vals) == 0:
         msg = '`{}` not found'.format(xpath_expression)
-        raise StepException(context, msg)
+        raise StepException(msg)
 
 
-@then('every `{xpath_expression}` should be on the {codelist} codelist')
-def then_every_on_codelist(context, xpath_expression, codelist):
-    vals = context.xml.xpath(xpath_expression)
+@then(r'every `([^`]+)` should be on the ([^ ]+) codelist')
+def then_every_on_codelist(xml, xpath_expression, codelist, **kwargs):
+    vals = xml.xpath(xpath_expression)
 
     if len(vals) == 0:
         msg = '`{}` not found'.format(xpath_expression)
-        raise StepException(context, msg)
+        raise StepException(msg)
 
-    codelist_path = join(dirname(__file__), 'codelists', '2',
-                         codelist + '.json')
-    with open(codelist_path) as f:
-        j = json.load(f)
-    codes = [x['code'] for x in j['data']]
+    codes = kwargs.get('codelists', {}).get(codelist, [])
 
     invalid_vals = []
     success = True
@@ -60,23 +61,20 @@ def then_every_on_codelist(context, xpath_expression, codelist):
             isare='is' if len(invalid_vals) == 1 else 'are',
             codelist=codelist,
         )
-        raise StepException(context, msg)
+        raise StepException(msg)
 
     assert(True)
 
 
-@then('at least one `{xpath_expression}` should be on the {codelist} codelist')
-def then_at_least_one_on_codelist(context, xpath_expression, codelist):
-    vals = context.xml.xpath(xpath_expression)
+@then(r'at least one `([^`]+)` should be on the ([^ ]+) codelist')
+def then_at_least_one_on_codelist(xml, xpath_expression, codelist, **kwargs):
+    vals = xml.xpath(xpath_expression)
 
     if len(vals) == 0:
         msg = '`{}` not found'.format(xpath_expression)
-        raise StepException(context, msg)
+        raise StepException(msg)
 
-    codelist_path = join('codelists', '2', codelist + '.json')
-    with open(codelist_path) as f:
-        j = json.load(f)
-    codes = [x['code'] for x in j['data']]
+    codes = kwargs.get('codelists', {}).get(codelist, [])
 
     for val in vals:
         if val in codes:
@@ -88,15 +86,20 @@ def then_at_least_one_on_codelist(context, xpath_expression, codelist):
         isare='is' if len(vals) == 1 else 'are',
         codelist=codelist,
     )
-    raise StepException(context, msg)
+    raise StepException(msg)
 
 
-@given('the activity is current')
-def given_activity_is_current(context):
+@given(r'the activity is current')
+def given_activity_is_pretend_current(xml, **kwargs):
+    pass
+
+
+@given(r'it should be current')
+def given_activity_is_really_current(xml, **kwargs):
     try:
-        context.execute_steps('given `activity-status/@code` is 2')
+        given_is_const(xml, 'activity-status/@code', '2')
         return
-    except AssertionError as e:
+    except:
         pass
 
     end_planned = 'activity-date[@type="3"]/@iso-date |' + \
@@ -104,23 +107,21 @@ def given_activity_is_current(context):
                   'activity-date[@type="end-planned"]/@iso-date |' + \
                   'activity-date[@type="end-planned"]/text()'
     try:
-        inp = 'given `{}` is less than 12 months ago'.format(end_planned)
-        context.execute_steps(inp)
+        given_is_less_than_x_months_ago(xml, end_planned, 12)
         assert(True)
         return
-    except AssertionError as e:
+    except:
         pass
 
-    end_planned = 'activity-date[@type="4"]/@iso-date |' + \
-                  'activity-date[@type="4"]/text() |' + \
-                  'activity-date[@type="end-actual"]/@iso-date |' + \
-                  'activity-date[@type="end-actual"]/text()'
+    end_actual = 'activity-date[@type="4"]/@iso-date |' + \
+                 'activity-date[@type="4"]/text() |' + \
+                 'activity-date[@type="end-actual"]/@iso-date |' + \
+                 'activity-date[@type="end-actual"]/text()'
     try:
-        inp = 'given `{}` is less than 12 months ago'.format(end_planned)
-        context.execute_steps(inp)
+        given_is_less_than_x_months_ago(xml, end_actual, 12)
         assert(True)
         return
-    except AssertionError as e:
+    except:
         pass
 
     xpath_expr = 'transaction[transaction-type/@code="C"] |' + \
@@ -129,30 +130,30 @@ def given_activity_is_current(context):
                  'transaction[transaction-type/@code="2"] |' + \
                  'transaction[transaction-type/@code="3"] |' + \
                  'transaction[transaction-type/@code="4"]'
-    transactions = context.xml.xpath(xpath_expr)
+    transactions = xml.xpath(xpath_expr)
     for transaction in transactions:
         transaction_date = 'transaction-date/@iso-date'
-        inp = 'given `{}` is less than 12 months ago'.format(transaction_date)
         try:
-            context.execute_steps(inp)
+            given_is_less_than_x_months_ago(transaction, transaction_date, 12)
             assert(True)
             return
-        except AssertionError as e:
+        except:
             pass
 
     msg = 'Activity is not current'
-    raise StepException(context, msg)
+    raise StepException(msg)
 
 
-@then('`{xpath_expression}` should have at least {reqd_chars:d} characters')
-def then_at_least_x_chars(context, xpath_expression, reqd_chars):
-    vals = context.xml.xpath(xpath_expression)
+@then(r'`([^`]+)` should have at least (\d+) characters')
+def then_at_least_x_chars(xml, xpath_expression, reqd_chars, **kwargs):
+    reqd_chars = int(reqd_chars)
+    vals = xml.xpath(xpath_expression)
     if len(vals) == 0:
         msg = '`{}` not found'.format(xpath_expression)
-        raise StepException(context, msg)
+        raise StepException(msg)
 
     most_chars, most_str = max([(len(val), val) for val in vals])
-    result = most_chars > reqd_chars
+    result = most_chars >= reqd_chars
 
     if not result:
         msg = '`{}` has fewer than {} characters (it has {})'.format(
@@ -160,13 +161,13 @@ def then_at_least_x_chars(context, xpath_expression, reqd_chars):
             reqd_chars,
             most_chars,
         )
-        raise StepException(context, msg)
+        raise StepException(msg)
 
 
-@given('`{xpath_expression}` is one of {consts}')
-def given_is_one_of_consts(context, xpath_expression, consts):
+@given(r'`([^`]+)` is one of ((?:\w+, )*\w+ or \w+)')
+def given_is_one_of_consts(xml, xpath_expression, consts, **kwargs):
     consts_list = re.split(r', | or ', consts)
-    vals = context.xml.xpath(xpath_expression)
+    vals = xml.xpath(xpath_expression)
     if len(vals) == 0:
         # explain = '{vals_explain} should be one of {const_explain}. ' + \
         #           'However, the activity doesn\'t contain that element'
@@ -183,13 +184,13 @@ def given_is_one_of_consts(context, xpath_expression, consts):
         consts,
         val,
     )
-    raise StepException(context, msg)
+    raise StepException(msg)
 
 
-@given('`{xpath_expression}` is not one of {consts}')
-def given_is_not_one_of_consts(context, xpath_expression, consts):
+@given(r'`([^`]+)` is not any of ((?:\w+, )*\w+ or \w+)')
+def given_is_not_one_of_consts(xml, xpath_expression, consts, **kwargs):
     consts_list = re.split(r', | or ', consts)
-    vals = context.xml.xpath(xpath_expression)
+    vals = xml.xpath(xpath_expression)
     if len(vals) == 0:
         assert(True)
         return
@@ -200,7 +201,7 @@ def given_is_not_one_of_consts(context, xpath_expression, consts):
                 consts,
                 val,
             )
-            raise StepException(context, msg)
+            raise StepException(msg)
     assert(True)
     return
 
@@ -212,9 +213,10 @@ def mkdate(date_str):
         return None
 
 
-@given('`{xpath_expression}` is at least {months_ahead:d} months ahead')
-def given_at_least_x_months_ahead(context, xpath_expression, months_ahead):
-    dates = context.xml.xpath(xpath_expression)
+@given(r'`([^`]+)` is at least (\d+) months ahead')
+def given_at_least_x_months_ahead(xml, xpath_expression,
+                                  months_ahead, **kwargs):
+    dates = xml.xpath(xpath_expression)
 
     if len(dates) == 0:
         msg = '`{0}` is not present, so assuming it is not at ' + \
@@ -222,7 +224,7 @@ def given_at_least_x_months_ahead(context, xpath_expression, months_ahead):
                   xpath_expression,
                   months_ahead,
               )
-        raise StepException(context, msg)
+        raise StepException(msg)
 
     valid_dates = list(filter(
         lambda x: x, [mkdate(date_str) for date_str in dates]))
@@ -235,17 +237,18 @@ def given_at_least_x_months_ahead(context, xpath_expression, months_ahead):
                   dates[0],
                   months_ahead,
               )
-        raise StepException(context, msg)
+        raise StepException(msg)
 
     max_date = max(valid_dates)
     prefix = ''
     if len(valid_dates) > 1 and max_date != min(valid_dates):
         prefix = 'the latest '
 
-    year_diff = max_date.year - context.today.year
-    month_diff = 12 * year_diff + max_date.month - context.today.month
+    today = kwargs.get('today')
+    year_diff = max_date.year - kwargs.get('today').year
+    month_diff = 12 * year_diff + max_date.month - today.month
     if month_diff == months_ahead:
-        success = max_date.day > context.today.day
+        success = max_date.day > today.day
     else:
         success = month_diff > months_ahead
     if not success:
@@ -254,19 +257,20 @@ def given_at_least_x_months_ahead(context, xpath_expression, months_ahead):
             xpath_expression,
             months_ahead,
         )
-        raise StepException(context, msg)
+        raise StepException(msg)
 
 
-@given('`{xpath_expression}` is less than {months_ago:d} months ago')
-def given_is_less_than_x_months_ago(context, xpath_expression, months_ago):
-    dates = context.xml.xpath(xpath_expression)
+@given(r'`([^`]+)` is less than (\d+) months ago')
+def given_is_less_than_x_months_ago(xml, xpath_expression,
+                                    months_ago, **kwargs):
+    dates = xml.xpath(xpath_expression)
 
     if len(dates) == 0:
         msg = '{xpath_expression} is not present, so assuming it is ' + \
               'not less than {months_ago} months ago'
         msg = msg.format(xpath_expression=xpath_expression,
                          months_ago=months_ago)
-        raise StepException(context, msg)
+        raise StepException(msg)
 
     valid_dates = list(filter(
         lambda x: x, [mkdate(date_str) for date_str in dates]))
@@ -276,14 +280,14 @@ def given_is_less_than_x_months_ago(context, xpath_expression, months_ago):
               'months ago'
         msg = msg.format(xpath_expression=xpath_expression,
                          date=dates[0], months_ago=months_ago)
-        raise StepException(context, msg)
+        raise StepException(msg)
 
     max_date = max(valid_dates)
     prefix = ''
     if len(valid_dates) > 1 and max_date != min(valid_dates):
         prefix = 'the most recent '
 
-    current_date = context.today
+    current_date = kwargs.get('today')
     if max_date > current_date:
         # msg = '{prefix}{xpath_expression} ({max_date}) is in the future'
         assert(True)
@@ -303,25 +307,25 @@ def given_is_less_than_x_months_ago(context, xpath_expression, months_ago):
           '{months_ago} months ago'
     msg = msg.format(prefix=prefix, xpath_expression=xpath_expression,
                      max_date=max_date, months_ago=months_ago)
-    raise StepException(context, msg)
+    raise StepException(msg)
 
 
-@given('`{xpath_expression}` is not {const}')
-def given_is_not_const(context, xpath_expression, const):
-    vals = context.xml.xpath(xpath_expression)
+@given(r'`([^`]+)` is not ([^ ]+)')
+def given_is_not_const(xml, xpath_expression, const, **kwargs):
+    vals = xml.xpath(xpath_expression)
     for val in vals:
         if val == const:
             msg = '`{}` is {}'.format(
                 xpath_expression,
                 const,
             )
-            raise StepException(context, msg)
+            raise StepException(msg)
     assert(True)
 
 
-@given('`{xpath_expression}` is {const}')
-def given_is_const(context, xpath_expression, const):
-    vals = context.xml.xpath(xpath_expression)
+@given(r'`([^`]+)` is ([^ ]+)')
+def given_is_const(xml, xpath_expression, const, **kwargs):
+    vals = xml.xpath(xpath_expression)
     for val in vals:
         if val == const:
             assert(True)
@@ -331,12 +335,12 @@ def given_is_const(context, xpath_expression, const):
         const,
         val,
     )
-    raise StepException(context, msg)
+    raise StepException(msg)
 
 
-@then('`{xpath_expression}` should be available forward {period}')
-def then_is_available_forward(context, xpath_expression, period):
-    vals = context.xml.xpath(xpath_expression)
+@then(r'`([^`]+)` should be available forward (annually|quarterly)')
+def then_is_available_forward(xml, xpath_expression, period, **kwargs):
+    vals = xml.xpath(xpath_expression)
 
     def max_date(dates, default):
         dates = list(filter(
@@ -382,35 +386,34 @@ def then_is_available_forward(context, xpath_expression, period):
     # 1) period-end after reference date
     # 2) a maximum number of days, depending on # of qtrs.
     for element in vals:
-        after_ref = check_after(element, context.today)
+        after_ref = check_after(element, kwargs.get('today'))
         within_length = max_budget_length(element, max_days)
         if after_ref and within_length:
             assert(True)
             return
 
     msg = 'Failed'
-    raise StepException(context, msg)
+    raise StepException(msg)
 
 
-@then('`{xpath_expression}` should be available {years:d} year forward')
-@then('`{xpath_expression}` should be available {years:d} years forward')
-def then_is_available_x_years_forward(context, xpath_expression, years):
-    budgets = context.xml.xpath(xpath_expression)
+@then(r'`([^`]+)` should be available (\d+) years? forward')
+def then_is_available_x_years_forward(xml, xpath_expression,
+                                      years, **kwargs):
+    budgets = xml.xpath(xpath_expression)
     # TODO
-    raise StepException(context, '')
+    raise StepException('')
 
 
-@then('`{xpath_expression1}` should start with either ' +
-      '`{xpath_expression2}` or `{xpath_expression3}`')
-def then_should_start_with_either(context, xpath_expression1,
-                                  xpath_expression2, xpath_expression3):
-    vals = context.xml.xpath(xpath_expression1)
-    prefix1 = context.xml.xpath(xpath_expression2)
-    prefix2 = context.xml.xpath(xpath_expression3)
+@then(r'`([^`]+)` should start with either `([^`]+)` or `([^`]+)`')
+def then_should_start_with_either(xml, xpath_expression1, xpath_expression2,
+                                  xpath_expression3, **kwargs):
+    vals = xml.xpath(xpath_expression1)
+    prefix1 = xml.xpath(xpath_expression2)
+    prefix2 = xml.xpath(xpath_expression3)
 
     if len(vals) == 0:
         msg = '`{}` not found'.format(xpath_expression1)
-        raise StepException(context, msg)
+        raise StepException(msg)
 
     target = vals[0]
 
@@ -437,50 +440,4 @@ def then_should_start_with_either(context, xpath_expression1,
     else:
         msg = '`{}` or `{}` not found'.format(
             xpath_expression2, xpath_expression3)
-    raise StepException(context, msg)
-
-
-def either_or(context, tmpl, xpath_expressions):
-    exceptions = []
-    for xpath_expression in xpath_expressions:
-        try:
-            context.execute_steps(tmpl.format(
-                expression=xpath_expression)
-            )
-            assert(True)
-            return
-        except AssertionError as e:
-            msg = str(e).split('StepException: ')[1].strip()
-            exceptions.append(msg)
-
-    msg = ' and '.join(exceptions)
-    raise StepException(context, msg)
-
-
-@given('either `{xpath_expression1}` or `{xpath_expression2}` {statement}')
-def given_either_or(context, xpath_expression1, xpath_expression2, statement):
-    xpath_expressions = [xpath_expression1, xpath_expression2]
-    tmpl = 'given `{{expression}}` {statement}'.format(
-        statement=statement,
-    )
-    either_or(context, tmpl, xpath_expressions)
-
-
-@then('either `{xpath_expression1}` or `{xpath_expression2}` {statement}')
-def then_either_or(context, xpath_expression1, xpath_expression2, statement):
-    xpath_expressions = [xpath_expression1, xpath_expression2]
-    tmpl = 'then `{{expression}}` {statement}'.format(
-        statement=statement,
-    )
-    either_or(context, tmpl, xpath_expressions)
-
-
-@then('either every `{xpath_expression1}` or ' +
-      '`{xpath_expression2}` {statement}')
-def then_either_every_or(context, xpath_expression1,
-                         xpath_expression2, statement):
-    xpath_expressions = [xpath_expression1, xpath_expression2]
-    tmpl = 'then every `{{expression}}` {statement}'.format(
-        statement=statement,
-    )
-    either_or(context, tmpl, xpath_expressions)
+    raise StepException(msg)

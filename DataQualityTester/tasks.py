@@ -65,19 +65,14 @@ def test_file_task(self, path_to_file, feature_path, component_id,
         features = glob(join(feature_path, '*.feature'))
         feature_count = len(features)
 
-        formatters = [
-            'bdd_tester.formatters:DQSummaryFormatter',
-            'bdd_tester.formatters:DQCSVFormatter',
-        ]
-
         results = {}
         score = None
         for idx, feature in enumerate(features):
             result = bdd_tester(
+                join('steps', 'step_definitions.py'),
+                feature_path,
                 etree=xml,
-                features=[feature],
                 output_path=output_path,
-                formatters=formatters,
             )
             if not result:
                 continue
