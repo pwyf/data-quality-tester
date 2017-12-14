@@ -8,7 +8,7 @@ from lxml import etree
 import requests
 from werkzeug.utils import secure_filename
 
-from DataQualityTester import celery, db
+from DataQualityTester import app, celery, db
 
 
 def _colorify(number):
@@ -46,6 +46,19 @@ def _compute_score(results):
         return None
 
 
+def _load_codelists():
+    all_codes = {}
+    codelist_list = app.config.get('CODELIST_LIST')
+    for codelist in codelist_list:
+        codes = []
+        for ver in ['1', '2']:
+            with open(join('codelists', ver, codelist + '.json')) as f:
+                codelist_data = json.load(f)['data']
+                codes += [x['code'] for x in codelist_data]
+        all_codes[codelist] = codes
+    return all_codes
+
+
 @celery.task(bind=True)
 def test_file_task(self, path_to_file, feature_path, component_id,
                    output_path):
@@ -64,6 +77,7 @@ def test_file_task(self, path_to_file, feature_path, component_id,
 
         features = glob(join(feature_path, '*.feature'))
         feature_count = len(features)
+        codelists = _load_codelists()
 
         results = {}
         score = None
@@ -73,6 +87,7 @@ def test_file_task(self, path_to_file, feature_path, component_id,
                 feature_path,
                 etree=xml,
                 output_path=output_path,
+                codelists=codelists,
             )
             if not result:
                 continue
