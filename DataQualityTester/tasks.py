@@ -75,6 +75,7 @@ def test_file_task(self, path_to_file, feature_path, component_id,
         # TODO: handle parse error
         xml = etree.parse(path_to_file)
 
+        step_definitions_path = join('steps', 'step_definitions.py')
         features = glob(join(feature_path, '*.feature'))
         feature_count = len(features)
         codelists = _load_codelists()
@@ -83,7 +84,7 @@ def test_file_task(self, path_to_file, feature_path, component_id,
         score = None
         for idx, feature in enumerate(features):
             result = bdd_tester(
-                join('steps', 'step_definitions.py'),
+                step_definitions_path,
                 features,
                 etree=xml,
                 output_path=output_path,
