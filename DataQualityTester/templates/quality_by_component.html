@@ -15,7 +15,7 @@
               <h3 class="panel-title">{{ test_name }}</h3>
             </div>
             <div class="panel-body">
-              {% if result_dict|percent %}
+              {% if result_dict|percent is not none %}
               <div class="progress">
                 <div class="progress-bar progress-bar-striped" style="width: {{ result_dict|percent }}%; background-color: {{ result_dict|percent|colorify }}">
                   <span class="sr-only">{{ result_dict|percent|int }}% Pass</span>
