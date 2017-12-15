@@ -76,6 +76,8 @@ def test_file_task(self, path_to_file, feature_path, component_id,
         xml = etree.parse(path_to_file)
 
         step_definitions_path = join('steps', 'step_definitions.py')
+
+        filters = [join(feature_path, '..', 'filter.feature')]
         features = glob(join(feature_path, '*.feature'))
         feature_count = len(features)
         codelists = _load_codelists()
@@ -86,6 +88,7 @@ def test_file_task(self, path_to_file, feature_path, component_id,
             result = bdd_tester(
                 step_definitions_path,
                 features,
+                filters=filters,
                 etree=xml,
                 output_path=output_path,
                 codelists=codelists,
