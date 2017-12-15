@@ -95,9 +95,10 @@ def then_at_least_one_on_codelist(xml, xpath_expression, codelist, **kwargs):
 
 
 @given(r'the activity is current')
-def given_activity_is_really_current(xml, **kwargs):
+def given_activity_is_current(xml, **kwargs):
     try:
         given_is_const(xml, 'activity-status/@code', '2')
+        assert(True)
         return
     except:
         pass
