@@ -1,14 +1,7 @@
 from datetime import datetime
-import hashlib
 import re
 
-from lxml import etree
-import redis
-
 from bdd_tester.utils import given, then
-
-
-redisdb = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 
 class StepException(Exception):
@@ -96,20 +89,15 @@ def then_at_least_one_on_codelist(xml, xpath_expression, codelist, **kwargs):
     raise StepException(msg)
 
 
+# @given(r'the activity is current')
+# def given_activity_is_pretend_current(xml, **kwargs):
+#     pass
+
+
 @given(r'the activity is current')
-def given_activity_is_current(xml, **kwargs):
-    hsh = hashlib.md5(etree.tostring(xml)).hexdigest()
-    res = redisdb.get(hsh)
-    if res:
-        res = eval(res)
-        if res[0] is True:
-            return
-        else:
-            raise StepException(res[1])
+def given_activity_is_really_current(xml, **kwargs):
     try:
         given_is_const(xml, 'activity-status/@code', '2')
-        assert(True)
-        redisdb.set(hsh, (True,))
         return
     except:
         pass
@@ -121,7 +109,6 @@ def given_activity_is_current(xml, **kwargs):
     try:
         given_is_less_than_x_months_ago(xml, end_planned, 12)
         assert(True)
-        redisdb.set(hsh, (True,))
         return
     except:
         pass
@@ -133,7 +120,6 @@ def given_activity_is_current(xml, **kwargs):
     try:
         given_is_less_than_x_months_ago(xml, end_actual, 12)
         assert(True)
-        redisdb.set(hsh, (True,))
         return
     except:
         pass
@@ -150,13 +136,11 @@ def given_activity_is_current(xml, **kwargs):
         try:
             given_is_less_than_x_months_ago(transaction, transaction_date, 12)
             assert(True)
-            redisdb.set(hsh, (True,))
             return
         except:
             pass
 
     msg = 'Activity is not current'
-    redisdb.set(hsh, (False, msg))
     raise StepException(msg)
 
 
