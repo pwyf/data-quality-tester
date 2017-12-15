@@ -79,38 +79,31 @@ def test_file_task(self, path_to_file, feature_path, component_id,
 
         filters = [join(feature_path, '..', 'filter.feature')]
         features = glob(join(feature_path, '*.feature'))
-        feature_count = len(features)
         codelists = _load_codelists()
 
-        results = {}
-        score = None
-        for idx, feature in enumerate(features):
-            result = bdd_tester(
-                step_definitions_path,
-                features,
-                filters=filters,
-                etree=xml,
-                output_path=output_path,
-                codelists=codelists,
-            )
-            if not result:
-                continue
-            results.update(result)
-            score = _compute_score(results)
-            if score is not None:
-                colour = _colorify(score)
-            else:
-                colour = '#222'
-            self.update_state(
-                state='RUNNING',
-                meta={
-                    'name': component_id,
-                    'progress': 100. * (idx + 1) / feature_count,
-                    'data': results,
-                    'score': score,
-                    'colour': colour,
-                }
-            )
+        results = bdd_tester(
+            step_definitions_path,
+            features,
+            filters=filters,
+            etree=xml,
+            output_path=output_path,
+            codelists=codelists,
+        )
+        score = _compute_score(results)
+        if score is not None:
+            colour = _colorify(score)
+        else:
+            colour = '#222'
+        self.update_state(
+            state='RUNNING',
+            meta={
+                'name': component_id,
+                'progress': 100,
+                'data': results,
+                'score': score,
+                'colour': colour,
+            }
+        )
         # cache the result
         with open(results_path, 'w') as f:
             json.dump(results, f)
