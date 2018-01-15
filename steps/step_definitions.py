@@ -418,26 +418,28 @@ def then_should_start_with_either(xml, xpath_expression1, xpath_expression2,
 
     target = vals[0]
 
+    msgs = []
     if len(prefix1) > 0 and len(prefix1[0]) > 0:
         prefix1 = prefix1[0]
         if target.startswith('{}-'.format(prefix1)):
             assert(True)
             return
         else:
-            msg = '`{}` doesn\'t start with {}'.format(
-                xpath_expression1,
-                prefix1
-            )
-    elif len(prefix2) and len(prefix2[0]) > 0:
+            msgs.append(prefix1)
+
+    if len(prefix2) and len(prefix2[0]) > 0:
         prefix2 = prefix2[0]
         if target.startswith('{}-'.format(prefix2)):
             assert(True)
             return
         else:
-            msg = '`{}` doesn\'t start with {}'.format(
-                xpath_expression1,
-                prefix2
-            )
+            msgs.append(prefix2)
+
+    if len(msgs):
+        msg = '`{}` doesn\'t start with {}'.format(
+            xpath_expression1,
+            ' or '.join(msgs),
+        )
     else:
         msg = '`{}` or `{}` not found'.format(
             xpath_expression2, xpath_expression3)
