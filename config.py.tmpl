@@ -10,7 +10,6 @@ class Config(object):
     REGISTRY_API_BASE_URL = 'https://iatiregistry.org/api/3/action'
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-    CACHE_TIMEOUT = 86400  # 24 hours
     CURRENT_PATH = dirname(__file__)
     MEDIA_FOLDER = join(CURRENT_PATH, 'media')
     SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(
