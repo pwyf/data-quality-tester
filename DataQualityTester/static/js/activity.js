@@ -3,7 +3,7 @@ var Activity = {
     this.bindEvents();
 
     // pretty print xml
-    var $p = $($('.prettyprint')[0]);
+    var $p = $('.prettyprint');
     $p.text(vkbeautify.xml($p.text()));
   },
   bindEvents:function(){
