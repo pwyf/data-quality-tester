@@ -15,4 +15,3 @@ cssmin==0.2.0
 jsmin==2.2.2
 
 git+https://github.com/pwyf/bdd-tester.git#egg=bdd-tester
-foxpath==2.0.1
