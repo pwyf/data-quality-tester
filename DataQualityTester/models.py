@@ -183,16 +183,11 @@ class Component():
 
 class Test():
     def __init__(self, name, expression, filepath, line_num):
-        self.id = self._slugify(name)
+        self.id = secure_filename(name)
         self.name = name
         self.expression = expression
         self.filepath = filepath
         self.line_num = line_num
-
-    def _slugify(self, inp):
-        out = inp.lower().strip().replace(' ', '_')
-        out = ''.join(c for c in out if c.isalnum() or c == '_')
-        return out
 
     @property
     def rendered(self):
