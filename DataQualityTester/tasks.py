@@ -1,5 +1,6 @@
-from glob import glob
+import csv
 import json
+from glob import glob
 from os.path import exists, join
 from os import makedirs
 
@@ -60,7 +61,7 @@ def _load_codelists():
 
 
 @celery.task(bind=True)
-def test_file_task(self, path_to_file, feature_path, component_id,
+def test_file_task(self, path_to_file, component_path, component_id,
                    output_path):
     results_path = '{}.json'.format(join(output_path, component_id))
     if exists(results_path):
@@ -74,36 +75,54 @@ def test_file_task(self, path_to_file, feature_path, component_id,
     else:
         # TODO: handle parse error
         xml = etree.parse(path_to_file)
+        activities = xml.findall('iati-activity')
 
-        step_definitions_path = join('steps', 'step_definitions.py')
+        step_def_path = join(component_path, '..', 'step_definitions.py')
+        filter_path = join(component_path, '..', 'current_data.feature')
+        features_paths = glob(join(component_path, '*.feature'))
 
-        filters = [join(feature_path, '..', 'filter.feature')]
-        features = glob(join(feature_path, '*.feature'))
+        tester = bdd_tester(step_def_path)
+        features = [tester.load_feature(f) for f in features_paths]
+        total_tests = sum([len(f.tests) for f in features]) + 1
+
+        filter_ = tester.load_feature(filter_path).tests[0]
+        filtered_activities = [a for a in activities if filter_(a) is True]
+
         codelists = _load_codelists()
 
-        results = bdd_tester(
-            step_definitions_path,
-            features,
-            filters=filters,
-            etree=xml,
-            output_path=output_path,
-            codelists=codelists,
-        )
-        score = _compute_score(results)
-        if score is not None:
-            colour = _colorify(score)
-        else:
-            colour = '#222'
-        self.update_state(
-            state='RUNNING',
-            meta={
-                'name': component_id,
-                'progress': 100,
-                'data': results,
-                'score': score,
-                'colour': colour,
-            }
-        )
+        results = {}
+        lookup = {True: 'passed', False: 'failed', None: 'not-relevant'}
+        counter = 1
+        for feature in features:
+            for test in feature.tests:
+                self.update_state(
+                    state='RUNNING',
+                    meta={
+                        'name': component_id,
+                        'progress': 100. * counter / total_tests,
+                    }
+                )
+                counter += 1
+                result = {x: 0 for x in lookup.values()}
+                current_test = 'Given the activity is current'
+                test.steps = [s for s in test.steps if str(s) != current_test]
+                fn = '{}.csv'.format(secure_filename(str(test)))
+                with open(join(output_path, fn), 'w') as f:
+                    csv_file = csv.writer(f)
+                    csv_file.writerow(('IATI Identifier', 'Message'))
+                    for activity in filtered_activities:
+                        out = test(activity,
+                                   codelists=codelists,
+                                   verbose=True)
+                        result[lookup.get(out[0])] += 1
+                        if out[0] is False:
+                            csv_file.writerow(out[1].split(': ', 1))
+                    results[str(test)] = result
+                    score = _compute_score(results)
+                    if score is not None:
+                        colour = _colorify(score)
+                    else:
+                        colour = '#222'
         # cache the result
         with open(results_path, 'w') as f:
             json.dump(results, f)
