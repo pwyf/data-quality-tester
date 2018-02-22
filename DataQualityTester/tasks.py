@@ -75,7 +75,6 @@ def test_file_task(self, path_to_file, component_path, component_id,
     else:
         # TODO: handle parse error
         xml = etree.parse(path_to_file)
-        activities = xml.findall('iati-activity')
 
         step_def_path = join(component_path, '..', 'step_definitions.py')
         filter_path = join(component_path, '..', 'current_data.feature')
@@ -85,8 +84,11 @@ def test_file_task(self, path_to_file, component_path, component_id,
         features = [tester.load_feature(f) for f in features_paths]
         total_tests = sum([len(f.tests) for f in features]) + 1
 
+        activities = xml.findall('iati-activity')
         filter_ = tester.load_feature(filter_path).tests[0]
         filtered_activities = [a for a in activities if filter_(a) is True]
+
+        elements = filtered_activities + xml.findall('iati-organisation')
 
         codelists = _load_codelists()
 
@@ -110,8 +112,8 @@ def test_file_task(self, path_to_file, component_path, component_id,
                 with open(join(output_path, fn), 'w') as f:
                     csv_file = csv.writer(f)
                     csv_file.writerow(('IATI Identifier', 'Message'))
-                    for activity in filtered_activities:
-                        out = test(activity,
+                    for el in elements:
+                        out = test(el,
                                    codelists=codelists,
                                    verbose=True)
                         result[lookup.get(out[0])] += 1

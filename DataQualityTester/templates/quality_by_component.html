@@ -26,10 +26,11 @@
                 </div>
               </div>
 
+              This test passes in
               {{ result_dict['passed']|commify }}
               out of
               {{ (result_dict['passed'] + result_dict['failed'])|commify }}
-              relevant activities pass this test.
+              relevant cases.
 
               <a class="btn btn-default pull-right" href="{{ url_for('package_quality_by_test', uuid=uuid, component_id=component.id, test_name=quote_plus(test_name)) }}">More…</a>
               {% else %}
