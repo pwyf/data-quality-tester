@@ -21,7 +21,13 @@
 <div class="row" id="results-tabs">
 {% for result in results %}
   <li>
-    <a href="{{ url_for('activity_quality', uuid=uuid, iati_identifier=result['IATI Identifier']) }}">{{ result['IATI Identifier'] }}</a> {{ pprint(result['Message'])|safe }}</h5>
+    {% if result['IATI Identifier'] != '[no-identifier]' %}
+    <a href="{{ url_for('activity_quality', uuid=uuid, iati_identifier=result['IATI Identifier']) }}">{{ result['IATI Identifier'] }}</a>
+    {% else %}
+      [no-identifier]
+    {% endif %}
+
+    {{ pprint(result['Message'])|safe }}
   </li>
 {% endfor %}
 </div>
