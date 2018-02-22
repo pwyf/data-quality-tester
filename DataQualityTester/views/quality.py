@@ -52,7 +52,7 @@ def package_quality_by_component(uuid, component_id):
 
     context = {
         'component': component,
-        'results': results,
+        'results': sorted(results.items()),
         'uuid': uuid,
         'quote_plus': quote_plus,
     }

@@ -8,7 +8,7 @@
     <div class="panel-heading"><h3 class="panel-title">{{ component.name }} <a class="pull-right" href="{{ url_for('package_overview', uuid=uuid) }}">Back to overview</a></h3></div>
     <div class="panel-body">
 
-      {% for test_name, result_dict in results.items() %}
+      {% for test_name, result_dict in results %}
       <div class="col-sm-6 quality-panel">
           <div class="panel panel-primary">
             <div class="panel-heading">
