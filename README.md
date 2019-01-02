@@ -31,16 +31,17 @@ Index tests.
     cp config.py.tmpl config.py
     ```
 
-5. Set the `FLASK_APP` environment variable:
+5. Set the environment variables:
 
     ```shell
     export FLASK_APP=DataQualityTester/__init__.py
+    export FLASK_ENV=development
     ```
 
     …Or you can alternatively append it to `venv/bin/activate` with something like:
 
     ```shell
-    echo -e '\nexport FLASK_APP=DataQualityTester/__init__.py' >> venv/bin/activate
+    echo -e '\nexport FLASK_APP=DataQualityTester/__init__.py\nexport FLASK_ENV=development' >> venv/bin/activate
     ```
 
 6. Set up the database:
