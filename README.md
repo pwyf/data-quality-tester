@@ -15,8 +15,8 @@ Index tests.
 2. Set up a virtualenv:
 
     ```shell
-    pyvenv .ve
-    source .ve/bin/activate
+    pyvenv venv
+    source venv/bin/activate
     ```
 
 3. Install dependencies:
@@ -37,10 +37,10 @@ Index tests.
     export FLASK_APP=DataQualityTester/__init__.py
     ```
 
-    You can also append it to `.ve/bin/activate` with something like:
+    …Or you can alternatively append it to `venv/bin/activate` with something like:
 
     ```shell
-    echo -e '\nexport FLASK_APP=DataQualityTester/__init__.py' >> .ve/bin/activate
+    echo -e '\nexport FLASK_APP=DataQualityTester/__init__.py' >> venv/bin/activate
     ```
 
 6. Set up the database:
