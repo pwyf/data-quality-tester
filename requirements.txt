@@ -1,5 +1,4 @@
 lxml==4.2.5
-PyYAML==3.13
 requests==2.20.1
 
 celery==4.0.2
