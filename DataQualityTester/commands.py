@@ -45,9 +45,9 @@ def refresh_codelists():
             'codelist_version': 'clv3',
         },
     )
-    all_codelists_tmpl = 'http://iatistandard.org/{iati_version}/' + \
-        'codelists/downloads/{codelist_version}/codelists.json'
-    codelist_tmpl = 'http://iatistandard.org/{iati_version}/' + \
+    all_codelists_tmpl = 'https://reference.iatistandard.org/' + \
+        '{iati_version}/codelists/downloads/{codelist_version}/codelists.json'
+    codelist_tmpl = 'https://reference.iatistandard.org/{iati_version}/' + \
         'codelists/downloads/{codelist_version}/json/en/{codelist_name}.json'
     codelists_path = join(app.config.get('CURRENT_PATH'), 'codelists')
     for version in versions:
