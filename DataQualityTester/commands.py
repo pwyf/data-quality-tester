@@ -49,7 +49,7 @@ def refresh_codelists():
         'codelists/downloads/{codelist_version}/codelists.json'
     codelist_tmpl = 'http://iatistandard.org/{iati_version}/' + \
         'codelists/downloads/{codelist_version}/json/en/{codelist_name}.json'
-    codelists_path = join(app.config.get('CURRENT_PATH'), 'steps', 'codelists')
+    codelists_path = join(app.config.get('CURRENT_PATH'), 'codelists')
     for version in versions:
         codelist_path = join(codelists_path, version['iati_version'][0])
         all_codelists_url = all_codelists_tmpl.format(**version)
