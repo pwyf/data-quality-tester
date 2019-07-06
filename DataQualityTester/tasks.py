@@ -4,7 +4,7 @@ from glob import glob
 from os.path import exists, join
 from os import makedirs
 
-from bdd_tester import bdd_tester
+from bdd_tester import BDDTester
 from lxml import etree
 import requests
 from werkzeug.utils import secure_filename
@@ -80,7 +80,7 @@ def test_file_task(self, path_to_file, component_path, component_id,
         filter_path = join(component_path, '..', 'current_data.feature')
         features_paths = glob(join(component_path, '*.feature'))
 
-        tester = bdd_tester(step_def_path)
+        tester = BDDTester(step_def_path)
         features = [tester.load_feature(f) for f in features_paths]
         total_tests = sum([len(f.tests) for f in features]) + 1
 
