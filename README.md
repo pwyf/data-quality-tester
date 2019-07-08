@@ -8,7 +8,7 @@ Index tests.
 1. Clone the repository:
 
     ```shell
-    git clone https://github.com/pwyf/data-quality-tester.git
+    git clone --recursive https://github.com/pwyf/data-quality-tester.git
     cd data-quality-tester
     ```
 
