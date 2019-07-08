@@ -34,7 +34,7 @@ def refresh_codelists():
     Command to fetch IATI codelists in json format and dump them
     for use in some of the tests.
 
-    Usage: flask refresh_codelists
+    Usage: flask refresh-codelists
     '''
     versions = (
         {
