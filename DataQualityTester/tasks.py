@@ -115,7 +115,7 @@ def test_file_task(self, path_to_file, component_path, component_id,
                     for el in elements:
                         out = test(el,
                                    codelists=codelists,
-                                   verbose=True)
+                                   bdd_verbose=True)
                         result[lookup.get(out[0])] += 1
                         if out[0] is False:
                             csv_file.writerow(out[1].split(': ', 1))
