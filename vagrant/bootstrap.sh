@@ -20,19 +20,4 @@ source venv/bin/activate
 pip install -r requirements.txt
 cp config.py.tmpl config.py
 
-echo "**** Build the assets and run the server ****"
-flask assets build
-
-echo "**** Retrieve all of the codelists from IATI register ****"
-flask refresh-codelists
-
-echo "**** Set up the databases ****"
-flask db upgrade
-
-echo "**** Start redis ****"
-redis-server > /dev/null 2>&1 &
-
-echo "**** Start celery ****"
-celery worker --app DataQualityTester.celery -l debug &
-
 
