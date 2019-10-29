@@ -26,8 +26,7 @@
     {% else %}
       [no-identifier]
     {% endif %}
-
-    {{ pprint(result['Message'])|safe }}
+    - {{ pprint(result['Message'])|safe }}
   </li>
 {% endfor %}
 </div>
