@@ -9,7 +9,7 @@ from DataQualityTester import app
 @app.before_request
 def csrf_protect():
     if request.method == 'POST':
-        token = session.pop('_csrf_token', None)
+        token = session.get('_csrf_token', None)
         if not token or token != request.form.get('_csrf_token'):
             abort(403)
 
