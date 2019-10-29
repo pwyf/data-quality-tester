@@ -116,9 +116,19 @@ def test_file_task(self, path_to_file, component_path, component_id,
                         out = test(el,
                                    codelists=codelists,
                                    bdd_verbose=True)
+
                         result[lookup.get(out[0])] += 1
                         if out[0] is False:
-                            csv_file.writerow([None, out[1]])
+                            iati_identifier = None
+                            xpath_result = el.xpath(
+                                'iati-identifier[1]/text()'
+                            )
+                            if len(xpath_result) > 0:
+                                iati_identifier = str(xpath_result[0])
+                            csv_file.writerow(
+                                [iati_identifier, str(out[1].args[1])]
+                            )
+
                     results[str(test)] = result
                     score = _compute_score(results)
                     if score is not None:
