@@ -46,7 +46,7 @@ def generic_error(e):
             name=e.name,
             code=err_code
         )
-    except:
+    except Exception:
         error_str = 'Unknown error'
         err_code = 500
 
