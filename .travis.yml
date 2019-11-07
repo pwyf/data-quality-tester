@@ -1,0 +1,20 @@
+language: python
+
+python:
+  - "3.6"
+
+cache: pip
+
+install:
+  - "pip install -r requirements.txt"
+  - "pip install -r requirements_dev.txt"
+
+before_script:
+  - export FLASK_APP=DataQualityTester/__init__.py
+  - export FLASK_ENV=development
+  - cp ./config.py.tmpl ./config.py
+  - flask assets build
+
+script:
+  - "flake8 ./DataQualityTester/"
+  - "pytest ./tests/"
