@@ -102,6 +102,7 @@ def task_status(task_id):
     output = {
         'status': task.state,
     }
+
     if task.state == 'PENDING':
         return jsonify(output)
     else:

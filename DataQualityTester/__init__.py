@@ -38,4 +38,4 @@ assets.register('css_base', Bundle(
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from DataQualityTester import commands, routes, models, views, lib
+from DataQualityTester import commands, routes, models, views, lib # noqa

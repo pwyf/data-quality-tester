@@ -1,5 +1,5 @@
 from DataQualityTester import app
-from DataQualityTester.views import api, quality, pages, uploader
+from DataQualityTester.views import quality, pages, uploader
 
 
 @app.route('/')

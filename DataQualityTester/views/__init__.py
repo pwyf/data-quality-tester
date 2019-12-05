@@ -1,1 +1,1 @@
-from DataQualityTester.views import api, pages, quality, uploader
+from DataQualityTester.views import api, pages, quality, uploader # noqa

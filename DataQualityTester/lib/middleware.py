@@ -9,7 +9,7 @@ from DataQualityTester import app
 @app.before_request
 def csrf_protect():
     if request.method == 'POST':
-        token = session.pop('_csrf_token', None)
+        token = session.get('_csrf_token', None)
         if not token or token != request.form.get('_csrf_token'):
             abort(403)
 
@@ -46,7 +46,7 @@ def generic_error(e):
             name=e.name,
             code=err_code
         )
-    except:
+    except Exception:
         error_str = 'Unknown error'
         err_code = 500
 
