@@ -126,7 +126,7 @@ def test_file_task(self, path_to_file, component_path, component_id,
                             if len(xpath_result) > 0:
                                 iati_identifier = str(xpath_result[0])
                             csv_file.writerow(
-                                [iati_identifier, str(out[1].args[1])]
+                                [iati_identifier, str(out[1].args[0])]
                             )
 
                     results[str(test)] = result
