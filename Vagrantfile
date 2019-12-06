@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
     end
 
     config.vm.provision :shell, path: "vagrant/bootstrap.sh"
-    config.vm.provision :shell, path: "vagrant/services.sh", run: 'always'
+    # config.vm.provision :shell, path: "vagrant/services.sh", run: 'always'
 
   end
 
