@@ -16,9 +16,9 @@ apt-get install -y git python3-pip redis python3-venv
 
 echo "**** Setting up the application ****"
 cd /vagrant
-python3 -m venv venv
-echo -e '\nexport FLASK_APP=DataQualityTester/__init__.py\nexport FLASK_ENV=development' >> venv/bin/activate
-source venv/bin/activate
+python3 -m venv .ve
+echo -e '\nexport FLASK_APP=DataQualityTester/__init__.py\nexport FLASK_ENV=development' >> .ve/bin/activate
+source .ve/bin/activate
 pip install -r requirements.txt
 cp config.py.tmpl config.py
 
