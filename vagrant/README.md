@@ -13,7 +13,7 @@ localhost:5000
 ``` bash
 vagrant ssh
 cd /vagrant
-source venv/bin/activate
+source .ve/bin/activate
 flask assets build
 flask refresh-codelists
 flask db upgrade
