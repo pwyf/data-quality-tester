@@ -12,7 +12,8 @@
       <div class="col-sm-6 quality-panel">
           <div class="panel panel-primary">
             <div class="panel-heading">
-              <h3 class="panel-title">{{ test_name }}</h3>
+                <h3 class="panel-title" style="display: inline">{{ test_name }}</h3>
+                <span class="pull-right" title="Scoring indicator number {{ result_dict['indicator']['indicator_num'] }}">#{{ result_dict['indicator']['indicator_num'] }}</span>
             </div>
             <div class="panel-body">
               {% if result_dict|percent is not none %}
