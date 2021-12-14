@@ -16,12 +16,13 @@
             </div>
             <div class="panel-body">
               {% if result_dict|percent is not none %}
+              {% set bg_color=result_dict|percent|colorify %}
               <div class="progress">
-                <div class="progress-bar progress-bar-striped" style="width: {{ result_dict|percent }}%; background-color: {{ result_dict|percent|colorify }}">
+                <div class="progress-bar" style="width: {{ result_dict|percent }}%; background-color: {{ bg_color }}">
                   <span class="sr-only">{{ result_dict|percent|int }}% Pass</span>
                   {{ result_dict|percent|int }}%
                 </div>
-                <div class="progress-bar" style="width: {{ 100 - result_dict|percent }}%; background-color: #222">
+                <div class="progress-bar" style="width: {{ 100 - result_dict|percent }}%; background-color: {{ bg_color }}; opacity: 0.2;">
                   <span class="sr-only">{{ 100 - result_dict|percent|int }}% Fail</span>
                 </div>
               </div>
