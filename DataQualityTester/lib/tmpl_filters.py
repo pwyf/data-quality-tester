@@ -49,10 +49,7 @@ def ceil(val):
 
 @app.template_filter('percent')
 def percent(result):
-    total = result['passed'] + result['failed']
-    if total == 0:
-        return None
-    return 100. * result['passed'] / total
+    return helpers.percent(result)
 
 
 @app.template_filter('colorify')

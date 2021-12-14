@@ -2,12 +2,13 @@ import csv
 import json
 from os.path import exists, join
 from urllib.parse import quote_plus, unquote_plus
-
+from io import StringIO
 from flask import abort, jsonify, redirect, request, \
-                  render_template, url_for
+                  render_template, url_for, make_response
 
 from DataQualityTester.lib.exceptions import ActivityNotFoundException
-from DataQualityTester.tasks import test_file_task
+from DataQualityTester.lib.helpers import percent
+from DataQualityTester.tasks import test_file_task, _compute_score
 from DataQualityTester.models import SuppliedData, TestSet
 from DataQualityTester import app
 
@@ -132,3 +133,30 @@ def task_status(task_id):
     else:
         output.update(task.info)
         return jsonify(output)
+
+
+def download_results(task_id):
+    supplied_data = SuppliedData.query.get_or_404(str(task_id))
+    output_path = supplied_data.upload_dir()
+    csv_response = StringIO()
+
+    test_set_id = request.args.get('test_set')
+    test_set = TestSet(test_set_id)
+    csv_file = csv.writer(csv_response)
+    csv_file.writerow(('type', 'name', 'score'))
+    for component in test_set.components:
+        component_file = '{}.json'.format(join(output_path, component.id))
+        with open(component_file) as f:
+            results = json.load(f)
+            category_score = _compute_score(results)
+        csv_file.writerow(['category', component.name, category_score])
+
+        for test, test_scores in results.items():
+            test_score = percent(test_scores)
+            csv_file.writerow(['test', test, test_score])
+
+        csv_file.writerow(['','',''])
+
+    output = make_response(csv_response.getvalue())
+
+    return output
