@@ -47,6 +47,11 @@ def activity_quality(uuid, iati_identifier):
 def package_overview(uuid):
     return quality.package_overview(uuid)
 
+@app.route('/package/<uuid:uuid>/download')
+def download_results(uuid):
+    response_csv = quality.download_results(uuid)
+    response_csv.headers.set('Content-Disposition', 'attachment', filename='all_results.csv')
+    return response_csv
 
 @app.route('/package/<uuid:uuid>/<component_id>')
 def package_quality_by_component(uuid, component_id):
