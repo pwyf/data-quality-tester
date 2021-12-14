@@ -1,0 +1,226 @@
+{
+  "None": {
+    "indicator_num": 2,
+    "indicator_name": "Accessibility (database/data portal)"
+  },
+  "Allocation policy is present": {
+    "indicator_num": 5,
+    "indicator_name": "Allocation policy "
+  },
+  "Annual report is present": {
+    "indicator_num": 4,
+    "indicator_name": "Annual report"
+  },
+  "Audit is present": {
+    "indicator_num": 8,
+    "indicator_name": "Audit"
+  },
+  "Country strategy or Memorandum of Understanding": {
+    "indicator_num": 7,
+    "indicator_name": "Strategy (country/sector) or MoU"
+  },
+  "Organisation strategy is present": {
+    "indicator_num": 3,
+    "indicator_name": "Organisation strategy"
+  },
+  "Procurement policy is present": {
+    "indicator_num": 6,
+    "indicator_name": "Procurement policy"
+  },
+  "Budget available forward annually": {
+    "indicator_num": 11,
+    "indicator_name": "Project budget"
+  },
+  "Budget available forward quarterly": {
+    "indicator_num": 11,
+    "indicator_name": "Project budget"
+  },
+  "Budget document is present": {
+    "indicator_num": 12,
+    "indicator_name": "Project budget documents"
+  },
+  "Capital spend is present": {
+    "indicator_num": 15,
+    "indicator_name": "Budget alignment"
+  },
+  "Publish detailed CRS purpose codes in the sector field": {
+    "indicator_num": 15,
+    "indicator_name": "Budget alignment"
+  },
+  "Commitment is present": {
+    "indicator_num": 13,
+    "indicator_name": "Commitments"
+  },
+  "Disbursements or expenditures are present": {
+    "indicator_num": 14,
+    "indicator_name": "Disbursements & expenditures"
+  },
+  "Disaggregated budget - one year": {
+    "indicator_num": 10,
+    "indicator_name": "Disaggregated budget"
+  },
+  "Disaggregated budget - two years": {
+    "indicator_num": 10,
+    "indicator_name": "Disaggregated budget"
+  },
+  "Disaggregated budget - three years": {
+    "indicator_num": 10,
+    "indicator_name": "Disaggregated budget"
+  },
+  "Organisation budget available one year forward": {
+    "indicator_num": 9,
+    "indicator_name": "Total organisation budget"
+  },
+  "Organisation budget available two years forward": {
+    "indicator_num": 9,
+    "indicator_name": "Total organisation budget"
+  },
+  "Organisation budget available three years forward": {
+    "indicator_num": 9,
+    "indicator_name": "Total organisation budget"
+  },
+  "Actual end date is present": {
+    "indicator_num": 19,
+    "indicator_name": "Actual dates"
+  },
+  "Actual start date is present": {
+    "indicator_num": 19,
+    "indicator_name": "Actual dates"
+  },
+  "Contact info is present": {
+    "indicator_num": 21,
+    "indicator_name": "Contact details"
+  },
+  "Current status is present": {
+    "indicator_num": 20,
+    "indicator_name": "Current status"
+  },
+  "Current status is valid": {
+    "indicator_num": 20,
+    "indicator_name": "Current status"
+  },
+  "Description has at least 80 characters": {
+    "indicator_num": 17,
+    "indicator_name": "Description"
+  },
+  "Description is present": {
+    "indicator_num": 17,
+    "indicator_name": "Description"
+  },
+  "IATI Identifier is present": {
+    "indicator_num": 25,
+    "indicator_name": "Unique ID"
+  },
+  "IATI Identifier starts with reporting org ref": {
+    "indicator_num": 25,
+    "indicator_name": "Unique ID"
+  },
+  "Conditions data": {
+    "indicator_num": 24,
+    "indicator_name": "Conditions"
+  },
+  "Conditions document": {
+    "indicator_num": 24,
+    "indicator_name": "Conditions"
+  },
+  "Location (sub-national)": {
+    "indicator_num": 23,
+    "indicator_name": "Sub-national location"
+  },
+  "Location (sub-national) coordinates or point": {
+    "indicator_num": 23,
+    "indicator_name": "Sub-national location"
+  },
+  "Planned end date is present": {
+    "indicator_num": 18,
+    "indicator_name": "Planned dates"
+  },
+  "Planned start date is present": {
+    "indicator_num": 18,
+    "indicator_name": "Planned dates"
+  },
+  "Sector is present": {
+    "indicator_num": 22,
+    "indicator_name": "Sectors"
+  },
+  "Sector uses DAC CRS 5 digit purpose codes": {
+    "indicator_num": 22,
+    "indicator_name": "Sectors"
+  },
+  "Title has at least 10 characters": {
+    "indicator_num": 16,
+    "indicator_name": "Title"
+  },
+  "Title is present": {
+    "indicator_num": 16,
+    "indicator_name": "Title"
+  },
+  "Aid type is present": {
+    "indicator_num": 27,
+    "indicator_name": "Aid type"
+  },
+  "Aid type is valid": {
+    "indicator_num": 27,
+    "indicator_name": "Aid type"
+  },
+  "Names of implementing org present": {
+    "indicator_num": 30,
+    "indicator_name": "Network data"
+  },
+  "Org references are present": {
+    "indicator_num": 30,
+    "indicator_name": "Network data"
+  },
+  "Contract is present": {
+    "indicator_num": 31,
+    "indicator_name": "Project procurement "
+  },
+  "Tender is present": {
+    "indicator_num": 31,
+    "indicator_name": "Project procurement "
+  },
+  "Default finance type": {
+    "indicator_num": 28,
+    "indicator_name": "Finance type"
+  },
+  "Finance type uses standard codelist": {
+    "indicator_num": 28,
+    "indicator_name": "Finance type"
+  },
+  "Flow type": {
+    "indicator_num": 26,
+    "indicator_name": "Flow type"
+  },
+  "Flow type uses standard codelist": {
+    "indicator_num": 26,
+    "indicator_name": "Flow type"
+  },
+  "Tied aid status": {
+    "indicator_num": 29,
+    "indicator_name": "Tied aid status"
+  },
+  "Tied aid status uses standard codelist": {
+    "indicator_num": 29,
+    "indicator_name": "Tied aid status"
+  },
+  "Objectives of activity document": {
+    "indicator_num": 33,
+    "indicator_name": "Objectives"
+  },
+  "Pre- and/or post-project impact appraisal documents": {
+    "indicator_num": 34,
+    "indicator_name": "Pre-project impact appraisal"
+  },
+  "Project performance and evaluation document": {
+    "indicator_num": 35,
+    "indicator_name": "Reviews and evaluations"
+  },
+  "Results data": {
+    "indicator_num": 36,
+    "indicator_name": "Results"
+  },
+  "Results document": {
+    "indicator_num": 36,
+    "indicator_name": "Results"
+  }
+}

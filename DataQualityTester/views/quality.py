@@ -9,6 +9,19 @@ from flask import abort, jsonify, redirect, request, \
 from DataQualityTester.lib.exceptions import ActivityNotFoundException
 from DataQualityTester.tasks import test_file_task
 from DataQualityTester.models import SuppliedData, TestSet
+from DataQualityTester import app
+
+
+def indicator_lookup():
+    print("loading indicator lookup")
+    with open(
+            join(
+                app.config.get('CURRENT_PATH'),
+                "indicator_lookup.json")) as fp:
+        return json.load(fp)
+
+
+INDICATOR_LOOKUP = indicator_lookup()
 
 
 def package_overview(uuid):
@@ -50,9 +63,21 @@ def package_quality_by_component(uuid, component_id):
     else:
         return redirect(url_for('package_overview', uuid=uuid))
 
+    # Add indicator information to results for frontend
+    for res in results:
+        try:
+            results[res]["indicator"] = INDICATOR_LOOKUP[res]
+        except KeyError:
+            results[res]["indicator"] = {
+                "indicator_num": 0,
+                "indicator_name": "Unknown"
+            }
+
     context = {
         'component': component,
-        'results': sorted(results.items()),
+        'results': sorted(
+            results.items(),
+            key=lambda res: res[1]["indicator"]["indicator_num"]),
         'uuid': uuid,
         'quote_plus': quote_plus,
     }
