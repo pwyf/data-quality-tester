@@ -5,7 +5,7 @@
 
 <div class="row quality-panels-list">
 {% for component in components %}
-  <div class="col-sm-6 quality-panel" id="{{ component.id }}" data-status-url="{{ url_for('task_status', task_id=task_ids[component.id]) }}" data-more-url="{{ url_for('package_quality_by_component', uuid=uuid, component_id=component.id) }}">
+  <div class="col-sm-6 quality-panel" id="{{ component.id }}" data-title="{{component.name}}" data-status-url="{{ url_for('task_status', task_id=task_ids[component.id]) }}" data-more-url="{{ url_for('package_quality_by_component', uuid=uuid, component_id=component.id) }}">
     <div class="panel panel-primary">
       <div class="panel-heading">
         <h3 class="panel-title">{{ component.name }}</h3>
@@ -17,7 +17,6 @@
             <i class="fa fa-circle-o-notch fa-spin fa-fw"></i>
           </div>
         </div>
-
         <div class="progress" style="visibility: collapse;"></div>
         <a class="btn btn-default pull-right" disabled="disabled" href="#">More…</a>
       </div>
@@ -35,14 +34,15 @@
 <script id="panel-tmpl" type="text/x-handlebars-template">
 {% raw %}
   <div class="progress">
-    <div class="progress-bar progress-bar-striped" style="width: {{ pass }}%; background-color: {{ colour }}">
+    <div class="progress-bar" style="width: {{ pass }}%; background-color: {{ colour }};" title="{{int_pass}}% Passed" data-toggle="tooltip">
       <span class="sr-only">{{ int_pass }}% Pass</span>
       {{ int_pass }}%
     </div>
-    <div class="progress-bar" style="width: {{ fail }}%; background-color: #222">
+    <div class="progress-bar" style="width: {{ fail }}%; background-color: {{ colour }}; opacity: 0.2;">
       <span class="sr-only">{{ int_fail }}% Fail</span>
     </div>
   </div>
+  <p><strong>{{int_pass}}%</strong> of the '{{title}}' tests passed.</p>
   <a class="btn btn-default pull-right" href="{{ more_url }}">More…</a>
 {% endraw %}
 </script>
@@ -74,10 +74,12 @@ $(function() {
             int_fail: parseInt(100 - data.score),
             colour: data.colour,
             component: data.name,
-            more_url: $el.data('more-url')
+            more_url: $el.data('more-url'),
+            title: $el.data('title'),
           };
           $el.find('.panel-body .loading').fadeOut(function() {
             $el.find('.panel-body').html(tmpl(ctx));
+            $('[data-toggle="tooltip"]').tooltip();
           });
         } else {
           $el.find('.panel-body .loading').fadeOut(function() {
