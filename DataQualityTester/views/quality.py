@@ -13,7 +13,6 @@ from DataQualityTester import app
 
 
 def indicator_lookup():
-    print("loading indicator lookup")
     with open(
             join(
                 app.config.get('CURRENT_PATH'),
