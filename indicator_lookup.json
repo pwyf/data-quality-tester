@@ -55,15 +55,7 @@
     "indicator_num": 14,
     "indicator_name": "Disbursements & expenditures"
   },
-  "Disaggregated budget - one year": {
-    "indicator_num": 10,
-    "indicator_name": "Disaggregated budget"
-  },
-  "Disaggregated budget - two years": {
-    "indicator_num": 10,
-    "indicator_name": "Disaggregated budget"
-  },
-  "Disaggregated budget - three years": {
+  "Disaggregated budget": {
     "indicator_num": 10,
     "indicator_name": "Disaggregated budget"
   },
@@ -163,11 +155,11 @@
     "indicator_num": 27,
     "indicator_name": "Aid type"
   },
-  "Names of implementing org present": {
+  "Implementing organisation": {
     "indicator_num": 30,
     "indicator_name": "Network data"
   },
-  "Org references are present": {
+  "Participating Orgs": {
     "indicator_num": 30,
     "indicator_name": "Network data"
   },
