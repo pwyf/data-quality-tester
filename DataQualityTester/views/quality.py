@@ -157,7 +157,7 @@ def download_results(task_id):
                 indicator = INDICATOR_LOOKUP[test]
             except KeyError:
                 indicator = {
-                    "indicator_num": 0,
+                    "indicator_num": "Unknown",
                     "indicator_name": "Unknown"
                 }
             total_tested = sum(test_scores.values()) 
