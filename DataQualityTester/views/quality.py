@@ -153,7 +153,13 @@ def download_results(task_id):
 
         for test, test_scores in results.items():
             test_score = percent(test_scores)
-            indicator = INDICATOR_LOOKUP[test]
+            try:
+                indicator = INDICATOR_LOOKUP[test]
+            except KeyError:
+                indicator = {
+                    "indicator_num": 0,
+                    "indicator_name": "Unknown"
+                }
             total_tested = sum(test_scores.values()) 
             csv_file.writerow(['test', indicator['indicator_num'], test, test_score, total_tested, test_scores['failed'], test_scores['passed'], test_scores['not-relevant']])
 
