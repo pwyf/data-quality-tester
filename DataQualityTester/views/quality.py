@@ -143,7 +143,7 @@ def download_results(task_id):
     test_set_id = request.args.get('test_set')
     test_set = TestSet(test_set_id)
     csv_file = csv.writer(csv_response)
-    csv_file.writerow(('type', 'name', 'score'))
+    csv_file.writerow(('type', 'name', 'score', 'total_tested', 'failed', 'passed', 'not-relevant'))
     for component in test_set.components:
         component_file = '{}.json'.format(join(output_path, component.id))
         with open(component_file) as f:
@@ -153,9 +153,11 @@ def download_results(task_id):
 
         for test, test_scores in results.items():
             test_score = percent(test_scores)
-            csv_file.writerow(['test', test, test_score])
+            print(test)
+            total_tested = sum(test_scores.values()) 
+            csv_file.writerow(['test', test, test_score, total_tested, test_scores['failed'], test_scores['passed'], test_scores['not-relevant']])
 
-        csv_file.writerow(['','',''])
+        csv_file.writerow([])
 
     output = make_response(csv_response.getvalue())
 
