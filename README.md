@@ -15,8 +15,8 @@ Index tests.
 2. Set up a virtualenv:
 
     ```shell
-    pyvenv venv
-    source venv/bin/activate
+    python3.7 -m venv .ve
+    source .ve/bin/activate
     ```
 
 3. Install dependencies:
@@ -61,7 +61,7 @@ Index tests.
 2. Start a celery worker:
 
     ```shell
-    celery worker --app DataQualityTester.celery
+    celery --app DataQualityTester.celery worker
     ```
 
 3. Start the webserver:
