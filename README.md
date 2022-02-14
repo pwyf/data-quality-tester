@@ -38,10 +38,10 @@ Index tests.
     export FLASK_ENV=development
     ```
 
-    …Or you can alternatively append it to `venv/bin/activate` with something like:
+    …Or you can alternatively append it to `.ve/bin/activate` with something like:
 
     ```shell
-    echo -e '\nexport FLASK_APP=DataQualityTester/__init__.py\nexport FLASK_ENV=development' >> venv/bin/activate
+    echo -e '\nexport FLASK_APP=DataQualityTester/__init__.py\nexport FLASK_ENV=development' >> .ve/bin/activate
     ```
 
 6. Set up the database:
