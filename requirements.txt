@@ -16,7 +16,7 @@ itsdangerous==1.1.0
 Jinja2==2.11.3
 jsmin==3.0.1
 lxml==4.6.5
-Mako==1.1.0
+Mako==1.2.2
 MarkupSafe==1.1.1
 more-itertools==8.0.2
 pkg-resources==0.0.0
