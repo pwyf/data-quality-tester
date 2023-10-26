@@ -3,7 +3,11 @@
 Test your IATI data against the Publish What You Fund Aid Transparency
 Index tests.
 
-## Installation
+## Installation option 1: using Vagrant
+
+See the [`vagrant/README.md`](vagrant/README.md) file for details.
+
+## Installation option 2: without Vagrant
 
 1. Clone the repository:
 
@@ -44,19 +48,29 @@ Index tests.
     echo -e '\nexport FLASK_APP=DataQualityTester/__init__.py\nexport FLASK_ENV=development' >> .ve/bin/activate
     ```
 
-6. Set up the database:
+6. Build the assets, download codelists, and set up the database:
 
-    ```
-    flask db upgrade
-    ```
+   ```
+   flask assets build
+   flask refresh-codelists
+   flask db upgrade
+   ```
 
-## Running
+## Running (without Vagrant)
 
-1. Start Redis:
+1. Start a Redis server:
 
-    ```shell
-    redis-server
-    ```
+   If you have a native install of redis server:
+
+   ```shell
+   redis-server
+   ```
+
+   Alternatively, you can also run it in docker:
+
+   ```shell
+   docker run -d -p 6379:6379 redis
+   ```
 
 2. Start a celery worker:
 
