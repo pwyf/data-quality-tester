@@ -115,13 +115,21 @@
     "indicator_num": 24,
     "indicator_name": "Conditions"
   },
-  "Location (sub-national)": {
-    "indicator_num": 23,
-    "indicator_name": "Sub-national location"
+  "Location": {
+    "indicator_num": 23.1,
+    "indicator_name": "Location"
   },
-  "Location (sub-national) coordinates or point": {
-    "indicator_num": 23,
-    "indicator_name": "Sub-national location"
+  "Location point or administrative or location-id": {
+    "indicator_num": 23.1,
+    "indicator_name": "Location"
+  },
+  "Location (with activity-scope exclusion)": {
+    "indicator_num": 23.2,
+    "indicator_name": "Location (with activity-scope exclusion)"
+  },
+  "Location point or administrative or location-id (with activity-scope exclusion)": {
+    "indicator_num": 23.2,
+    "indicator_name": "Location (with activity-scope exclusion)"
   },
   "Planned end date is present": {
     "indicator_num": 18,
@@ -156,19 +164,23 @@
     "indicator_name": "Aid type"
   },
   "Implementing organisation": {
-    "indicator_num": 30,
+    "indicator_num": 30.1,
     "indicator_name": "Network data"
   },
   "Participating Orgs": {
-    "indicator_num": 30,
+    "indicator_num": 30.2,
+    "indicator_name": "Network data"
+  },
+  "Transactions with valid receiver": {
+    "indicator_num": 30.3,
     "indicator_name": "Network data"
   },
   "Contract is present": {
-    "indicator_num": 31,
+    "indicator_num": 31.1,
     "indicator_name": "Project procurement "
   },
   "Tender is present": {
-    "indicator_num": 31,
+    "indicator_num": 31.2,
     "indicator_name": "Project procurement "
   },
   "Default finance type": {
@@ -196,23 +208,23 @@
     "indicator_name": "Tied aid status"
   },
   "Objectives of activity document": {
-    "indicator_num": 33,
+    "indicator_num": 32,
     "indicator_name": "Objectives"
   },
   "Pre- and/or post-project impact appraisal documents": {
-    "indicator_num": 34,
+    "indicator_num": 33,
     "indicator_name": "Pre-project impact appraisal"
   },
   "Project performance and evaluation document": {
-    "indicator_num": 35,
+    "indicator_num": 34,
     "indicator_name": "Reviews and evaluations"
   },
   "Results data": {
-    "indicator_num": 36,
+    "indicator_num": 35,
     "indicator_name": "Results"
   },
   "Results document": {
-    "indicator_num": 36,
+    "indicator_num": 35,
     "indicator_name": "Results"
   }
 }
