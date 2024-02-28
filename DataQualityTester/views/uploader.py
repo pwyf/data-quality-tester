@@ -16,9 +16,9 @@ def upload():
 
     next_url = url_for('package_overview', uuid=supplied_data.id)
 
-    if request.is_xhr:
-        task_url = url_for('task_status', task_id=supplied_data.task_id)
-        return jsonify({'task_url': task_url, 'next_url': next_url})
+    #if request.is_xhr:
+    #    task_url = url_for('task_status', task_id=supplied_data.task_id)
+    #    return jsonify({'task_url': task_url, 'next_url': next_url})
 
     return redirect(next_url)
 
